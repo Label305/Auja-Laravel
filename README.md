@@ -1,13 +1,13 @@
-Auja-Laravel
-============
+# Auja-Laravel
 
 Auja for Laravel.
 
-This project is in active development. Come back later!
+## Setup
 
+To start developing for this project, clone [Auja-Laravel-Example](https://github.com/Label305/Auja-Laravel-Example).
+After running `composer install`, you can find this project in `\vendor\label305\auja-laravel\`.
 
-License
------
+## License
 
 	Copyright 2014 Label305
 
