@@ -1,0 +1,4 @@
+suites:
+  auja-laravel: Label305\AujaLaravel
+
+formatter.name: dot

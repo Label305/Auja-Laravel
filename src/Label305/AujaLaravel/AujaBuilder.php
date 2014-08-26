@@ -66,8 +66,6 @@ class AujaBuilder {
 
         $columns = Schema::getColumnListing($tableName);
 
-        var_dump($columns);
-
         foreach ($columns as $columnName) {
             if (ends_with($columnName, self::ID_PREFIX)) {
                 self::defineRelationship($model, $columnName);
