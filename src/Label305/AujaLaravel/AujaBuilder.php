@@ -33,42 +33,57 @@ class AujaBuilder {
     /**
      * @var String[] the model names, as provided in init().
      */
+    private static $modelNames;
+
+    /**
+     * @var Model[] the models, as generated in init().
+     */
     private static $models;
 
     /**
      * Initializes this class for given models.
      *
-     * @param $models String[] an array of model names to use.
+     * @param $modelNames String[] an array of model names to use.
      */
-    public static function init($models) {
-        if (empty($models)) {
+    public static function init($modelNames) {
+        if (empty($modelNames)) {
             throw new \InvalidArgumentException('Provide models!');
         }
-        self::$models = array_map('strtolower', $models);
+        self::$modelNames = $modelNames; // TODO: Camel cased?!
 
-        foreach ($models as $model) {
+        foreach ($modelNames as $modelName) {
+            $model = new Model($modelName);
+
+            self::findColumns($model);
             self::findRelationShips($model);
+
+            self::$models[] = $model;
         }
-        self::findManyToManyRelationships($models);
+        self::findManyToManyRelationships(self::$models);
+    }
+
+    private static function findColumns(Model $model) {
+        $tableName = $model->getTableName();
+
+        if (!Schema::hasTable($tableName)) {
+            throw new \InvalidArgumentException(sprintf('Table for %s does not exist!', $model->getName()));
+        }
+
+        $columns = Schema::getColumnListing($tableName); // TODO dependency injection
+        foreach ($columns as $column) {
+            $model->addColumn(new Column($column, null));
+        }
     }
 
     /**
-     * Finds and definces one-to-one and one-to-many relationships for given model.
+     * Finds and defines one-to-one and one-to-many relationships for given model.
      *
-     * @param $model String the model name.
+     * @param $model Model
      */
-    private static function findRelationShips($model) {
-        $tableName = str_plural($model);
-
-        if (!Schema::hasTable($tableName)) {
-            throw new \InvalidArgumentException(sprintf('Table for %s does not exist!', $model));
-        }
-
-        $columns = Schema::getColumnListing($tableName);
-
-        foreach ($columns as $columnName) {
-            if (ends_with($columnName, self::ID_PREFIX)) {
-                self::defineRelationship($model, $columnName);
+    private static function findRelationShips(Model $model) {
+        foreach ($model->getColumns() as $column) {
+            if (ends_with($column->getName(), self::ID_PREFIX)) {
+                self::defineRelationship($model, $column->getName());
             }
         }
     }
@@ -77,23 +92,26 @@ class AujaBuilder {
      * Defines the relationship between given model and the model corresponding to the column name.
      * Does nothing if the other model was not declared in init().
      *
-     * @param $model      String the model which has given columnName.
+     * @param $model      Model the model which has given columnName.
      * @param $columnName String the column name, which corresponds to another model.
      */
-    private static function defineRelationship($model, $columnName) {
+    private static function defineRelationship(Model $model, $columnName) {
         $otherModel = substr($columnName, 0, strpos($columnName, self::ID_PREFIX));
 
-        if (!in_array($otherModel, self::$models)) {
+        var_dump($otherModel);
+        var_dump(self::$modelNames);
+
+        if (!in_array($otherModel, self::$modelNames)) {
             return;
         }
 
-        echo $model . ' has a ' . $otherModel . PHP_EOL;
+        echo $model->getName() . ' has a ' . $otherModel . PHP_EOL;
     }
 
     /**
      * Finds and defines many to many relationships between models in given array.
      *
-     * @param $models String[] the model names to look for relationships for.
+     * @param $models Model[] the model names to look for relationships for.
      */
     private static function findManyToManyRelationships($models) {
         for ($i = 0; $i < sizeof($models); $i++) {
@@ -101,10 +119,10 @@ class AujaBuilder {
                 $model1 = $models[$i];
                 $model2 = $models[$j];
 
-                if (strcasecmp($model1, $model2) < 0) {
-                    $tableName = strtolower($model1) . '_' . strtolower($model2);
+                if (strcasecmp($model1->getName(), $model2->getName()) < 0) {
+                    $tableName = strtolower($model1->getName()) . '_' . strtolower($model2->getName());
                 } else {
-                    $tableName = strtolower($model2) . '_' . strtolower($model1);
+                    $tableName = strtolower($model2->getName()) . '_' . strtolower($model1->getName());
                 }
 
                 if (Schema::hasTable($tableName)) {
@@ -119,11 +137,11 @@ class AujaBuilder {
     /**
      * Defines a many-to-many relationship between given models.
      *
-     * @param $model1 String the first model name.
-     * @param $model2 String the second model name.
+     * @param $model1 Model the first model.
+     * @param $model2 Model the second model.
      */
-    private static function defineManyToManyRelationship($model1, $model2) {
-        echo $model1 . ' has and belongs to many ' . str_plural($model2) . PHP_EOL;
+    private static function defineManyToManyRelationship(Model $model1, Model $model2) {
+        echo $model1->getName() . ' has and belongs to many ' . str_plural($model2->getName()) . PHP_EOL;
     }
 
 }

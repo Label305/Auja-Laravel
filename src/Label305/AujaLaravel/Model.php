@@ -32,6 +32,11 @@ class Model {
     private $name;
 
     /**
+     * @var String the name of the table. Defaults to the pluralized form of $name.
+     */
+    private $tableName;
+
+    /**
      * @var Column[] the columns in the Model.
      */
     private $columns = array();
@@ -43,6 +48,7 @@ class Model {
      */
     function __construct($name) {
         $this->name = $name;
+        $this->tableName = str_plural(snake_case($name));
     }
 
     /**
@@ -66,5 +72,19 @@ class Model {
      */
     public function getColumns() {
         return $this->columns;
+    }
+
+    /**
+     * @param $tableName String table name to set.
+     */
+    public function setTableName($tableName) {
+        $this->tableName = $tableName;
+    }
+
+    /**
+     * @return String the table name.
+     */
+    public function getTableName() {
+        return $this->tableName;
     }
 }
