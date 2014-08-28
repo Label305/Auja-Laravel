@@ -76,6 +76,13 @@ class AujaConfigurator {
     }
 
     /**
+     * @return array a key-value pair of model names and the Model instances.
+     */
+    public function getModels() {
+        return $this->models;
+    }
+
+    /**
      * @return array a key-value pair of model names and an array of their relations.
      */
     public function getRelations() {
@@ -93,19 +100,12 @@ class AujaConfigurator {
     }
 
     /**
-     * @return array a key-value pair of model names and the Model instances.
-     */
-    public function getModels() {
-        return $this->models;
-    }
-
-    /**
      * Finds and configures the Columns for given Model.
      *
      * @param Model $model the Model to find the Columns for.
      */
     private function findColumns(Model $model) {
-        Log::debug('Finding columns for model ' . $model->getName());
+//        Log::debug('Finding columns for model ' . $model->getName());
         $tableName = $model->getTableName();
 
         if (!$this->databaseRepository->hasTable($tableName)) {
@@ -114,7 +114,7 @@ class AujaConfigurator {
 
         $columns = $this->databaseRepository->getColumnListing($tableName);
         foreach ($columns as $column) {
-            Log::debug(sprintf('Adding column %s to %s', $column, $model->getName()));
+//            Log::debug(sprintf('Adding column %s to %s', $column, $model->getName()));
             $model->addColumn(new Column($column, null));
         }
     }
@@ -136,7 +136,7 @@ class AujaConfigurator {
      * @param $model Model the Model to find the relations for.
      */
     private function findSimpleRelations(Model $model) {
-        Log::debug(sprintf('Finding relations for %s', $model->getName()));
+//        Log::debug(sprintf('Finding relations for %s', $model->getName()));
         foreach ($model->getColumns() as $column) {
             if (ends_with($column->getName(), self::ID_PREFIX)) {
                 $this->defineRelation($model, $column->getName());
@@ -155,11 +155,11 @@ class AujaConfigurator {
         $otherModelName = ucfirst(camel_case(substr($columnName, 0, strpos($columnName, self::ID_PREFIX))));
 
         if (!in_array($otherModelName, array_keys($this->models))) {
-            Log::warning(sprintf('Found foreign id %s in model %s, but no model with name %s was registered', $columnName, $model->getName(), $otherModelName));
+//            Log::warning(sprintf('Found foreign id %s in model %s, but no model with name %s was registered', $columnName, $model->getName(), $otherModelName));
             return;
         }
 
-        Log::info(sprintf('%s has a %s', $model->getName(), $otherModelName));
+//        Log::info(sprintf('%s has a %s', $model->getName(), $otherModelName));
 
         $this->relations[$model->getName()][] = new Relation($model, $this->models[$otherModelName], Relation::BELONGS_TO);
         $this->relations[$otherModelName][] = new Relation($this->models[$otherModelName], $model, Relation::HAS_MANY);
@@ -171,7 +171,7 @@ class AujaConfigurator {
      * @param $models Model[] the model names to look for relations for.
      */
     private function findManyToManyRelations(array $models) {
-        Log::debug('Finding many to many relations');
+//        Log::debug('Finding many to many relations');
         for ($i = 0; $i < sizeof($models); $i++) {
             for ($j = $i + 1; $j < sizeof($models); $j++) {
                 $model1 = $models[$i];
@@ -197,7 +197,7 @@ class AujaConfigurator {
      * @param $model2 Model the second model.
      */
     private function defineManyToManyRelation(Model $model1, Model $model2) {
-        Log::info(sprintf('%s has and belongs to many %s', $model1->getName(), str_plural($model2->getName())));
+//        Log::info(sprintf('%s has and belongs to many %s', $model1->getName(), str_plural($model2->getName())));
         $this->relations[$model1->getName()][] = new Relation($model1, $model2, Relation::HAS_AND_BELONGS_TO);
         $this->relations[$model2->getName()][] = new Relation($model2, $model1, Relation::HAS_AND_BELONGS_TO);
     }
