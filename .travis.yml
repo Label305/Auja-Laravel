@@ -8,7 +8,7 @@ before_script:
 script:
   - bin/phpspec run --format=pretty
 
-  notifications:
-    - email:
-      on_success: change
-      on_failure: change
+notifications:
+  - email:
+    on_success: change
+    on_failure: change
