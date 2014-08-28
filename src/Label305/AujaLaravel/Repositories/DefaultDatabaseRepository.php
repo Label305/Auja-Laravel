@@ -21,31 +21,18 @@
  * limitations under the License.
  */
 
-namespace Label305\AujaLaravel;
+namespace Label305\AujaLaravel\Repositories;
 
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
-class AujaBuilder {
+class DefaultDatabaseRepository implements DatabaseRepository {
 
-    /**
-     * @var AujaConfigurator
-     */
-    private static $aujaConfigurator;
-
-    /**
-     * Initializes this class for given models.
-     *
-     * @param $modelNames String[] an array of model names to use.
-     */
-    public static function init($modelNames) {
-        if (empty($modelNames)) {
-            throw new \InvalidArgumentException('Provide models!');
-        }
-
-        Log::debug('Initializing Auja with models:', $modelNames);
-
-        self::$aujaConfigurator = App::make('Label305\AujaLaravel\AujaConfigurator');
-        self::$aujaConfigurator->configure($modelNames);
+    public function hasTable($tableName) {
+        return Schema::hasTable($tableName);
     }
-}
+
+    public function getColumnListing($tableName) {
+        return Schema::getColumnListing($tableName);
+    }
+
+} 

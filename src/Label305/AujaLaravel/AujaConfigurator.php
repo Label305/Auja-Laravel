@@ -25,15 +25,16 @@ namespace Label305\AujaLaravel;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
+use Label305\AujaLaravel\Repositories\DatabaseRepository;
 
 class AujaConfigurator {
 
     const ID_PREFIX = '_id';
 
     /**
-     * @var String[] the model names, as provided in init().
+     * @var DatabaseRepository the DatabaseRepository which provides information about the database.
      */
-    private $modelNames;
+    private $databaseRepository;
 
     /**
      * @var array a key-value pair of model names and the Model instances.
@@ -46,21 +47,23 @@ class AujaConfigurator {
     private $relations = array();
 
     /**
-     * Creates a new AujaConfigurator, using given model names.
+     * Creates a new AujaConfigurator.
      *
-     * @param array $modelNames String[] an array of model names to use.
+     * @param DatabaseRepository $databaseRepository
      */
-    public function __construct(array $modelNames) {
-        $this->modelNames = $modelNames;
+    public function __construct(DatabaseRepository $databaseRepository) {
+        $this->databaseRepository = $databaseRepository;
     }
 
     /**
      * Defines Models, Columns and Relations between the Models.
      * This method should be called before using any other methods.
+     *
+     * @param array $modelNames String[] an array of model names to use.
      */
-    public function configure() {
+    public function configure(array $modelNames) {
         /* First define the models and their columns. */
-        foreach ($this->modelNames as $modelName) {
+        foreach ($modelNames as $modelName) {
             $model = new Model($modelName);
             $this->models[$modelName] = $model;
             $this->relations[$modelName] = array();
@@ -105,11 +108,11 @@ class AujaConfigurator {
         Log::debug('Finding columns for model ' . $model->getName());
         $tableName = $model->getTableName();
 
-        if (!Schema::hasTable($tableName)) { // TODO dependency injection
+        if (!$this->databaseRepository->hasTable($tableName)) {
             throw new \InvalidArgumentException(sprintf('Table for %s does not exist!', $model->getName()));
         }
 
-        $columns = Schema::getColumnListing($tableName); // TODO dependency injection
+        $columns = $this->databaseRepository->getColumnListing($tableName);
         foreach ($columns as $column) {
             Log::debug(sprintf('Adding column %s to %s', $column, $model->getName()));
             $model->addColumn(new Column($column, null));
@@ -151,7 +154,7 @@ class AujaConfigurator {
     private function defineRelation(Model $model, $columnName) {
         $otherModelName = ucfirst(camel_case(substr($columnName, 0, strpos($columnName, self::ID_PREFIX))));
 
-        if (!in_array($otherModelName, $this->modelNames)) {
+        if (!in_array($otherModelName, array_keys($this->models))) {
             Log::warning(sprintf('Found foreign id %s in model %s, but no model with name %s was registered', $columnName, $model->getName(), $otherModelName));
             return;
         }
