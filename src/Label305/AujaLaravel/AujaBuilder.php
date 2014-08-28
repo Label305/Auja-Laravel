@@ -46,6 +46,7 @@ class AujaBuilder {
 
         self::$aujaConfigurator = new AujaConfigurator($modelNames);
         self::$aujaConfigurator->configure();
-    }
 
+
+    }
 }

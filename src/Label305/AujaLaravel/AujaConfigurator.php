@@ -36,31 +36,76 @@ class AujaConfigurator {
     private $modelNames;
 
     /**
-     * @var Model[] the models, as generated in init().
+     * @var array a key-value pair of model names and the Model instances.
      */
-    private $models;
+    private $models = array();
 
-    public function __construct($modelNames) {
+    /**
+     * @var array a key-value pair of model names and an array of their relations.
+     */
+    private $relations = array();
+
+    /**
+     * Creates a new AujaConfigurator, using given model names.
+     *
+     * @param array $modelNames String[] an array of model names to use.
+     */
+    public function __construct(array $modelNames) {
         $this->modelNames = $modelNames;
     }
 
+    /**
+     * Defines Models, Columns and Relations between the Models.
+     * This method should be called before using any other methods.
+     */
     public function configure() {
+        /* First define the models and their columns. */
         foreach ($this->modelNames as $modelName) {
             $model = new Model($modelName);
+            $this->models[$modelName] = $model;
+            $this->relations[$modelName] = array();
 
             $this->findColumns($model);
-            $this->findRelationShips($model);
-
-            $this->models[] = $model;
         }
-        $this->findManyToManyRelationships($this->models);
+
+        /* Find relations */
+        $this->findRelations(array_values($this->models));
     }
 
+    /**
+     * @return array a key-value pair of model names and an array of their relations.
+     */
+    public function getRelations() {
+        return $this->relations;
+    }
+
+    /**
+     * Returns an array of Relations for given Model.
+     *
+     * @param Model $model the Model.
+     * @return Relation[] the Relations.
+     */
+    public function getRelationsForModel(Model $model) {
+        return isset($this->relations[$model->getName()]) ? $this->relations[$model->getName()] : array();
+    }
+
+    /**
+     * @return array a key-value pair of model names and the Model instances.
+     */
+    public function getModels() {
+        return $this->models;
+    }
+
+    /**
+     * Finds and configures the Columns for given Model.
+     *
+     * @param Model $model the Model to find the Columns for.
+     */
     private function findColumns(Model $model) {
         Log::debug('Finding columns for model ' . $model->getName());
         $tableName = $model->getTableName();
 
-        if (!Schema::hasTable($tableName)) {
+        if (!Schema::hasTable($tableName)) { // TODO dependency injection
             throw new \InvalidArgumentException(sprintf('Table for %s does not exist!', $model->getName()));
         }
 
@@ -72,45 +117,58 @@ class AujaConfigurator {
     }
 
     /**
-     * Finds and defines one-to-one and one-to-many relationships for given model.
-     *
-     * @param $model Model
+     * @param array $models Finds Relations for given Models.
      */
-    private function findRelationShips(Model $model) {
-        Log::debug(sprintf('Finding relationships for %s', $model->getName()));
+    private function findRelations(array $models) {
+        foreach ($models as $model) {
+            $this->findSimpleRelations($model);
+        }
+        $this->findManyToManyRelations(array_values($this->models));
+    }
+
+
+    /**
+     * Finds and defines one-to-one and one-to-many relations for given model.
+     *
+     * @param $model Model the Model to find the relations for.
+     */
+    private function findSimpleRelations(Model $model) {
+        Log::debug(sprintf('Finding relations for %s', $model->getName()));
         foreach ($model->getColumns() as $column) {
             if (ends_with($column->getName(), self::ID_PREFIX)) {
-                $this->defineRelationship($model, $column->getName());
+                $this->defineRelation($model, $column->getName());
             }
         }
     }
 
     /**
-     * Defines the relationship between given model and the model corresponding to the column name.
+     * Defines the relation between given model and the model corresponding to the column name.
      * Does nothing if the other model was not declared in init().
      *
      * @param $model      Model the model which has given columnName.
      * @param $columnName String the column name, which corresponds to another model.
      */
-    private function defineRelationship(Model $model, $columnName) {
-        $otherModel = ucfirst(camel_case(substr($columnName, 0, strpos($columnName, self::ID_PREFIX))));
+    private function defineRelation(Model $model, $columnName) {
+        $otherModelName = ucfirst(camel_case(substr($columnName, 0, strpos($columnName, self::ID_PREFIX))));
 
-        if (!in_array($otherModel, $this->modelNames)) {
-            Log::warning(sprintf('Found foreign id %s in model %s, but no model with name %s was registered', $columnName, $model->getName(), $otherModel));
+        if (!in_array($otherModelName, $this->modelNames)) {
+            Log::warning(sprintf('Found foreign id %s in model %s, but no model with name %s was registered', $columnName, $model->getName(), $otherModelName));
             return;
         }
 
-        Log::info(sprintf('%s has a %s', $model->getName(), $otherModel));
-        echo $model->getName() . ' has a ' . $otherModel . PHP_EOL;
+        Log::info(sprintf('%s has a %s', $model->getName(), $otherModelName));
+
+        $this->relations[$model->getName()][] = new Relation($model, $this->models[$otherModelName], Relation::BELONGS_TO);
+        $this->relations[$otherModelName][] = new Relation($this->models[$otherModelName], $model, Relation::HAS_MANY);
     }
 
     /**
-     * Finds and defines many to many relationships between models in given array.
+     * Finds and defines many to many relations between models in given array.
      *
-     * @param $models Model[] the model names to look for relationships for.
+     * @param $models Model[] the model names to look for relations for.
      */
-    private function findManyToManyRelationships($models) {
-        Log::debug('Finding many to many relationships');
+    private function findManyToManyRelations(array $models) {
+        Log::debug('Finding many to many relations');
         for ($i = 0; $i < sizeof($models); $i++) {
             for ($j = $i + 1; $j < sizeof($models); $j++) {
                 $model1 = $models[$i];
@@ -123,22 +181,22 @@ class AujaConfigurator {
                 }
 
                 if (Schema::hasTable($tableName)) {
-                    $this->defineManyToManyRelationship($model1, $model2);
+                    $this->defineManyToManyRelation($model1, $model2);
                 }
-
             }
         }
     }
 
     /**
-     * Defines a many-to-many relationship between given models.
+     * Defines a many-to-many relation between given models.
      *
      * @param $model1 Model the first model.
      * @param $model2 Model the second model.
      */
-    private function defineManyToManyRelationship(Model $model1, Model $model2) {
+    private function defineManyToManyRelation(Model $model1, Model $model2) {
         Log::info(sprintf('%s has and belongs to many %s', $model1->getName(), str_plural($model2->getName())));
-        echo $model1->getName() . ' has and belongs to many ' . str_plural($model2->getName()) . PHP_EOL;
+        $this->relations[$model1->getName()][] = new Relation($model1, $model2, Relation::HAS_AND_BELONGS_TO);
+        $this->relations[$model2->getName()][] = new Relation($model2, $model1, Relation::HAS_AND_BELONGS_TO);
     }
 
-} 
+}
