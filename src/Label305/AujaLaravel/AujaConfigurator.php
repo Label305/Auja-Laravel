@@ -183,7 +183,7 @@ class AujaConfigurator {
                     $tableName = strtolower($model2->getName()) . '_' . strtolower($model1->getName());
                 }
 
-                if (Schema::hasTable($tableName)) {
+                if ($this->databaseRepository->hasTable($tableName)) {
                     $this->defineManyToManyRelation($model1, $model2);
                 }
             }
