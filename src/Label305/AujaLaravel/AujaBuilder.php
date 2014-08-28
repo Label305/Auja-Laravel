@@ -24,6 +24,7 @@
 namespace Label305\AujaLaravel;
 
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 
 class AujaBuilder {
@@ -49,7 +50,10 @@ class AujaBuilder {
         if (empty($modelNames)) {
             throw new \InvalidArgumentException('Provide models!');
         }
-        self::$modelNames = $modelNames; // TODO: Camel cased?!
+
+        Log::debug('Initializing Auja with models:', $modelNames);
+
+        self::$modelNames = $modelNames;
 
         foreach ($modelNames as $modelName) {
             $model = new Model($modelName);
@@ -63,6 +67,7 @@ class AujaBuilder {
     }
 
     private static function findColumns(Model $model) {
+        Log::debug('Finding columns for model ' . $model->getName());
         $tableName = $model->getTableName();
 
         if (!Schema::hasTable($tableName)) {
@@ -71,6 +76,7 @@ class AujaBuilder {
 
         $columns = Schema::getColumnListing($tableName); // TODO dependency injection
         foreach ($columns as $column) {
+            Log::debug(sprintf('Adding column %s to %s', $column, $model->getName()));
             $model->addColumn(new Column($column, null));
         }
     }
@@ -81,6 +87,7 @@ class AujaBuilder {
      * @param $model Model
      */
     private static function findRelationShips(Model $model) {
+        Log::debug(sprintf('Finding relationships for %s', $model->getName()));
         foreach ($model->getColumns() as $column) {
             if (ends_with($column->getName(), self::ID_PREFIX)) {
                 self::defineRelationship($model, $column->getName());
@@ -96,15 +103,14 @@ class AujaBuilder {
      * @param $columnName String the column name, which corresponds to another model.
      */
     private static function defineRelationship(Model $model, $columnName) {
-        $otherModel = substr($columnName, 0, strpos($columnName, self::ID_PREFIX));
-
-        var_dump($otherModel);
-        var_dump(self::$modelNames);
+        $otherModel = ucfirst(camel_case(substr($columnName, 0, strpos($columnName, self::ID_PREFIX))));
 
         if (!in_array($otherModel, self::$modelNames)) {
+            Log::warning(sprintf('Found foreign id %s in model %s, but no model with name %s was registered', $columnName, $model->getName(), $otherModel));
             return;
         }
 
+        Log::info(sprintf('%s has a %s', $model->getName(), $otherModel));
         echo $model->getName() . ' has a ' . $otherModel . PHP_EOL;
     }
 
@@ -114,6 +120,7 @@ class AujaBuilder {
      * @param $models Model[] the model names to look for relationships for.
      */
     private static function findManyToManyRelationships($models) {
+        Log::debug('Finding many to many relationships');
         for ($i = 0; $i < sizeof($models); $i++) {
             for ($j = $i + 1; $j < sizeof($models); $j++) {
                 $model1 = $models[$i];
@@ -126,7 +133,6 @@ class AujaBuilder {
                 }
 
                 if (Schema::hasTable($tableName)) {
-                    // TODO: YAY! $model1 has and belongs to many $model2!
                     self::defineManyToManyRelationship($model1, $model2);
                 }
 
@@ -141,7 +147,9 @@ class AujaBuilder {
      * @param $model2 Model the second model.
      */
     private static function defineManyToManyRelationship(Model $model1, Model $model2) {
+        Log::info(sprintf('%s has and belongs to many %s', $model1->getName(), str_plural($model2->getName())));
         echo $model1->getName() . ' has and belongs to many ' . str_plural($model2->getName()) . PHP_EOL;
     }
+
 
 }
