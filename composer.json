@@ -20,8 +20,8 @@
         "bin-dir": "bin"
     },
     "autoload": {
-        "psr-0": {
-            "Label305\\AujaLaravel": "src/"
+        "psr-4": {
+            "Label305\\AujaLaravel\\": "src/"
         }
     },
     "minimum-stability": "stable"
