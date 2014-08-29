@@ -2,7 +2,7 @@
 
 use Illuminate\Support\ServiceProvider;
 
-class AujaLaravelServiceProvider extends ServiceProvider {
+class AujaServiceProvider extends ServiceProvider {
 
     /**
      * Indicates if loading of the provider is deferred.
