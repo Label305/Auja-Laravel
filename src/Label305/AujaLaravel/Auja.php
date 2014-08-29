@@ -25,8 +25,12 @@ namespace Label305\AujaLaravel;
 
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
+use Label305\Auja\Menu\Menu;
+use Label305\Auja\Menu\ResourceMenuItem;
+use Label305\Auja\Menu\SpacerMenuItem;
+use Label305\Auja\Utils\JsonGenerator;
 
-class AujaBuilder {
+class Auja {
 
     /**
      * @var AujaConfigurator
@@ -38,7 +42,7 @@ class AujaBuilder {
      *
      * @param $modelNames String[] an array of model names to use.
      */
-    public static function init($modelNames) {
+    public static function init(array $modelNames) {
         if (empty($modelNames)) {
             throw new \InvalidArgumentException('Provide models!');
         }
@@ -47,5 +51,27 @@ class AujaBuilder {
 
         self::$aujaConfigurator = App::make('Label305\AujaLaravel\AujaConfigurator');
         self::$aujaConfigurator->configure($modelNames);
+
+
     }
+
+    public static function buildMenu($modelName) {
+        $models = self::$aujaConfigurator->getModels();
+        $model = $models[$modelName];
+
+        $menu = new Menu();
+
+        $headerMenuItem = new SpacerMenuItem();
+        $headerMenuItem->setName($modelName);
+        $menu->addMenuItem($headerMenuItem);
+
+        $resourceMenuItem = new ResourceMenuItem();
+        $resourceMenuItem->addProperty("Searchable");
+        $menu->addMenuItem($resourceMenuItem);
+
+        return $menu;
+    }
+
+
+
 }

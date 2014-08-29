@@ -60,7 +60,7 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:Label305/Auja-PHP.git",
-                "reference": "06405e2fa1a4bb827df092f7b5477fef222c78ab"
+                "reference": "a5a96667698e95aef346bccac534b8fbd4c6a6e9"
             },
             "require": {
                 "php": ">=5.4.0"
@@ -100,7 +100,7 @@
                 "Auja",
                 "interface"
             ],
-            "time": "2014-08-29 12:25:21"
+            "time": "2014-08-29 14:30:05"
         }
     ],
     "packages-dev": [
