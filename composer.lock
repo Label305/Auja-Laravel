@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "dabd81466dbbc1373937a983af78ba4a",
+    "hash": "d6c7567ad3255d9b99987860cfda3b58",
     "packages": [
         {
             "name": "illuminate/support",
@@ -53,6 +53,54 @@
                 }
             ],
             "time": "2014-08-05 12:08:34"
+        },
+        {
+            "name": "label305/auja",
+            "version": "dev-dev",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:Label305/Auja-PHP.git",
+                "reference": "06405e2fa1a4bb827df092f7b5477fef222c78ab"
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "phpspec/phpspec": "~2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "": "src/"
+                }
+            },
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Niek Haarman",
+                    "email": "niek@label305.com",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Joris Blaak",
+                    "email": "joris@label305.com",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Mike Kolkman",
+                    "email": "mike@label305.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "PHP API for Auja interface for rapid backend creation",
+            "homepage": "https://github.com/Label305/Auja-PHP",
+            "keywords": [
+                "Auja",
+                "interface"
+            ],
+            "time": "2014-08-29 12:25:21"
         }
     ],
     "packages-dev": [
@@ -590,9 +638,9 @@
 
     ],
     "minimum-stability": "stable",
-    "stability-flags": [
-
-    ],
+    "stability-flags": {
+        "label305/auja": 20
+    },
     "prefer-stable": false,
     "platform": {
         "php": ">=5.4.0"
