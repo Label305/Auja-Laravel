@@ -24,8 +24,6 @@
 
 namespace Label305\AujaLaravel;
 
-use Label305\AujaLaravel\Repositories\DatabaseRepository;
-
 use \Mockery as m;
 
 require_once 'AujaTestCase.php';

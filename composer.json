@@ -29,7 +29,10 @@
     "autoload": {
         "psr-4": {
             "Label305\\AujaLaravel\\": "src/"
-        }
+        },
+        "classmap": [
+            "src/"
+        ]
     },
     "minimum-stability": "stable"
 }

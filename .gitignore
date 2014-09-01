@@ -3,3 +3,5 @@ composer.phar
 .DS_Store
 
 bin/**
+
+.idea/**
