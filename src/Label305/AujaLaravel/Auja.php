@@ -26,6 +26,7 @@ namespace Label305\AujaLaravel;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
+use Label305\Auja\Button;
 use Label305\Auja\Item;
 use Label305\Auja\Main;
 use Label305\Auja\Menu\LinkMenuItem;
@@ -61,10 +62,22 @@ class Auja {
 
         $main->setTitle($title);
 
+        $main->setColor('main', '#FF0000');
+        $main->setColor('secondary', '#00FF00');
+
+        $button = new Button();
+        $button->setTitle('Logout');
+        $button->setTarget('#logout'); // TODO proper url
+        $main->addButton($button);
+
+        $main->setUsername('Niek'); // TODO proper user
+
         foreach(array_values(self::$aujaConfigurator->getModels()) as $model){
             /* @var $model Model */
             $item = new Item();
-            $item->setTarget(sprintf('/%s/', self::toUrlName($model->getName())));
+            $item->setTitle($model->getName());
+            $item->setIcon('tower'); //TODO proper icon
+            $item->setTarget(sprintf('%s/menu', self::toUrlName($model->getName()))); //TODO leading slash?
             $main->addItem($item);
         }
 
