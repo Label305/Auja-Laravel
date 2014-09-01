@@ -8,14 +8,14 @@
  *
  *  Copyright Label305 B.V. All rights reserved.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the Apache License, Version 2.0 (the 'License');
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
+ * distributed under the License is distributed on an 'AS IS' BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
@@ -29,7 +29,6 @@ use Label305\Auja\Menu\LinkMenuItem;
 use Label305\Auja\Menu\Menu;
 use Label305\Auja\Menu\ResourceMenuItem;
 use Label305\Auja\Menu\SpacerMenuItem;
-use Label305\Auja\Utils\JsonGenerator;
 
 class Auja {
 
@@ -54,30 +53,32 @@ class Auja {
         self::$aujaConfigurator->configure($modelNames);
     }
 
-    public static function buildIndexMenu($modelName) {
-        $models = self::$aujaConfigurator->getModels();
-        $model = $models[$modelName];
-        $relations = self::$aujaConfigurator->getRelationsForModel($model);
+    public static function buildIndexMenu($modelName, $modelId = 0) {
+        if ($modelId == 0) {
+            $menu = self::buildNoAssociationsIndexMenu($modelName);
+        } else {
+            $models = self::$aujaConfigurator->getModels();
+            $model = $models[$modelName];
+            $relations = self::$aujaConfigurator->getRelationsForModel($model);
 
-        $numAssociations = 0;
-        $associationRelations = array();
-        foreach ($relations as $relation) {
-            if ($relation->getType() == Relation::HAS_MANY || $relation->getType() == Relation::HAS_AND_BELONGS_TO) {
-                $numAssociations++;
-                $associationRelations[] = $relation;
+            $associationRelations = array();
+            foreach ($relations as $relation) {
+                if ($relation->getType() == Relation::HAS_MANY || $relation->getType() == Relation::HAS_AND_BELONGS_TO) {
+                    $associationRelations[] = $relation;
+                }
             }
-        }
 
-        switch ($numAssociations) {
-            case 0:
-                $menu = self::buildNoAssociationsIndexMenu($modelName);
-                break;
-            case 1:
-                $menu = self::buildSingleAssociationIndexMenu($modelName, $associationRelations[0]);
-                break;
-            default:
-                $menu = self::buildMultipleAssociationsIndexMenu($modelName, $associationRelations);
-                break;
+            switch (count($associationRelations)) {
+                case 0:
+                    $menu = self::buildNoAssociationsIndexMenu($modelName);
+                    break;
+                case 1:
+                    $menu = self::buildSingleAssociationIndexMenu($modelName, $associationRelations[0]);
+                    break;
+                default:
+                    $menu = self::buildMultipleAssociationsIndexMenu($modelName, $associationRelations);
+                    break;
+            }
         }
 
         return $menu;
@@ -87,7 +88,7 @@ class Auja {
         $menu = new Menu();
 
         $addMenuItem = new LinkMenuItem();
-        $addMenuItem->setName("Add"); // TODO I18N
+        $addMenuItem->setName('Add'); // TODO I18N
         $addMenuItem->setTarget($modelName); // TODO proper name
         $menu->addMenuItem($addMenuItem);
 
@@ -96,7 +97,8 @@ class Auja {
         $menu->addMenuItem($headerMenuItem);
 
         $resourceMenuItem = new ResourceMenuItem();
-        $resourceMenuItem->addProperty("Searchable"); // TODO when is something searchable?
+        $resourceMenuItem->setTarget(sprintf('/%s', strtolower($modelName)));
+        $resourceMenuItem->addProperty('searchable'); // TODO when is something searchable?
         $menu->addMenuItem($resourceMenuItem);
 
         return $menu;
@@ -106,7 +108,7 @@ class Auja {
         $menu = new Menu();
 
         $addMenuItem = new LinkMenuItem();
-        $addMenuItem->setName("Edit"); // TODO I18N
+        $addMenuItem->setName('Edit'); // TODO I18N
         $addMenuItem->setTarget($modelName); // TODO proper target
         $menu->addMenuItem($addMenuItem);
 
@@ -115,7 +117,7 @@ class Auja {
         $menu->addMenuItem($headerMenuItem);
 
         $resourceMenuItem = new ResourceMenuItem();
-        $resourceMenuItem->addProperty("Searchable"); // TODO when is something searchable?
+        $resourceMenuItem->addProperty('searchable'); // TODO when is something searchable?
         $menu->addMenuItem($resourceMenuItem);
 
         return $menu;
@@ -130,7 +132,7 @@ class Auja {
         $menu = new Menu();
 
         $addMenuItem = new LinkMenuItem();
-        $addMenuItem->setName("Edit"); // TODO I18N
+        $addMenuItem->setName('Edit'); // TODO I18N
         $addMenuItem->setTarget($modelName); // TODO proper name
         $menu->addMenuItem($addMenuItem);
 
