@@ -26,6 +26,8 @@ namespace Label305\AujaLaravel;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
+use Label305\Auja\Item;
+use Label305\Auja\Main;
 use Label305\Auja\Menu\LinkMenuItem;
 use Label305\Auja\Menu\Menu;
 use Label305\Auja\Menu\ResourceMenuItem;
@@ -52,6 +54,21 @@ class Auja {
 
         self::$aujaConfigurator = App::make('Label305\AujaLaravel\AujaConfigurator');
         self::$aujaConfigurator->configure($modelNames);
+    }
+
+    public static function buildMain($title) {
+        $main = new Main();
+
+        $main->setTitle($title);
+
+        foreach(array_values(self::$aujaConfigurator->getModels()) as $model){
+            /* @var $model Model */
+            $item = new Item();
+            $item->setTarget(sprintf('/%s/', self::toUrlName($model->getName())));
+            $main->addItem($item);
+        }
+
+        return $main;
     }
 
     public static function buildIndexMenu($modelName, $modelId = 0) {
