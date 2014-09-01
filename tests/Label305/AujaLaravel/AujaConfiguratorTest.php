@@ -38,6 +38,11 @@ class AujaConfiguratorTest extends AujaTestCase {
     /**
      * @var Model
      */
+    private $countryModel;
+
+    /**
+     * @var Model
+     */
     private $clubModel;
 
     /**
@@ -58,6 +63,8 @@ class AujaConfiguratorTest extends AujaTestCase {
     protected function setUp() {
         $this->databaseRepository = m::mock('Label305\AujaLaravel\Repositories\DatabaseRepository');
 
+        $this->countryModel = m::mock('Label305\AujaLaravel\Model');
+        $this->countryModel->shouldReceive('getName')->andReturn('Country');
         $this->clubModel = m::mock('Label305\AujaLaravel\Model');
         $this->clubModel->shouldReceive('getName')->andReturn('Club');
         $this->teamModel = m::mock('Label305\AujaLaravel\Model');
@@ -90,6 +97,9 @@ class AujaConfiguratorTest extends AujaTestCase {
         assertThat($this->aujaConfigurator->getRelationsForModel($this->clubModel), is(emptyArray()));
     }
 
+    /**
+     * Tests configuration between two models Club and Team, where a Team belongs to a Club.
+     */
     public function testConfigureSimpleBelongsTo() {
         /* Given there are tables for Club and Team */
         $this->databaseRepository->shouldReceive('hasTable')->times(1)->with('clubs')->andReturn(true);
@@ -119,6 +129,65 @@ class AujaConfiguratorTest extends AujaTestCase {
         assertThat($clubRelation->getLeft()->getName(), equalTo($this->clubModel->getName()));
         assertThat($clubRelation->getRight()->getName(), equalTo($this->teamModel->getName()));
         assertThat($clubRelation->getType(), is(Relation::HAS_MANY));
+
+        $teamRelation = $this->aujaConfigurator->getRelationsForModel($this->teamModel)[0];
+        assertThat($teamRelation->getLeft()->getName(), equalTo($this->teamModel->getName()));
+        assertThat($teamRelation->getRight()->getName(), equalTo($this->clubModel->getName()));
+        assertThat($teamRelation->getType(), is(Relation::BELONGS_TO));
+    }
+
+
+    /**
+     * Tests configuration between three models Country, Club and Team,
+     * where a Team belongs to a Club, and Club belongs to a Country.
+     */
+    public function testConfigureTransitiveBelongsTo() {
+        /* Given there are tables for Country, Club and Team */
+        $this->databaseRepository->shouldReceive('hasTable')->times(1)->with('countries')->andReturn(true);
+        $this->databaseRepository->shouldReceive('hasTable')->times(1)->with('clubs')->andReturn(true);
+        $this->databaseRepository->shouldReceive('hasTable')->times(1)->with('teams')->andReturn(true);
+        $this->databaseRepository->shouldReceive('hasTable')->times(1)->with('club_country')->andReturn(false);
+        $this->databaseRepository->shouldReceive('hasTable')->times(1)->with('club_team')->andReturn(false);
+        $this->databaseRepository->shouldReceive('hasTable')->times(1)->with('country_team')->andReturn(false);
+        $this->databaseRepository->shouldReceive('getColumnListing')->times(1)->with('countries')->andReturn(array('id', 'name'));
+        $this->databaseRepository->shouldReceive('getColumnListing')->times(1)->with('clubs')->andReturn(array('id', 'name', 'country_id'));
+        $this->databaseRepository->shouldReceive('getColumnListing')->times(1)->with('teams')->andReturn(array('id', 'name', 'club_id'));
+
+        /* When we configure with Club and Team */
+        $this->aujaConfigurator->configure(array('Country', 'Club', 'Team'));
+
+        /* We want a configuration with:
+         *  - Three models
+         *  - A belongs to relationship between Club and Country
+         *  - A has many relationship between Country and Club
+         *  - A belongs to relationship between Team and Club
+         *  - A has many relationship between Club and Team
+         */
+        assertThat($this->aujaConfigurator->getModels(), is(arrayWithSize(3)));
+        assertThat($this->aujaConfigurator->getRelations(), is(arrayWithSize(3)));
+
+        assertThat($this->aujaConfigurator->getRelations()['Country'], is(arrayWithSize(1)));
+        assertThat($this->aujaConfigurator->getRelations()['Club'], is(arrayWithSize(2)));
+        assertThat($this->aujaConfigurator->getRelations()['Team'], is(arrayWithSize(1)));
+
+        assertThat($this->aujaConfigurator->getRelationsForModel($this->countryModel), is(arrayWithSize(1)));
+        assertThat($this->aujaConfigurator->getRelationsForModel($this->clubModel), is(arrayWithSize(2)));
+        assertThat($this->aujaConfigurator->getRelationsForModel($this->teamModel), is(arrayWithSize(1)));
+
+        $countryRelation = $this->aujaConfigurator->getRelationsForModel($this->countryModel)[0];
+        assertThat($countryRelation->getLeft()->getName(), equalTo($this->countryModel->getName()));
+        assertThat($countryRelation->getRight()->getName(), equalTo($this->clubModel->getName()));
+        assertThat($countryRelation->getType(), is(Relation::HAS_MANY));
+
+        $clubCountryRelation = $this->aujaConfigurator->getRelationsForModel($this->clubModel)[0];
+        assertThat($clubCountryRelation->getLeft()->getName(), equalTo($this->clubModel->getName()));
+        assertThat($clubCountryRelation->getRight()->getName(), equalTo($this->countryModel->getName()));
+        assertThat($clubCountryRelation->getType(), is(Relation::BELONGS_TO));
+
+        $clubTeamRelation = $this->aujaConfigurator->getRelationsForModel($this->clubModel)[1];
+        assertThat($clubTeamRelation->getLeft()->getName(), equalTo($this->clubModel->getName()));
+        assertThat($clubTeamRelation->getRight()->getName(), equalTo($this->teamModel->getName()));
+        assertThat($clubTeamRelation->getType(), is(Relation::HAS_MANY));
 
         $teamRelation = $this->aujaConfigurator->getRelationsForModel($this->teamModel)[0];
         assertThat($teamRelation->getLeft()->getName(), equalTo($this->teamModel->getName()));
