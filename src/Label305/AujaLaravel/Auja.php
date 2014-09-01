@@ -57,7 +57,33 @@ class Auja {
     public static function buildIndexMenu($modelName) {
         $models = self::$aujaConfigurator->getModels();
         $model = $models[$modelName];
+        $relations = self::$aujaConfigurator->getRelationsForModel($model);
 
+        $numAssociations = 0;
+        $associationRelations = array();
+        foreach ($relations as $relation) {
+            if ($relation->getType() == Relation::HAS_MANY || $relation->getType() == Relation::HAS_AND_BELONGS_TO) {
+                $numAssociations++;
+                $associationRelations[] = $relation;
+            }
+        }
+
+        switch ($numAssociations) {
+            case 0:
+                $menu = self::buildNoAssociationsIndexMenu($modelName);
+                break;
+            case 1:
+                $menu = self::buildSingleAssociationIndexMenu($modelName, $associationRelations[0]);
+                break;
+            default:
+                $menu = self::buildMultipleAssociationsIndexMenu($modelName, $associationRelations);
+                break;
+        }
+
+        return $menu;
+    }
+
+    private static function buildNoAssociationsIndexMenu($modelName) {
         $menu = new Menu();
 
         $addMenuItem = new LinkMenuItem();
@@ -76,6 +102,47 @@ class Auja {
         return $menu;
     }
 
+    private static function buildSingleAssociationIndexMenu($modelName, $relation) {
+        $menu = new Menu();
+
+        $addMenuItem = new LinkMenuItem();
+        $addMenuItem->setName("Edit"); // TODO I18N
+        $addMenuItem->setTarget($modelName); // TODO proper target
+        $menu->addMenuItem($addMenuItem);
+
+        $headerMenuItem = new SpacerMenuItem();
+        $headerMenuItem->setName($modelName); // TODO I18N
+        $menu->addMenuItem($headerMenuItem);
+
+        $resourceMenuItem = new ResourceMenuItem();
+        $resourceMenuItem->addProperty("Searchable"); // TODO when is something searchable?
+        $menu->addMenuItem($resourceMenuItem);
+
+        return $menu;
+    }
+
+    /**
+     * @param $modelName
+     * @param Relation[] $relations
+     * @return Menu
+     */
+    private static function buildMultipleAssociationsIndexMenu($modelName, array $relations) {
+        $menu = new Menu();
+
+        $addMenuItem = new LinkMenuItem();
+        $addMenuItem->setName("Edit"); // TODO I18N
+        $addMenuItem->setTarget($modelName); // TODO proper name
+        $menu->addMenuItem($addMenuItem);
+
+        foreach ($relations as $relation) {
+            $associationMenuItem = new LinkMenuItem();
+            $associationMenuItem->setName($relation->getRight()->getName());
+            $associationMenuItem->setTarget($relation->getRight()->getName()); // TODO proper target
+            $menu->addMenuItem($associationMenuItem);
+        }
+
+        return $menu;
+    }
 
 
 }
