@@ -7,16 +7,9 @@
             "email": "niek@label305.com"
         }
     ],
-    "repositories": [
-        {
-            "type": "git",
-            "url": "git@github.com:Label305/Auja-PHP.git"
-        }
-    ],
     "require": {
         "php": ">=5.4.0",
-        "illuminate/support": "4.2.*",
-        "label305/auja": "dev-dev"
+        "illuminate/support": "4.2.*"
     },
     "require-dev": {
         "phpspec/phpspec": "~2.0",
@@ -31,7 +24,8 @@
             "Label305\\AujaLaravel\\": "src/"
         },
         "classmap": [
-            "src/"
+            "src/",
+            "workbench/label305/auja-php/src/"
         ]
     },
     "minimum-stability": "stable"
