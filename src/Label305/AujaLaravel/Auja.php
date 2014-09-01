@@ -25,6 +25,7 @@ namespace Label305\AujaLaravel;
 
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
+use Label305\Auja\Menu\LinkMenuItem;
 use Label305\Auja\Menu\Menu;
 use Label305\Auja\Menu\ResourceMenuItem;
 use Label305\Auja\Menu\SpacerMenuItem;
@@ -51,22 +52,25 @@ class Auja {
 
         self::$aujaConfigurator = App::make('Label305\AujaLaravel\AujaConfigurator');
         self::$aujaConfigurator->configure($modelNames);
-
-
     }
 
-    public static function buildMenu($modelName) {
+    public static function buildIndexMenu($modelName) {
         $models = self::$aujaConfigurator->getModels();
         $model = $models[$modelName];
 
         $menu = new Menu();
 
+        $addMenuItem = new LinkMenuItem();
+        $addMenuItem->setName("Add"); // TODO I18N
+        $addMenuItem->setTarget($modelName); // TODO proper name
+        $menu->addMenuItem($addMenuItem);
+
         $headerMenuItem = new SpacerMenuItem();
-        $headerMenuItem->setName($modelName);
+        $headerMenuItem->setName($modelName); // TODO I18N
         $menu->addMenuItem($headerMenuItem);
 
         $resourceMenuItem = new ResourceMenuItem();
-        $resourceMenuItem->addProperty("Searchable");
+        $resourceMenuItem->addProperty("Searchable"); // TODO when is something searchable?
         $menu->addMenuItem($resourceMenuItem);
 
         return $menu;
