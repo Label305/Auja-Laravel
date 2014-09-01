@@ -1,3 +1,3 @@
 [submodule "workbench/label305/auja-php"]
 	path = workbench/label305/auja-php
-	url = git@github.com:Label305/Auja-PHP.git
+	url = git://github.com/Label305/Auja-PHP.git
