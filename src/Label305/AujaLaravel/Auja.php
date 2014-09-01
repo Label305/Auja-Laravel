@@ -77,7 +77,7 @@ class Auja {
             $item = new Item();
             $item->setTitle($model->getName());
             $item->setIcon('tower'); //TODO proper icon
-            $item->setTarget(sprintf('%s/menu', self::toUrlName($model->getName()))); //TODO leading slash?
+            $item->setTarget(sprintf('/%s/menu', self::toUrlName($model->getName())));
             $main->addItem($item);
         }
 
@@ -163,9 +163,9 @@ class Auja {
         $addMenuItem->setTarget($modelName); // TODO proper target
         $menu->addMenuItem($addMenuItem);
 
-        $headerMenuItem = new SpacerMenuItem();
-        $headerMenuItem->setName($modelName); // TODO I18N
-        $menu->addMenuItem($headerMenuItem);
+        $spacerMenuItem = new SpacerMenuItem();
+        $spacerMenuItem->setName($modelName); // TODO I18N
+        $menu->addMenuItem($spacerMenuItem);
 
         $resourceMenuItem = new ResourceMenuItem();
         $resourceMenuItem->setTarget(sprintf('/%s', strtolower($modelName)));
