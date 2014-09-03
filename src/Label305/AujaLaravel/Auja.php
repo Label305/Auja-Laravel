@@ -31,8 +31,13 @@ use Label305\Auja\Item;
 use Label305\Auja\Main;
 use Label305\Auja\Menu\LinkMenuItem;
 use Label305\Auja\Menu\Menu;
+use Label305\Auja\Menu\ResourceItemsMenuItems;
 use Label305\Auja\Menu\ResourceMenuItem;
 use Label305\Auja\Menu\SpacerMenuItem;
+use Label305\Auja\Page\PageForm;
+use Label305\Auja\Page\PageHeader;
+use Label305\Auja\Page\Page;
+use Label305\Auja\Page\TextFormItem;
 
 class Auja {
 
@@ -61,6 +66,7 @@ class Auja {
      * Builds the initial Auja view based on the models as initialized in init().
      *
      * @param $title String the title to be shown.
+     *
      * @return Main the Main instance which can be configured further.
      */
     public static function buildMain($title) {
@@ -94,7 +100,7 @@ class Auja {
      * Intelligently builds an index menu for given model, and optionally model id.
      *
      * @param $modelName String the name of the model to build the menu for.
-     * @param $modelId int (optional) the id of an instance of the model.
+     * @param $modelId   int (optional) the id of an instance of the model.
      *
      * @return Menu the built menu instance, which can be configured further.
      */
@@ -138,7 +144,7 @@ class Auja {
      * These are typically used when a ResourceMenuItem triggers a call for items.
      *
      * @param $modelName String the name of the model the items represent.
-     * @param $items array an array of instances of the model to be shown.
+     * @param $items     array an array of instances of the model to be shown.
      *
      * @return LinkMenuItem[] the built LinkMenuItems.
      */
@@ -172,14 +178,14 @@ class Auja {
             $target = sprintf('/%s/%s/menu', self::toUrlName($modelName), '%s');
         }
 
-        $result = array();
+        $resourceItems = new ResourceItemsMenuItems();
         foreach ($items as $item) {
             $menuItem = new LinkMenuItem();
             $menuItem->setName($item->name); // TODO which field?
             $menuItem->setTarget(sprintf($target, $item->id));
-            $result[] = $menuItem;
+            $resourceItems->add($menuItem);
         }
-        return $result;
+        return $resourceItems;
     }
 
     /**
@@ -224,8 +230,8 @@ class Auja {
      *
      *
      * @param $modelName String the name of the model.
-     * @param $modelId int the id of the model entry.
-     * @param $relation Relation the Relation this model has with the associated model.
+     * @param $modelId   int the id of the model entry.
+     * @param $relation  Relation the Relation this model has with the associated model.
      *
      * @return Menu the Menu, which can be configured further.
      */
@@ -257,7 +263,7 @@ class Auja {
      *  - For each of the Relations, a LinkMenuItem for the associated model.
      *
      * @param $modelName String the name of the model.
-     * @param $modelId int the id of the model entry.
+     * @param $modelId   int the id of the model entry.
      * @param $relations Relation[] the Relations this model has with associated models.
      *
      * @return Menu the Menu, which can be configured further.
@@ -288,8 +294,8 @@ class Auja {
      *  - A SpacerMenuItem with the name of the associated model;
      *  - A ResourceMenuItem to hold entries of the associated model.
      *
-     * @param $modelName String the name of the model (i.e. Club).
-     * @param $modelId int the id of the model entry.
+     * @param $modelName       String the name of the model (i.e. Club).
+     * @param $modelId         int the id of the model entry.
      * @param $associationName String the name of the associated model (i.e. Team).
      *
      * @return Menu the Menu, which can be configured further.
@@ -314,12 +320,37 @@ class Auja {
         return $menu;
     }
 
+    public static function buildPage($modelName, $modelId = 0) {
+        $page = new Page();
+
+        $header = new PageHeader();
+        $header->setText('Create ' . $modelName);
+        $page->addPageComponent($header);
+
+        $form = new PageForm();
+        $form->setAction(sprintf('/%s%s', self::toUrlName($modelName), $modelId == 0 ? '' : '/' . $modelId));
+        $form->setMethod($modelId == 0 ? 'POST' : 'PUT');
+
+        $model = self::$aujaConfigurator->getModels()[$modelName];
+        /* @var $model Model */
+        foreach ($model->getColumns() as $column) { // TODO: use fillable
+            $item = new TextFormItem();
+            $item->setName($column->getName());
+            $item->setLabel($column->getName());
+            $form->addItem($item);
+        }
+
+        $page->addPageComponent($form);
+
+        return $page;
+    }
+
     private static function toUrlName($modelName) {
         return strtolower($modelName);
     }
 
-    private static function toForeignColumnName($modelName){
-        return strtolower($modelName).'_id';
+    private static function toForeignColumnName($modelName) {
+        return strtolower($modelName) . '_id';
     }
 
 }
