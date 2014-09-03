@@ -28,8 +28,7 @@ use \Mockery as m;
 
 require_once 'AujaTestCase.php';
 
-class AujaConfiguratorTest extends AujaTestCase
-{
+class AujaConfiguratorTest extends AujaTestCase {
 
     /**
      * @var AujaConfigurator the class under test.
@@ -66,8 +65,7 @@ class AujaConfiguratorTest extends AujaTestCase
      */
     private $databaseRepository;
 
-    protected function setUp()
-    {
+    protected function setUp() {
         $this->databaseRepository = m::mock('Label305\AujaLaravel\Repositories\DatabaseRepository');
 
         $this->countryModel = m::mock('Label305\AujaLaravel\Model');
@@ -84,19 +82,19 @@ class AujaConfiguratorTest extends AujaTestCase
         $this->aujaConfigurator = new AujaConfigurator($this->databaseRepository);
     }
 
-    public function testInitialState()
-    {
+    public function testInitialState() {
         assertThat($this->aujaConfigurator->getModels(), is(emptyArray()));
         assertThat($this->aujaConfigurator->getRelations(), is(emptyArray()));
 
         assertThat($this->aujaConfigurator->getRelationsForModel($this->clubModel), is(emptyArray()));
     }
 
-    public function xtestConfigureSimpleSingleModel()
-    {
+    public function testConfigureSimpleSingleModel() {
         /* Given there is a table for 'Club' */
         $this->databaseRepository->shouldReceive('hasTable')->times(1)->with('clubs')->andReturn(true);
         $this->databaseRepository->shouldReceive('getColumnListing')->times(1)->with('clubs')->andReturn(array('id', 'name'));
+        $this->databaseRepository->shouldReceive('getColumnType')->times(1)->with('clubs','id')->andReturn("integer");
+        $this->databaseRepository->shouldReceive('getColumnType')->times(1)->with('clubs', 'name')->andReturn("string");
 
         /* When we configure with Club */
         $this->aujaConfigurator->configure(array('Club'));
@@ -111,14 +109,18 @@ class AujaConfiguratorTest extends AujaTestCase
     /**
      * Tests configuration between two models Club and Team, where a Team belongs to a Club.
      */
-    public function xtestConfigure_simpleBelongsTo()
-    {
+    public function testConfigure_simpleBelongsTo() {
         /* Given there are tables for Club and Team */
         $this->databaseRepository->shouldReceive('hasTable')->times(1)->with('clubs')->andReturn(true);
         $this->databaseRepository->shouldReceive('hasTable')->times(1)->with('teams')->andReturn(true);
         $this->databaseRepository->shouldReceive('hasTable')->times(1)->with('club_team')->andReturn(false);
         $this->databaseRepository->shouldReceive('getColumnListing')->times(1)->with('clubs')->andReturn(array('id', 'name'));
         $this->databaseRepository->shouldReceive('getColumnListing')->times(1)->with('teams')->andReturn(array('id', 'name', 'club_id'));
+        $this->databaseRepository->shouldReceive('getColumnType')->times(1)->with('clubs','id')->andReturn("integer");
+        $this->databaseRepository->shouldReceive('getColumnType')->times(1)->with('clubs', 'name')->andReturn("string");
+        $this->databaseRepository->shouldReceive('getColumnType')->times(1)->with('teams','id')->andReturn("integer");
+        $this->databaseRepository->shouldReceive('getColumnType')->times(1)->with('teams', 'name')->andReturn("string");
+        $this->databaseRepository->shouldReceive('getColumnType')->times(1)->with('teams', 'club_id')->andReturn("integer");
 
         /* When we configure with Club and Team */
         $this->aujaConfigurator->configure(array('Club', 'Team'));
@@ -153,8 +155,7 @@ class AujaConfiguratorTest extends AujaTestCase
      * Tests configuration between three models Country, Club and Team,
      * where a Team belongs to a Club, and Club belongs to a Country.
      */
-    public function xtestConfigure_transitiveBelongsTo()
-    {
+    public function testConfigure_transitiveBelongsTo() {
         /* Given there are tables for Country, Club and Team */
         $this->databaseRepository->shouldReceive('hasTable')->times(1)->with('countries')->andReturn(true);
         $this->databaseRepository->shouldReceive('hasTable')->times(1)->with('clubs')->andReturn(true);
@@ -165,6 +166,14 @@ class AujaConfiguratorTest extends AujaTestCase
         $this->databaseRepository->shouldReceive('getColumnListing')->times(1)->with('countries')->andReturn(array('id', 'name'));
         $this->databaseRepository->shouldReceive('getColumnListing')->times(1)->with('clubs')->andReturn(array('id', 'name', 'country_id'));
         $this->databaseRepository->shouldReceive('getColumnListing')->times(1)->with('teams')->andReturn(array('id', 'name', 'club_id'));
+        $this->databaseRepository->shouldReceive('getColumnType')->times(1)->with('countries','id')->andReturn("integer");
+        $this->databaseRepository->shouldReceive('getColumnType')->times(1)->with('countries', 'name')->andReturn("string");
+        $this->databaseRepository->shouldReceive('getColumnType')->times(1)->with('clubs','id')->andReturn("integer");
+        $this->databaseRepository->shouldReceive('getColumnType')->times(1)->with('clubs', 'name')->andReturn("string");
+        $this->databaseRepository->shouldReceive('getColumnType')->times(1)->with('clubs', 'country_id')->andReturn("integer");
+        $this->databaseRepository->shouldReceive('getColumnType')->times(1)->with('teams','id')->andReturn("integer");
+        $this->databaseRepository->shouldReceive('getColumnType')->times(1)->with('teams', 'name')->andReturn("string");
+        $this->databaseRepository->shouldReceive('getColumnType')->times(1)->with('teams', 'club_id')->andReturn("integer");
 
         /* When we configure with Country, Club and Team */
         $this->aujaConfigurator->configure(array('Country', 'Club', 'Team'));
@@ -208,8 +217,7 @@ class AujaConfiguratorTest extends AujaTestCase
         assertThat($teamRelation->getType(), is(Relation::BELONGS_TO));
     }
 
-    public function testConfigure_doubleBelongsTo()
-    {
+    public function testConfigure_doubleBelongsTo() {
         /* Given there are tables for Club, ClubHouse and Team */
         $this->databaseRepository->shouldReceive('hasTable')->times(1)->with('clubs')->andReturn(true);
         $this->databaseRepository->shouldReceive('hasTable')->times(1)->with('club_houses')->andReturn(true);
@@ -220,6 +228,14 @@ class AujaConfiguratorTest extends AujaTestCase
         $this->databaseRepository->shouldReceive('getColumnListing')->times(1)->with('clubs')->andReturn(array('id', 'name'));
         $this->databaseRepository->shouldReceive('getColumnListing')->times(1)->with('club_houses')->andReturn(array('id', 'name', 'club_id'));
         $this->databaseRepository->shouldReceive('getColumnListing')->times(1)->with('teams')->andReturn(array('id', 'name', 'club_id'));
+        $this->databaseRepository->shouldReceive('getColumnType')->times(1)->with('clubs','id')->andReturn("integer");
+        $this->databaseRepository->shouldReceive('getColumnType')->times(1)->with('clubs', 'name')->andReturn("string");
+        $this->databaseRepository->shouldReceive('getColumnType')->times(1)->with('club_houses','id')->andReturn("integer");
+        $this->databaseRepository->shouldReceive('getColumnType')->times(1)->with('club_houses', 'name')->andReturn("string");
+        $this->databaseRepository->shouldReceive('getColumnType')->times(1)->with('club_houses', 'club_id')->andReturn("integer");
+        $this->databaseRepository->shouldReceive('getColumnType')->times(1)->with('teams','id')->andReturn("integer");
+        $this->databaseRepository->shouldReceive('getColumnType')->times(1)->with('teams', 'name')->andReturn("string");
+        $this->databaseRepository->shouldReceive('getColumnType')->times(1)->with('teams', 'club_id')->andReturn("integer");
 
         /* When we configure with Club, ClubHouse and Team */
         $this->aujaConfigurator->configure(array('Club', 'ClubHouse', 'Team'));
