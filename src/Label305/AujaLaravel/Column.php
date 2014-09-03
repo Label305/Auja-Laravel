@@ -36,7 +36,7 @@ class Column {
     private $name;
 
     /**
-     * @var String the type of the column. One of: // TODO: DEFINE TYPES
+     * @var String the type of the column. See Doctrine\DBAL\Types\Type for supported column names.
      */
     private $type;
 
@@ -44,7 +44,7 @@ class Column {
      * Creates a new Column.
      *
      * @param $name String the name of the Column.
-     * @param $type String the type of the Column.
+     * @param $type String the type of the Column. See Doctrine\DBAL\Types\Type for supported column names.
      */
     function __construct($name, $type) {
         $this->name = $name;

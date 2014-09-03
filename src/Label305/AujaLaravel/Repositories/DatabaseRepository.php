@@ -44,4 +44,14 @@ interface DatabaseRepository {
      */
     public function getColumnListing($tableName);
 
+    /**
+     * Returns the type of the given column in given table.
+     *
+     * @param $tableName String the name of the table.
+     * @param $columnName String the name of the column.
+     *
+     * @return String the type of the column. See Doctrine\DBAL\Types\Type for supported column names.
+     */
+    public function getColumnType($tableName, $columnName);
+
 } 

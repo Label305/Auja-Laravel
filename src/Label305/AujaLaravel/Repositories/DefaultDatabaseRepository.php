@@ -23,6 +23,7 @@
 
 namespace Label305\AujaLaravel\Repositories;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class DefaultDatabaseRepository implements DatabaseRepository {
@@ -35,4 +36,7 @@ class DefaultDatabaseRepository implements DatabaseRepository {
         return Schema::getColumnListing($tableName);
     }
 
-} 
+    public function getColumnType($tableName, $columnName) {
+        return DB::connection()->getDoctrineColumn($tableName, $columnName)->getType()->getName();
+    }
+}

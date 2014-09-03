@@ -115,7 +115,8 @@ class AujaConfigurator {
         $columns = $this->databaseRepository->getColumnListing($tableName);
         foreach ($columns as $column) {
 //            Log::debug(sprintf('Adding column %s to %s', $column, $model->getName()));
-            $model->addColumn(new Column($column, null));
+            $columnType = $this->databaseRepository->getColumnType($tableName, $column);
+            $model->addColumn(new Column($column, $columnType));
         }
     }
 
