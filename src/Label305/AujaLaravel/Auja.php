@@ -57,6 +57,12 @@ class Auja {
         self::$aujaConfigurator->configure($modelNames);
     }
 
+    /**
+     * Builds the initial Auja view based on the models as initialized in init().
+     *
+     * @param $title String the title to be shown.
+     * @return Main the Main instance which can be configured further.
+     */
     public static function buildMain($title) {
         $main = new Main();
 
@@ -72,7 +78,7 @@ class Auja {
 
         $main->setUsername('Niek'); // TODO proper user
 
-        foreach(array_values(self::$aujaConfigurator->getModels()) as $model){
+        foreach (array_values(self::$aujaConfigurator->getModels()) as $model) {
             /* @var $model Model */
             $item = new Item();
             $item->setTitle($model->getName());
@@ -84,6 +90,14 @@ class Auja {
         return $main;
     }
 
+    /**
+     * Intelligently builds an index menu for given model, and optionally model id.
+     *
+     * @param $modelName String the name of the model to build the menu for.
+     * @param $modelId int (optional) the id of an instance of the model.
+     *
+     * @return Menu the built menu instance, which can be configured further.
+     */
     public static function buildIndexMenu($modelName, $modelId = 0) {
         if (is_null(self::$aujaConfigurator)) {
             throw new \LogicException('Auja not initialized. Call Auja::init first.');
@@ -119,7 +133,20 @@ class Auja {
         return $menu;
     }
 
+    /**
+     * Builds LinkMenuItems for each of the items.
+     * These are typically used when a ResourceMenuItem triggers a call for items.
+     *
+     * @param $modelName String the name of the model the items represent.
+     * @param $items array an array of instances of the model to be shown.
+     *
+     * @return LinkMenuItem[] the built LinkMenuItems.
+     */
     public static function buildResourceItems($modelName, $items) {
+        if (is_null(self::$aujaConfigurator)) {
+            throw new \LogicException('Auja not initialized. Call Auja::init first.');
+        }
+
         if (!($items instanceof \IteratorAggregate)) {
             $items = new Collection(array($items));
         }
@@ -155,12 +182,24 @@ class Auja {
         return $result;
     }
 
-    private static function buildNoAssociationsIndexMenu($modelName) {
+    /**
+     * Builds a simple menu for given model, where typically this model should not have any relations to other models.
+     *
+     * The menu will include:
+     *  - An Add LinkMenuItem;
+     *  - A SpacerMenuItem with the model's name;
+     *  - A ResourceMenuItem to hold entries of the model.
+     *
+     * @param $modelName String the name of the model.
+     *
+     * @return Menu the Menu, which can be configured further.
+     */
+    public static function buildNoAssociationsIndexMenu($modelName) {
         $menu = new Menu();
 
         $addMenuItem = new LinkMenuItem();
         $addMenuItem->setName('Add'); // TODO I18N
-        $addMenuItem->setTarget($modelName); // TODO proper target
+        $addMenuItem->setTarget(sprintf('/%s/create', self::toUrlName($modelName)));
         $menu->addMenuItem($addMenuItem);
 
         $spacerMenuItem = new SpacerMenuItem();
@@ -168,23 +207,38 @@ class Auja {
         $menu->addMenuItem($spacerMenuItem);
 
         $resourceMenuItem = new ResourceMenuItem();
-        $resourceMenuItem->setTarget(sprintf('/%s', strtolower($modelName)));
+        $resourceMenuItem->setTarget(sprintf('/%s', self::toUrlName($modelName)));
         $resourceMenuItem->addProperty('searchable'); // TODO when is something searchable?
         $menu->addMenuItem($resourceMenuItem);
 
         return $menu;
     }
 
-    private static function buildSingleAssociationIndexMenu($modelName, $modelId, Relation $relation) {
+    /**
+     * Builds a menu for a single model entry, where the model has exactly one relationship with another model.
+     *
+     * The menu will include:
+     *  - An Edit LinkMenuItem;
+     *  - A SpacerMenuItem with the name of the associated model;
+     *  - A ResourceMenuItem to hold entries of the associated model.
+     *
+     *
+     * @param $modelName String the name of the model.
+     * @param $modelId int the id of the model entry.
+     * @param $relation Relation the Relation this model has with the associated model.
+     *
+     * @return Menu the Menu, which can be configured further.
+     */
+    public static function buildSingleAssociationIndexMenu($modelName, $modelId, Relation $relation) {
         $menu = new Menu();
 
         $addMenuItem = new LinkMenuItem();
         $addMenuItem->setName('Edit'); // TODO I18N
-        $addMenuItem->setTarget($modelName); // TODO proper target
+        $addMenuItem->setTarget(sprintf('/%s/%s/edit', self::toUrlName($modelName), $modelId)); // TODO proper target
         $menu->addMenuItem($addMenuItem);
 
         $headerMenuItem = new SpacerMenuItem();
-        $headerMenuItem->setName($modelName); // TODO I18N
+        $headerMenuItem->setName($relation->getRight()->getName()); // TODO I18N
         $menu->addMenuItem($headerMenuItem);
 
         $resourceMenuItem = new ResourceMenuItem();
@@ -194,35 +248,58 @@ class Auja {
 
         return $menu;
     }
-    
-    private static function buildMultipleAssociationsIndexMenu($modelName, $modelId, array $relations) {
+
+    /**
+     * Builds a menu for a single model entry, where the model has multiple relationships with other models.
+     *
+     * The menu will include:
+     *  - An Edit LinkMenuItem;
+     *  - For each of the Relations, a LinkMenuItem for the associated model.
+     *
+     * @param $modelName String the name of the model.
+     * @param $modelId int the id of the model entry.
+     * @param $relations Relation[] the Relations this model has with associated models.
+     *
+     * @return Menu the Menu, which can be configured further.
+     */
+    public static function buildMultipleAssociationsIndexMenu($modelName, $modelId, array $relations) {
         $menu = new Menu();
 
         $addMenuItem = new LinkMenuItem();
         $addMenuItem->setName('Edit'); // TODO I18N
-        $addMenuItem->setTarget($modelName); // TODO proper name
+        $addMenuItem->setTarget(sprintf('/%s/%s/edit', self::toUrlName($modelName), $modelId));
         $menu->addMenuItem($addMenuItem);
 
         foreach ($relations as $relation) {
             $associationMenuItem = new LinkMenuItem();
             $associationMenuItem->setName($relation->getRight()->getName());
-            $associationMenuItem->setTarget(sprintf('/%s/%s/%s/%s', self::toUrlName($modelName), $modelId, self::toUrlName($relation->getRight()->getName(), 'menu')));
+            $associationMenuItem->setTarget(sprintf('/%s/%s/%s/menu', self::toUrlName($modelName), $modelId, self::toUrlName($relation->getRight()->getName())));
             $menu->addMenuItem($associationMenuItem);
         }
 
         return $menu;
     }
 
-    private static function toUrlName($modelName) {
-        return strtolower($modelName);
-    }
-
+    /**
+     * Builds a menu for displaying associated items to a model entry (i.e. /club/21/team).
+     *
+     * The menu will include:
+     *  - An Add LinkMenuItem;
+     *  - A SpacerMenuItem with the name of the associated model;
+     *  - A ResourceMenuItem to hold entries of the associated model.
+     *
+     * @param $modelName String the name of the model (i.e. Club).
+     * @param $modelId int the id of the model entry.
+     * @param $associationName String the name of the associated model (i.e. Team).
+     *
+     * @return Menu the Menu, which can be configured further.
+     */
     public static function buildAssociationMenu($modelName, $modelId, $associationName) {
         $menu = new Menu();
 
         $addMenuItem = new LinkMenuItem();
-        $addMenuItem->setName('Add ' . $modelName); // TODO I18N
-        $addMenuItem->setTarget($modelName); // TODO proper target
+        $addMenuItem->setName('Add ' . $associationName); // TODO I18N
+        $addMenuItem->setTarget(sprintf('/%s/create?%s=%s', self::toUrlName($associationName), self::toForeignColumnName($modelName), $modelId));
         $menu->addMenuItem($addMenuItem);
 
         $headerMenuItem = new SpacerMenuItem();
@@ -235,6 +312,14 @@ class Auja {
         $menu->addMenuItem($resourceMenuItem);
 
         return $menu;
+    }
+
+    private static function toUrlName($modelName) {
+        return strtolower($modelName);
+    }
+
+    private static function toForeignColumnName($modelName){
+        return strtolower($modelName).'_id';
     }
 
 }
