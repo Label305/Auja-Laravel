@@ -340,21 +340,21 @@ class Auja {
         $hidden = $instance->getHidden();
         /* @var $hidden String[] */
 
-        $r = new \ReflectionClass($modelName);
-        dd($r->getProperties());
-        dd(get_object_vars($instance));
-
         foreach($fillable as $columnName){
             $column = $model->getColumn($columnName);
-            $item = PageComponentFactory::getPageComponent($column->getType(), in_array($columnName, $hidden));
-            $item->setName($column->getName()); // TODO: proper name
-            $item->setLabel($column->getName()); // TODO: proper label
+            $item = PageFormItemFactory::getPageFormItem($column->getType(), in_array($columnName, $hidden));
+            $item->setName($column->getName());
+            $item->setLabel(self::toHumanReadableName($column->getName()));
             $form->addItem($item);
         }
 
         $page->addPageComponent($form);
 
         return $page;
+    }
+
+    private static function toHumanReadableName($modelName){
+        return preg_replace('/(?<=\\w)(?=[A-Z])/',' $1', camel_case($modelName));
     }
 
     private static function toUrlName($modelName) {

@@ -30,7 +30,7 @@ use Label305\Auja\Page\DateFormItem;
 use Label305\Auja\Page\DateTimeFormItem;
 use Label305\Auja\Page\IntegerFormItem;
 use Label305\Auja\Page\NumberFormItem;
-use Label305\Auja\Page\PageComponent;
+use Label305\Auja\Page\PageFormItem;
 use Label305\Auja\Page\PasswordFormItem;
 use Label305\Auja\Page\TextAreaFormItem;
 use Label305\Auja\Page\TextFormItem;
@@ -41,15 +41,15 @@ use Label305\Auja\Page\TimeFormItem;
  *
  * @package Label305\AujaLaravel
  */
-class PageComponentFactory {
+class PageFormItemFactory {
 
     /**
-     * @param $type   String the type of the column to create a PageComponent for. See Doctrine\DBAL\Types\Type for the supported types.
+     * @param $type   String the type of the column to create a PageFormItem for. See Doctrine\DBAL\Types\Type for the supported types.
      * @param $hidden bool whether the column is hidden.
      *
-     * @return PageComponent the created PageComponent.
+     * @return PageFormItem the created PageFormItem.
      */
-    public static function getPageComponent($type, $hidden) {
+    public static function getPageFormItem($type, $hidden) {
         if ($hidden) {
             return new PasswordFormItem();
         }
