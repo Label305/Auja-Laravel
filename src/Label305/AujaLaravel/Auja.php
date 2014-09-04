@@ -240,7 +240,7 @@ class Auja {
 
         $addMenuItem = new LinkMenuItem();
         $addMenuItem->setName('Edit'); // TODO I18N
-        $addMenuItem->setTarget(sprintf('/%s/%s/edit', self::toUrlName($modelName), $modelId)); // TODO proper target
+        $addMenuItem->setTarget(sprintf('/%s/%s/edit', self::toUrlName($modelName), $modelId));
         $menu->addMenuItem($addMenuItem);
 
         $headerMenuItem = new SpacerMenuItem();
@@ -333,10 +333,22 @@ class Auja {
 
         $model = self::$aujaConfigurator->getModels()[$modelName];
         /* @var $model Model */
-        foreach ($model->getColumns() as $column) { // TODO: use fillable
-            $item = new TextFormItem();
-            $item->setName($column->getName());
-            $item->setLabel($column->getName());
+
+        $instance = new $modelName;
+        $fillable = $instance->getFillable();
+        /* @var $fillable String[] */
+        $hidden = $instance->getHidden();
+        /* @var $hidden String[] */
+
+        $r = new \ReflectionClass($modelName);
+        dd($r->getProperties());
+        dd(get_object_vars($instance));
+
+        foreach($fillable as $columnName){
+            $column = $model->getColumn($columnName);
+            $item = PageComponentFactory::getPageComponent($column->getType(), in_array($columnName, $hidden));
+            $item->setName($column->getName()); // TODO: proper name
+            $item->setLabel($column->getName()); // TODO: proper label
             $form->addItem($item);
         }
 

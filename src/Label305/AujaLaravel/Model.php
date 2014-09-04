@@ -37,7 +37,7 @@ class Model {
     private $tableName;
 
     /**
-     * @var Column[] the columns in the Model.
+     * @var array an array of key value pairs with the column names and the columns in the Model.
      */
     private $columns = array();
 
@@ -64,14 +64,25 @@ class Model {
      * @param Column $column the column to add.
      */
     function addColumn(Column $column) {
-        $this->columns[] = $column;
+        $this->columns[$column->getName()] = $column;
     }
 
     /**
      * @return Column[] the columns as defined using addColumn.
      */
     public function getColumns() {
-        return $this->columns;
+        return array_values($this->columns);
+    }
+
+    /**
+     * Returns the column with given column name.
+     *
+     * @param $columnName String column name.
+     *
+     * @return Column the column with given name.
+     */
+    public function getColumn($columnName){
+        return $this->columns[$columnName];
     }
 
     /**
