@@ -63,6 +63,18 @@ class Auja {
     }
 
     /**
+     * @return array a key-value pair of model names and the Model instances.
+     */
+    public static function getModels() {
+        if (is_null(self::$aujaConfigurator)) {
+            throw new \LogicException('Auja not initialized. Call Auja::init first.');
+        }
+
+        return self::$aujaConfigurator->getModels();
+    }
+
+
+    /**
      * Builds the initial Auja view based on the models as initialized in init().
      *
      * @param $title String the title to be shown.
@@ -74,8 +86,8 @@ class Auja {
 
         $main->setTitle($title);
 
-        $main->setColor('main', '#FF0000');
-        $main->setColor('secondary', '#00FF00');
+        $main->setColor('main', '#1ebab8'); // TODO: remove colors
+        $main->setColor('secondary', '#E7EFEF');
 
         $button = new Button();
         $button->setTitle('Logout');
