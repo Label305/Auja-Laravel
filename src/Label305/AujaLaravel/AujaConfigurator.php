@@ -27,6 +27,11 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Label305\AujaLaravel\Repositories\DatabaseRepository;
 
+/**
+ * A class which determines properties and relations for models.
+ *
+ * @package Label305\AujaLaravel
+ */
 class AujaConfigurator {
 
     const ID_PREFIX = '_id';

@@ -39,6 +39,14 @@ use Label305\Auja\Page\PageHeader;
 use Label305\Auja\Page\Page;
 use Label305\Auja\Page\TextFormItem;
 
+/**
+ * The main class to interact with.
+ * This class can generate all necessary menu's and pages, as well as the main page.
+ *
+ * Prior to interacting with other functions in this class, call Auja::init($modelNames).
+ *
+ * @package Label305\AujaLaravel
+ */
 class Auja {
 
     /**
@@ -82,6 +90,10 @@ class Auja {
      * @return Main the Main instance which can be configured further.
      */
     public static function buildMain($title) {
+        if (is_null(self::$aujaConfigurator)) {
+            throw new \LogicException('Auja not initialized. Call Auja::init first.');
+        }
+
         $main = new Main();
 
         $main->setTitle($title);
@@ -94,7 +106,7 @@ class Auja {
         $button->setTarget('#logout'); // TODO proper url
         $main->addButton($button);
 
-        $main->setUsername('Niek'); // TODO proper user
+        $main->setUsername('Niek Haarman'); // TODO proper user
 
         foreach (array_values(self::$aujaConfigurator->getModels()) as $model) {
             /* @var $model Model */
@@ -191,10 +203,11 @@ class Auja {
         }
 
         $resourceItems = new ResourceItemsMenuItems();
-        foreach ($items as $item) {
+        for ($i = 0; $i < count($items); $i++) {
             $menuItem = new LinkMenuItem();
-            $menuItem->setName($item->name); // TODO which field?
-            $menuItem->setTarget(sprintf($target, $item->id));
+            $menuItem->setName($items[$i]->name); // TODO which field?
+            $menuItem->setTarget(sprintf($target, $items[$i]->id));
+            $menuItem->setOrder($i);
             $resourceItems->add($menuItem);
         }
         return $resourceItems;
