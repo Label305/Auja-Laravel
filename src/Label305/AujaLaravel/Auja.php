@@ -23,6 +23,7 @@
 
 namespace Label305\AujaLaravel;
 
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
@@ -164,17 +165,37 @@ class Auja {
     }
 
     /**
-     * Builds LinkMenuItems for each of the items.
-     * These are typically used when a ResourceMenuItem triggers a call for items.
+     * Builds a ResourceItemsMenuItems instance for given items.
+     * This is typically used when a ResourceMenuItem triggers a call for items.
      *
-     * @param $modelName String the name of the model the items represent.
-     * @param $items     array an array of instances of the model to be shown.
+     * This method also supports pagination, either manually or automatically.
+     * To automatically use pagination, simply provide a Paginator as items.
      *
-     * @return LinkMenuItem[] the built LinkMenuItems.
+     * @param $modelName   String the name of the model the items represent.
+     * @param $items       array|Paginator an array of instances of the model to be shown, or a Paginator containing the instances.
+     * @param $nextPageUrl String (optional) The url to the next page, if any.
+     * @param $offset      int (optional) The offset to start the order from.
+     *
+     * @return ResourceItemsMenuItems[] the built LinkMenuItems.
      */
-    public static function buildResourceItems($modelName, $items) {
+    public static function buildResourceItems($modelName, $items, $nextPageUrl = null, $offset = -1) { // TODO: create separate methods for pagination and no pagination?
         if (is_null(self::$aujaConfigurator)) {
             throw new \LogicException('Auja not initialized. Call Auja::init first.');
+        }
+
+        $paginator = null;
+        if ($items instanceof Paginator) {
+            $paginator = $items;
+            $items = $paginator->getCollection();
+
+            if ($offset == -1) {
+                $offset = ($paginator->getCurrentPage() - 1) * $paginator->getPerPage();
+            }
+        }
+
+
+        if ($offset == -1) {
+            $offset = 0;
         }
 
         if (!($items instanceof \IteratorAggregate)) {
@@ -207,9 +228,16 @@ class Auja {
             $menuItem = new LinkMenuItem();
             $menuItem->setName($items[$i]->name); // TODO which field?
             $menuItem->setTarget(sprintf($target, $items[$i]->id));
-            $menuItem->setOrder($i);
+            $menuItem->setOrder($offset + $i);
             $resourceItems->add($menuItem);
         }
+
+        if ($nextPageUrl != null) {
+            $resourceItems->setNextPageUrl($nextPageUrl);
+        } else if ($paginator != null && $paginator->getCurrentPage() != $paginator->getLastPage()) {
+            $resourceItems->setNextPageUrl(sprintf('/%s?page=%d', self::toUrlName($modelName), $paginator->getCurrentPage() + 1));
+        }
+
         return $resourceItems;
     }
 
@@ -365,7 +393,7 @@ class Auja {
         $hidden = $instance->getHidden();
         /* @var $hidden String[] */
 
-        foreach($fillable as $columnName){
+        foreach ($fillable as $columnName) {
             $column = $model->getColumn($columnName);
             $item = PageFormItemFactory::getPageFormItem($column->getType(), in_array($columnName, $hidden));
             $item->setName($column->getName());
@@ -378,8 +406,8 @@ class Auja {
         return $page;
     }
 
-    private static function toHumanReadableName($modelName){
-        return preg_replace('/(?<=\\w)(?=[A-Z])/',' $1', camel_case($modelName));
+    private static function toHumanReadableName($modelName) {
+        return preg_replace('/(?<=\\w)(?=[A-Z])/', ' $1', camel_case($modelName));
     }
 
     private static function toUrlName($modelName) {
