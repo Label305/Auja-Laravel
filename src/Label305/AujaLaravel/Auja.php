@@ -180,9 +180,10 @@ class Auja {
     public function buildResourceItems($modelName, $items, $nextPageUrl = null, $offset = -1) { // TODO: create separate methods for pagination and no pagination?
         $models = $this->aujaConfigurator->getModels();
         if (!isset($models[$modelName])) {
-            throw new \LogicException(sprintf('Auja not constructed with model %s. Make sure you pass in this model when instantiating Auja.', $modelName));
+            throw new \LogicException(sprintf('Auja not instantiated with model %s. Make sure you pass in this model when instantiating Auja.', $modelName));
         }
 
+        /* Extract items from Paginator if necessary */
         $paginator = null;
         if ($items instanceof Paginator) {
             $paginator = $items;
@@ -193,21 +194,26 @@ class Auja {
             }
         }
 
+        /* If the offset is not set, use no offset */
         if ($offset == -1) {
             $offset = 0;
         }
 
-        if (!($items instanceof \IteratorAggregate)) {
-            $items = new Collection(array($items));
+        /* No items. */
+        if (count($items) == 0) {
+            return new ResourceItemsMenuItems();
         }
 
-        if (count($items) == 0) {
-            return array();
+        /* If the items are not iterable */
+        if (!($items instanceof \IteratorAggregate)) {
+            $items = new Collection([$items]);
         }
+
 
         $model = $models[$modelName];
-        $relations = $this->aujaConfigurator->getRelationsForModel($model);
 
+        /* Find relations for this model, so we can know the target */
+        $relations = $this->aujaConfigurator->getRelationsForModel($model);
         $associationRelations = array();
         foreach ($relations as $relation) {
             if ($relation->getType() == Relation::HAS_MANY || $relation->getType() == Relation::HAS_AND_BELONGS_TO) {
@@ -221,6 +227,7 @@ class Auja {
             $target = sprintf('/%s/%s/menu', self::toUrlName($modelName), '%s');
         }
 
+        /* Build the actual items to return */
         $resourceItems = new ResourceItemsMenuItems();
         $displayField = $this->aujaConfigurator->getDisplayField($model);
         for ($i = 0; $i < count($items); $i++) {
@@ -231,6 +238,7 @@ class Auja {
             $resourceItems->add($menuItem);
         }
 
+        /* Add pagination if necessary */
         if ($nextPageUrl != null) {
             $resourceItems->setNextPageUrl($nextPageUrl);
         } else if ($paginator != null && $paginator->getCurrentPage() != $paginator->getLastPage()) {
@@ -278,7 +286,6 @@ class Auja {
      *  - An Edit LinkMenuItem;
      *  - A SpacerMenuItem with the name of the associated model;
      *  - A ResourceMenuItem to hold entries of the associated model.
-     *
      *
      * @param $modelName String the name of the model.
      * @param $modelId   int the id of the model entry.
