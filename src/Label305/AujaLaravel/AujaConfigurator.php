@@ -23,9 +23,11 @@
 
 namespace Label305\AujaLaravel;
 
+use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Label305\AujaLaravel\Repositories\DatabaseRepository;
+use ReflectionException;
 
 /**
  * A class which determines properties and relations for models.
@@ -35,6 +37,11 @@ use Label305\AujaLaravel\Repositories\DatabaseRepository;
 class AujaConfigurator {
 
     const ID_PREFIX = '_id';
+
+    /**
+     * @var Application
+     */
+    private $app;
 
     /**
      * @var DatabaseRepository the DatabaseRepository which provides information about the database.
@@ -52,11 +59,18 @@ class AujaConfigurator {
     private $relations = array();
 
     /**
+     * @var array a key-value pair of model names and their generated configs.
+     */
+    private $generatedConfigs = array();
+
+    /**
      * Creates a new AujaConfigurator.
      *
-     * @param DatabaseRepository $databaseRepository
+     * @param $app                 Application
+     * @param  $databaseRepository DatabaseRepository
      */
-    public function __construct(DatabaseRepository $databaseRepository) {
+    public function __construct(Application $app, DatabaseRepository $databaseRepository) {
+        $this->app = $app;
         $this->databaseRepository = $databaseRepository;
     }
 
@@ -69,11 +83,13 @@ class AujaConfigurator {
     public function configure(array $modelNames) {
         /* First define the models and their columns. */
         foreach ($modelNames as $modelName) {
-            $model = new Model($modelName);
-            $this->models[$modelName] = $model;
+            $this->models[$modelName] = new Model($modelName);
             $this->relations[$modelName] = array();
 
-            $this->findColumns($model);
+            $this->findColumns($this->models[$modelName]);
+
+            $configResolver = new ConfigResolver($this->models[$modelName]);
+            $this->generatedConfigs[$modelName] = $configResolver->resolve();
         }
 
         /* Find relations */
@@ -98,10 +114,29 @@ class AujaConfigurator {
      * Returns an array of Relations for given Model.
      *
      * @param Model $model the Model.
+     *
      * @return Relation[] the Relations.
      */
     public function getRelationsForModel(Model $model) {
         return isset($this->relations[$model->getName()]) ? $this->relations[$model->getName()] : array();
+    }
+
+    /**
+     * Finds which display field to use for given Model.
+     * Uses the overridden value if present, or falls back to the generated value.
+     *
+     * @param $model Model the Model to find the display field for.
+     *
+     * @return String the name of the field to use for displaying the Model.
+     */
+    public function getDisplayField(Model $model) {
+        $modelConfig = $this->getModelConfig($model);
+        if ($modelConfig == null || !$modelConfig->getDisplayField()) {
+            $generatedConfig = $this->generatedConfigs[$model->getName()];
+            return $generatedConfig->getDisplayField();
+        } else {
+            return $modelConfig->getDisplayField();
+        }
     }
 
     /**
@@ -118,10 +153,10 @@ class AujaConfigurator {
         }
 
         $columns = $this->databaseRepository->getColumnListing($tableName);
-        foreach ($columns as $column) {
+        foreach ($columns as $columnName) {
 //            Log::debug(sprintf('Adding column %s to %s', $column, $model->getName()));
-            $columnType = $this->databaseRepository->getColumnType($tableName, $column);
-            $model->addColumn(new Column($column, $columnType));
+            $columnType = $this->databaseRepository->getColumnType($tableName, $columnName);
+            $model->addColumn(new Column($columnName, $columnType));
         }
     }
 
@@ -134,7 +169,6 @@ class AujaConfigurator {
         }
         $this->findManyToManyRelations(array_values($this->models));
     }
-
 
     /**
      * Finds and defines one-to-one and one-to-many relations for given model.
@@ -206,6 +240,18 @@ class AujaConfigurator {
 //        Log::info(sprintf('%s has and belongs to many %s', $model1->getName(), str_plural($model2->getName())));
         $this->relations[$model1->getName()][] = new Relation($model1, $model2, Relation::HAS_AND_BELONGS_TO);
         $this->relations[$model2->getName()][] = new Relation($model2, $model1, Relation::HAS_AND_BELONGS_TO);
+    }
+
+    /**
+     * @param Model $model
+     * @return Config|null
+     */
+    private function getModelConfig(Model $model) {
+        try {
+            return $this->app[$model->getName() . 'Config'];
+        } catch (ReflectionException $e) {
+            return null;
+        }
     }
 
 }

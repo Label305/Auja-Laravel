@@ -23,6 +23,7 @@
 
 namespace Label305\AujaLaravel;
 
+use Illuminate\Foundation\Application;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
@@ -50,36 +51,34 @@ use Label305\Auja\Page\TextFormItem;
  */
 class Auja {
 
+    private $app;
+
     /**
      * @var AujaConfigurator
      */
-    private static $aujaConfigurator;
+    private $aujaConfigurator;
 
-    /**
-     * Initializes this class for given models.
-     *
-     * @param $modelNames String[] an array of model names to use.
-     */
-    public static function init(array $modelNames) {
+    function __construct(Application $app, array $modelNames) {
         if (empty($modelNames)) {
             throw new \InvalidArgumentException('Provide models!');
         }
 
-        Log::debug('Initializing Auja with models:', $modelNames);
+        $this->app = $app;
 
-        self::$aujaConfigurator = App::make('Label305\AujaLaravel\AujaConfigurator');
-        self::$aujaConfigurator->configure($modelNames);
+        Log::debug('Initializing Auja with models:', $modelNames);
+        $this->aujaConfigurator = $app['Label305\AujaLaravel\AujaConfigurator'];
+        $this->aujaConfigurator->configure($modelNames);
     }
 
     /**
      * @return array a key-value pair of model names and the Model instances.
      */
-    public static function getModels() {
-        if (is_null(self::$aujaConfigurator)) {
+    public function getModels() {
+        if (is_null($this->aujaConfigurator)) {
             throw new \LogicException('Auja not initialized. Call Auja::init first.');
         }
 
-        return self::$aujaConfigurator->getModels();
+        return $this->aujaConfigurator->getModels();
     }
 
 
@@ -90,8 +89,8 @@ class Auja {
      *
      * @return Main the Main instance which can be configured further.
      */
-    public static function buildMain($title) {
-        if (is_null(self::$aujaConfigurator)) {
+    public function buildMain($title) {
+        if (is_null($this->aujaConfigurator)) {
             throw new \LogicException('Auja not initialized. Call Auja::init first.');
         }
 
@@ -109,7 +108,7 @@ class Auja {
 
         $main->setUsername('Niek Haarman'); // TODO proper user
 
-        foreach (array_values(self::$aujaConfigurator->getModels()) as $model) {
+        foreach (array_values($this->aujaConfigurator->getModels()) as $model) {
             /* @var $model Model */
             $item = new Item();
             $item->setTitle($model->getName());
@@ -129,17 +128,17 @@ class Auja {
      *
      * @return Menu the built menu instance, which can be configured further.
      */
-    public static function buildIndexMenu($modelName, $modelId = 0) {
-        if (is_null(self::$aujaConfigurator)) {
+    public function buildIndexMenu($modelName, $modelId = 0) {
+        if (is_null($this->aujaConfigurator)) {
             throw new \LogicException('Auja not initialized. Call Auja::init first.');
         }
 
         if ($modelId == 0) {
             $menu = self::buildNoAssociationsIndexMenu($modelName);
         } else {
-            $models = self::$aujaConfigurator->getModels();
+            $models = $this->aujaConfigurator->getModels();
             $model = $models[$modelName];
-            $relations = self::$aujaConfigurator->getRelationsForModel($model);
+            $relations = $this->aujaConfigurator->getRelationsForModel($model);
 
             $associationRelations = array();
             foreach ($relations as $relation) {
@@ -178,9 +177,10 @@ class Auja {
      *
      * @return ResourceItemsMenuItems[] the built LinkMenuItems.
      */
-    public static function buildResourceItems($modelName, $items, $nextPageUrl = null, $offset = -1) { // TODO: create separate methods for pagination and no pagination?
-        if (is_null(self::$aujaConfigurator)) {
-            throw new \LogicException('Auja not initialized. Call Auja::init first.');
+    public function buildResourceItems($modelName, $items, $nextPageUrl = null, $offset = -1) { // TODO: create separate methods for pagination and no pagination?
+        $models = $this->aujaConfigurator->getModels();
+        if (!isset($models[$modelName])) {
+            throw new \LogicException(sprintf('Auja not constructed with model %s. Make sure you pass in this model when instantiating Auja.', $modelName));
         }
 
         $paginator = null;
@@ -192,7 +192,6 @@ class Auja {
                 $offset = ($paginator->getCurrentPage() - 1) * $paginator->getPerPage();
             }
         }
-
 
         if ($offset == -1) {
             $offset = 0;
@@ -206,9 +205,8 @@ class Auja {
             return array();
         }
 
-        $models = self::$aujaConfigurator->getModels();
         $model = $models[$modelName];
-        $relations = self::$aujaConfigurator->getRelationsForModel($model);
+        $relations = $this->aujaConfigurator->getRelationsForModel($model);
 
         $associationRelations = array();
         foreach ($relations as $relation) {
@@ -224,9 +222,10 @@ class Auja {
         }
 
         $resourceItems = new ResourceItemsMenuItems();
+        $displayField = $this->aujaConfigurator->getDisplayField($model);
         for ($i = 0; $i < count($items); $i++) {
             $menuItem = new LinkMenuItem();
-            $menuItem->setName($items[$i]->name); // TODO which field?
+            $menuItem->setName($items[$i]->$displayField);
             $menuItem->setTarget(sprintf($target, $items[$i]->id));
             $menuItem->setOrder($offset + $i);
             $resourceItems->add($menuItem);
@@ -253,7 +252,7 @@ class Auja {
      *
      * @return Menu the Menu, which can be configured further.
      */
-    public static function buildNoAssociationsIndexMenu($modelName) {
+    public function buildNoAssociationsIndexMenu($modelName) {
         $menu = new Menu();
 
         $addMenuItem = new LinkMenuItem();
@@ -267,7 +266,6 @@ class Auja {
 
         $resourceMenuItem = new ResourceMenuItem();
         $resourceMenuItem->setTarget(sprintf('/%s', self::toUrlName($modelName)));
-        $resourceMenuItem->addProperty('searchable'); // TODO when is something searchable?
         $menu->addMenuItem($resourceMenuItem);
 
         return $menu;
@@ -288,7 +286,7 @@ class Auja {
      *
      * @return Menu the Menu, which can be configured further.
      */
-    public static function buildSingleAssociationIndexMenu($modelName, $modelId, Relation $relation) {
+    public function buildSingleAssociationIndexMenu($modelName, $modelId, Relation $relation) {
         $menu = new Menu();
 
         $addMenuItem = new LinkMenuItem();
@@ -302,7 +300,6 @@ class Auja {
 
         $resourceMenuItem = new ResourceMenuItem();
         $resourceMenuItem->setTarget(sprintf('/%s/%s/%s', self::toUrlName($modelName), $modelId, self::toUrlName($relation->getRight()->getName())));
-        $resourceMenuItem->addProperty('searchable'); // TODO when is something searchable?
         $menu->addMenuItem($resourceMenuItem);
 
         return $menu;
@@ -321,7 +318,7 @@ class Auja {
      *
      * @return Menu the Menu, which can be configured further.
      */
-    public static function buildMultipleAssociationsIndexMenu($modelName, $modelId, array $relations) {
+    public function buildMultipleAssociationsIndexMenu($modelName, $modelId, array $relations) {
         $menu = new Menu();
 
         $addMenuItem = new LinkMenuItem();
@@ -353,7 +350,7 @@ class Auja {
      *
      * @return Menu the Menu, which can be configured further.
      */
-    public static function buildAssociationMenu($modelName, $modelId, $associationName) {
+    public function buildAssociationMenu($modelName, $modelId, $associationName) {
         $menu = new Menu();
 
         $addMenuItem = new LinkMenuItem();
@@ -367,13 +364,12 @@ class Auja {
 
         $resourceMenuItem = new ResourceMenuItem();
         $resourceMenuItem->setTarget(sprintf('/%s/%s/%s', self::toUrlName($modelName), $modelId, self::toUrlName($associationName)));
-        $resourceMenuItem->addProperty('searchable'); // TODO when is something searchable?
         $menu->addMenuItem($resourceMenuItem);
 
         return $menu;
     }
 
-    public static function buildPage($modelName, $modelId = 0) {
+    public function buildPage($modelName, $modelId = 0) {
         $page = new Page();
 
         $header = new PageHeader();
@@ -384,11 +380,11 @@ class Auja {
         $form->setAction(sprintf('/%s%s', self::toUrlName($modelName), $modelId == 0 ? '' : '/' . $modelId));
         $form->setMethod($modelId == 0 ? 'POST' : 'PUT');
 
-        $model = self::$aujaConfigurator->getModels()[$modelName];
+        $model = $this->aujaConfigurator->getModels()[$modelName];
         /* @var $model Model */
 
         $instance = new $modelName;
-        $fillable = $instance->getFillable();
+        $fillable = $instance->getFillable(); // TODO: other stuff
         /* @var $fillable String[] */
         $hidden = $instance->getHidden();
         /* @var $hidden String[] */
