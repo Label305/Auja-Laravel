@@ -48,7 +48,7 @@ class Model {
      */
     function __construct($name) {
         $this->name = $name;
-        $this->tableName = str_plural(snake_case($name));
+        $this->tableName = str_plural(snake_case($name)); // TODO: is this the proper name? Where do we define this definition?
     }
 
     /**

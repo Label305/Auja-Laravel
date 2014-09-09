@@ -26,6 +26,9 @@ class ModelSpec extends ObjectBehavior {
     }
 
     function it_can_store_columns(Column $column1, Column $column2) {
+        $column1->getName()->willReturn('Column 1');
+        $column2->getName()->willReturn('Column 2');
+
         $this->addColumn($column1);
         $this->addColumn($column2);
 

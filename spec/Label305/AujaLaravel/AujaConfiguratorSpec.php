@@ -2,6 +2,7 @@
 
 namespace spec\Label305\AujaLaravel;
 
+use Illuminate\Foundation\Application;
 use Label305\AujaLaravel\Model;
 use Label305\AujaLaravel\Repositories\DatabaseRepository;
 use PhpSpec\ObjectBehavior;
@@ -9,8 +10,8 @@ use Prophecy\Argument;
 
 class AujaConfiguratorSpec extends ObjectBehavior {
 
-    function let(DatabaseRepository $databaseRepository) {
-        $this->beConstructedWith($databaseRepository);
+    function let(Application $application, DatabaseRepository $databaseRepository) {
+        $this->beConstructedWith($application, $databaseRepository);
     }
 
     function it_is_initializable() {
