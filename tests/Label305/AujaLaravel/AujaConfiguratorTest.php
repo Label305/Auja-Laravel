@@ -24,6 +24,8 @@
 
 namespace Label305\AujaLaravel;
 
+use Illuminate\Foundation\Application;
+use Label305\AujaLaravel\Repositories\DatabaseRepository;
 use \Mockery as m;
 
 require_once 'AujaTestCase.php';
@@ -65,8 +67,14 @@ class AujaConfiguratorTest extends AujaTestCase {
      */
     private $databaseRepository;
 
+    /**
+     * @var Application a mocked Application.
+     */
+    private $application;
+
     protected function setUp() {
         $this->databaseRepository = m::mock('Label305\AujaLaravel\Repositories\DatabaseRepository');
+        $this->application = m::mock('Illuminate\Foundation\Application');
 
         $this->countryModel = m::mock('Label305\AujaLaravel\Model');
         $this->countryModel->shouldReceive('getName')->andReturn('Country');
@@ -79,7 +87,7 @@ class AujaConfiguratorTest extends AujaTestCase {
         $this->matchModel = m::mock('Label305\AujaLaravel\Model');
         $this->matchModel->shouldReceive('getName')->andReturn('Match');
 
-        $this->aujaConfigurator = new AujaConfigurator($this->databaseRepository);
+        $this->aujaConfigurator = new AujaConfigurator($this->application, $this->databaseRepository);
     }
 
     public function testInitialState() {
