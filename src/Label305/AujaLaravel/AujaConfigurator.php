@@ -66,8 +66,8 @@ class AujaConfigurator {
     /**
      * Creates a new AujaConfigurator.
      *
-     * @param $app                 Application
-     * @param  $databaseRepository DatabaseRepository
+     * @param  $app                 Application
+     * @param  $databaseRepository  DatabaseRepository
      */
     public function __construct(Application $app, DatabaseRepository $databaseRepository) {
         $this->app = $app;
@@ -97,10 +97,23 @@ class AujaConfigurator {
     }
 
     /**
-     * @return array a key-value pair of model names and the Model instances.
+     * @return Model[] the array of Model instances.
      */
     public function getModels() {
-        return $this->models;
+        return array_values($this->models);
+    }
+
+    /**
+     * @param $modelName String the name of the model.
+     *
+     * @return Model the Model corresponding to given Model name.
+     */
+    public function getModel($modelName) {
+        if (!isset($this->models[$modelName])) {
+            throw new \LogicException(sprintf("Model for name %s doesn't exist!", $modelName));
+        }
+
+        return $this->models[$modelName];
     }
 
     /**
@@ -217,6 +230,7 @@ class AujaConfigurator {
                 $model1 = $models[$i];
                 $model2 = $models[$j];
 
+                /* We assume names of pivot tables are alphabetically ordered */
                 if (strcasecmp($model1->getName(), $model2->getName()) < 0) {
                     $tableName = strtolower($model1->getName()) . '_' . strtolower($model2->getName());
                 } else {
@@ -243,7 +257,11 @@ class AujaConfigurator {
     }
 
     /**
-     * @param Model $model
+     * Returns the user specified Config for given Model if available, null otherwise.
+     * Specifically looks for a class represented by the binding with key $model->getName.'Config'.
+     *
+     * @param Model $model the Model.
+     *
      * @return Config|null
      */
     private function getModelConfig(Model $model) {

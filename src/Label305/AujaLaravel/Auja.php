@@ -40,6 +40,8 @@ use Label305\Auja\Page\PageForm;
 use Label305\Auja\Page\PageHeader;
 use Label305\Auja\Page\Page;
 use Label305\Auja\Page\TextFormItem;
+// TODO: use this class as a delegation class?
+// TODO: Create injectable dependencies for: url targets, icons, logging
 
 /**
  * The main class to interact with.
@@ -51,6 +53,9 @@ use Label305\Auja\Page\TextFormItem;
  */
 class Auja {
 
+    /**
+     * @var Application the Application instance.
+     */
     private $app;
 
     /**
@@ -58,6 +63,12 @@ class Auja {
      */
     private $aujaConfigurator;
 
+    /**
+     * Creates a new Auja instance.
+     *
+     * @param Application $app        the Illuminate Application instance.
+     * @param String[]    $modelNames the names of the models to use for Auja.
+     */
     function __construct(Application $app, array $modelNames) {
         if (empty($modelNames)) {
             throw new \InvalidArgumentException('Provide models!');
@@ -65,22 +76,17 @@ class Auja {
 
         $this->app = $app;
 
-        Log::debug('Initializing Auja with models:', $modelNames);
+        Log::debug('Initializing Auja with models:', $modelNames); // TODO: DI
         $this->aujaConfigurator = $app['Label305\AujaLaravel\AujaConfigurator'];
         $this->aujaConfigurator->configure($modelNames);
     }
 
     /**
-     * @return array a key-value pair of model names and the Model instances.
+     * @return Model[] the array of Model instances.
      */
     public function getModels() {
-        if (is_null($this->aujaConfigurator)) {
-            throw new \LogicException('Auja not initialized. Call Auja::init first.');
-        }
-
         return $this->aujaConfigurator->getModels();
     }
-
 
     /**
      * Builds the initial Auja view based on the models as initialized in init().
@@ -90,10 +96,6 @@ class Auja {
      * @return Main the Main instance which can be configured further.
      */
     public function buildMain($title) {
-        if (is_null($this->aujaConfigurator)) {
-            throw new \LogicException('Auja not initialized. Call Auja::init first.');
-        }
-
         $main = new Main();
 
         $main->setTitle($title);
@@ -108,11 +110,10 @@ class Auja {
 
         $main->setUsername('Niek Haarman'); // TODO proper user
 
-        foreach (array_values($this->aujaConfigurator->getModels()) as $model) {
-            /* @var $model Model */
+        foreach ($this->aujaConfigurator->getModels() as $model) {
             $item = new Item();
             $item->setTitle($model->getName());
-            $item->setIcon('tower'); //TODO proper icon
+            $item->setIcon('tower'); //TODO proper icon - DI
             $item->setTarget(sprintf('/%s/menu', self::toUrlName($model->getName())));
             $main->addItem($item);
         }
@@ -136,8 +137,7 @@ class Auja {
         if ($modelId == 0) {
             $menu = self::buildNoAssociationsIndexMenu($modelName);
         } else {
-            $models = $this->aujaConfigurator->getModels();
-            $model = $models[$modelName];
+            $model = $this->aujaConfigurator->getModel($modelName);
             $relations = $this->aujaConfigurator->getRelationsForModel($model);
 
             $associationRelations = array();
@@ -178,11 +178,6 @@ class Auja {
      * @return ResourceItemsMenuItems[] the built LinkMenuItems.
      */
     public function buildResourceItems($modelName, $items, $nextPageUrl = null, $offset = -1) { // TODO: create separate methods for pagination and no pagination?
-        $models = $this->aujaConfigurator->getModels();
-        if (!isset($models[$modelName])) {
-            throw new \LogicException(sprintf('Auja not instantiated with model %s. Make sure you pass in this model when instantiating Auja.', $modelName));
-        }
-
         /* Extract items from Paginator if necessary */
         $paginator = null;
         if ($items instanceof Paginator) {
@@ -210,7 +205,7 @@ class Auja {
         }
 
 
-        $model = $models[$modelName];
+        $model = $this->aujaConfigurator->getModel($modelName);
 
         /* Find relations for this model, so we can know the target */
         $relations = $this->aujaConfigurator->getRelationsForModel($model);
@@ -387,15 +382,14 @@ class Auja {
         $form->setAction(sprintf('/%s%s', self::toUrlName($modelName), $modelId == 0 ? '' : '/' . $modelId));
         $form->setMethod($modelId == 0 ? 'POST' : 'PUT');
 
-        $model = $this->aujaConfigurator->getModels()[$modelName];
-        /* @var $model Model */
 
         $instance = new $modelName;
-        $fillable = $instance->getFillable(); // TODO: other stuff
+        $fillable = $instance->getFillable(); // TODO: other stuff (hidden?)
         /* @var $fillable String[] */
         $hidden = $instance->getHidden();
         /* @var $hidden String[] */
 
+        $model = $this->aujaConfigurator->getModel($modelName);
         foreach ($fillable as $columnName) {
             $column = $model->getColumn($columnName);
             $item = PageFormItemFactory::getPageFormItem($column->getType(), in_array($columnName, $hidden));
