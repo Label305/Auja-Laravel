@@ -21,15 +21,22 @@
  * limitations under the License.
  */
 
-namespace Label305\AujaLaravel\Repositories;
+namespace Label305\AujaLaravel\Database;
 
-
-interface DatabaseRepository {
+/**
+ * An interface for defining database properties.
+ *
+ * @author  Niek Haarman - <niek@label305.com>
+ *
+ * @package Label305\AujaLaravel\Database
+ * @license http://www.apache.org/licenses/LICENSE-2.0
+ */
+interface DatabaseHelper {
 
     /**
      * Returns whether the database has given table name.
      *
-     * @param $tableName String the name of the table to look for.
+     * @param String $tableName the name of the table to look for.
      *
      * @return bool true if the table exists, false otherwise.
      */
@@ -38,7 +45,7 @@ interface DatabaseRepository {
     /**
      * Returns an array of column names for given table name.
      *
-     * @param $tableName String the table name.
+     * @param String $tableName the table name.
      *
      * @return String[] the columns in the table.
      */
@@ -47,8 +54,8 @@ interface DatabaseRepository {
     /**
      * Returns the type of the given column in given table.
      *
-     * @param $tableName String the name of the table.
-     * @param $columnName String the name of the column.
+     * @param String $tableName  the name of the table.
+     * @param String $columnName the name of the column.
      *
      * @return String the type of the column. See Doctrine\DBAL\Types\Type for supported column names.
      */

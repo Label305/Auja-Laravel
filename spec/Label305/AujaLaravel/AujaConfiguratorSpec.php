@@ -4,13 +4,13 @@ namespace spec\Label305\AujaLaravel;
 
 use Illuminate\Foundation\Application;
 use Label305\AujaLaravel\Model;
-use Label305\AujaLaravel\Repositories\DatabaseRepository;
+use Label305\AujaLaravel\Database\DatabaseHelper;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
 class AujaConfiguratorSpec extends ObjectBehavior {
 
-    function let(Application $application, DatabaseRepository $databaseRepository) {
+    function let(Application $application, DatabaseHelper $databaseRepository) {
         $this->beConstructedWith($application, $databaseRepository);
     }
 

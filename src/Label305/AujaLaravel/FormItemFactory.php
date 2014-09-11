@@ -23,33 +23,32 @@
 
 namespace Label305\AujaLaravel;
 
-
 use Doctrine\DBAL\Types\Type;
-use Label305\Auja\Page\CheckboxFormItem;
-use Label305\Auja\Page\DateFormItem;
-use Label305\Auja\Page\DateTimeFormItem;
-use Label305\Auja\Page\IntegerFormItem;
-use Label305\Auja\Page\NumberFormItem;
-use Label305\Auja\Page\PageFormItem;
-use Label305\Auja\Page\PasswordFormItem;
-use Label305\Auja\Page\TextAreaFormItem;
-use Label305\Auja\Page\TextFormItem;
-use Label305\Auja\Page\TimeFormItem;
+use Label305\Auja\Page\FormItem\CheckboxFormItem;
+use Label305\Auja\Page\FormItem\DateFormItem;
+use Label305\Auja\Page\FormItem\DateTimeFormItem;
+use Label305\Auja\Page\FormItem\FormItem;
+use Label305\Auja\Page\FormItem\IntegerFormItem;
+use Label305\Auja\Page\FormItem\NumberFormItem;
+use Label305\Auja\Page\FormItem\PasswordFormItem;
+use Label305\Auja\Page\FormItem\TextAreaFormItem;
+use Label305\Auja\Page\FormItem\TextFormItem;
+use Label305\Auja\Page\FormItem\TimeFormItem;
 
 /**
  * A factory class for creating PageComponents out of types.
  *
  * @package Label305\AujaLaravel
  */
-class PageFormItemFactory {
+class FormItemFactory {
 
     /**
      * @param $type   String the type of the column to create a PageFormItem for. See Doctrine\DBAL\Types\Type for the supported types.
      * @param $hidden bool whether the column is hidden.
      *
-     * @return PageFormItem the created PageFormItem.
+     * @return FormItem the created PageFormItem.
      */
-    public static function getPageFormItem($type, $hidden) {
+    public static function getFormItem($type, $hidden) {
         if ($hidden) {
             return new PasswordFormItem();
         }

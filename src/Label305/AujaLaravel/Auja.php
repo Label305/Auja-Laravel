@@ -28,28 +28,31 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
-use Label305\Auja\Button;
-use Label305\Auja\Item;
-use Label305\Auja\Main;
+use Label305\Auja\Main\Item;
+use Label305\Auja\Main\Main;
 use Label305\Auja\Menu\LinkMenuItem;
 use Label305\Auja\Menu\Menu;
 use Label305\Auja\Menu\ResourceItemsMenuItems;
 use Label305\Auja\Menu\ResourceMenuItem;
 use Label305\Auja\Menu\SpacerMenuItem;
-use Label305\Auja\Page\PageForm;
+use Label305\Auja\Page\Form;
 use Label305\Auja\Page\PageHeader;
 use Label305\Auja\Page\Page;
-use Label305\Auja\Page\TextFormItem;
+use Label305\Auja\Shared\Button;
+
 // TODO: use this class as a delegation class?
 // TODO: Create injectable dependencies for: url targets, icons, logging
 
 /**
  * The main class to interact with.
- * This class can generate all necessary menu's and pages, as well as the main page.
+ * This class can generate all necessary menus and pages, as well as the main page.
  *
  * Prior to interacting with other functions in this class, call Auja::init($modelNames).
  *
+ * @author  Niek Haarman - <niek@label305.com>
+ *
  * @package Label305\AujaLaravel
+ * @license http://www.apache.org/licenses/LICENSE-2.0
  */
 class Auja {
 
@@ -91,7 +94,7 @@ class Auja {
     /**
      * Builds the initial Auja view based on the models as initialized in init().
      *
-     * @param $title String the title to be shown.
+     * @param String $title the title to be shown.
      *
      * @return Main the Main instance which can be configured further.
      */
@@ -124,8 +127,8 @@ class Auja {
     /**
      * Intelligently builds an index menu for given model, and optionally model id.
      *
-     * @param $modelName String the name of the model to build the menu for.
-     * @param $modelId   int (optional) the id of an instance of the model.
+     * @param String $modelName the name of the model to build the menu for.
+     * @param int    $modelId   (optional) the id of an instance of the model.
      *
      * @return Menu the built menu instance, which can be configured further.
      */
@@ -170,10 +173,10 @@ class Auja {
      * This method also supports pagination, either manually or automatically.
      * To automatically use pagination, simply provide a Paginator as items.
      *
-     * @param $modelName   String the name of the model the items represent.
-     * @param $items       array|Paginator an array of instances of the model to be shown, or a Paginator containing the instances.
-     * @param $nextPageUrl String (optional) The url to the next page, if any.
-     * @param $offset      int (optional) The offset to start the order from.
+     * @param String          $modelName   the name of the model the items represent.
+     * @param array|Paginator $items       an array of instances of the model to be shown, or a Paginator containing the instances.
+     * @param String          $nextPageUrl (optional) The url to the next page, if any.
+     * @param int             $offset      (optional) The offset to start the order from.
      *
      * @return ResourceItemsMenuItems[] the built LinkMenuItems.
      */
@@ -251,7 +254,7 @@ class Auja {
      *  - A SpacerMenuItem with the model's name;
      *  - A ResourceMenuItem to hold entries of the model.
      *
-     * @param $modelName String the name of the model.
+     * @param String $modelName the name of the model.
      *
      * @return Menu the Menu, which can be configured further.
      */
@@ -282,9 +285,9 @@ class Auja {
      *  - A SpacerMenuItem with the name of the associated model;
      *  - A ResourceMenuItem to hold entries of the associated model.
      *
-     * @param $modelName String the name of the model.
-     * @param $modelId   int the id of the model entry.
-     * @param $relation  Relation the Relation this model has with the associated model.
+     * @param String   $modelName the name of the model.
+     * @param int      $modelId   the id of the model entry.
+     * @param Relation $relation  the Relation this model has with the associated model.
      *
      * @return Menu the Menu, which can be configured further.
      */
@@ -314,9 +317,9 @@ class Auja {
      *  - An Edit LinkMenuItem;
      *  - For each of the Relations, a LinkMenuItem for the associated model.
      *
-     * @param $modelName String the name of the model.
-     * @param $modelId   int the id of the model entry.
-     * @param $relations Relation[] the Relations this model has with associated models.
+     * @param String     $modelName the name of the model.
+     * @param int        $modelId   the id of the model entry.
+     * @param Relation[] $relations the Relations this model has with associated models.
      *
      * @return Menu the Menu, which can be configured further.
      */
@@ -346,9 +349,9 @@ class Auja {
      *  - A SpacerMenuItem with the name of the associated model;
      *  - A ResourceMenuItem to hold entries of the associated model.
      *
-     * @param $modelName       String the name of the model (i.e. Club).
-     * @param $modelId         int the id of the model entry.
-     * @param $associationName String the name of the associated model (i.e. Team).
+     * @param String $modelName       the name of the model (i.e. Club).
+     * @param int    $modelId         the id of the model entry.
+     * @param String $associationName the name of the associated model (i.e. Team).
      *
      * @return Menu the Menu, which can be configured further.
      */
@@ -378,7 +381,7 @@ class Auja {
         $header->setText('Create ' . $modelName);
         $page->addPageComponent($header);
 
-        $form = new PageForm();
+        $form = new Form();
         $form->setAction(sprintf('/%s%s', self::toUrlName($modelName), $modelId == 0 ? '' : '/' . $modelId));
         $form->setMethod($modelId == 0 ? 'POST' : 'PUT');
 
@@ -392,7 +395,7 @@ class Auja {
         $model = $this->aujaConfigurator->getModel($modelName);
         foreach ($fillable as $columnName) {
             $column = $model->getColumn($columnName);
-            $item = PageFormItemFactory::getPageFormItem($column->getType(), in_array($columnName, $hidden));
+            $item = FormItemFactory::getFormItem($column->getType(), in_array($columnName, $hidden));
             $item->setName($column->getName());
             $item->setLabel(self::toHumanReadableName($column->getName()));
             $form->addItem($item);

@@ -21,12 +21,12 @@
  * limitations under the License.
  */
 
-namespace Label305\AujaLaravel\Repositories;
+namespace Label305\AujaLaravel\Database;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class DefaultDatabaseRepository implements DatabaseRepository {
+class MySQLDatabaseHelper implements DatabaseHelper {
 
     public function hasTable($tableName) {
         return Schema::hasTable($tableName);

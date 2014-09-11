@@ -26,7 +26,7 @@ namespace Label305\AujaLaravel;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
-use Label305\AujaLaravel\Repositories\DatabaseRepository;
+use Label305\AujaLaravel\Database\DatabaseHelper;
 use ReflectionException;
 
 /**
@@ -44,7 +44,7 @@ class AujaConfigurator {
     private $app;
 
     /**
-     * @var DatabaseRepository the DatabaseRepository which provides information about the database.
+     * @var DatabaseHelper the DatabaseRepository which provides information about the database.
      */
     private $databaseRepository;
 
@@ -67,9 +67,9 @@ class AujaConfigurator {
      * Creates a new AujaConfigurator.
      *
      * @param  $app                 Application
-     * @param  $databaseRepository  DatabaseRepository
+     * @param  $databaseRepository  DatabaseHelper
      */
-    public function __construct(Application $app, DatabaseRepository $databaseRepository) {
+    public function __construct(Application $app, DatabaseHelper $databaseRepository) {
         $this->app = $app;
         $this->databaseRepository = $databaseRepository;
     }
@@ -146,6 +146,7 @@ class AujaConfigurator {
         $modelConfig = $this->getModelConfig($model);
         if ($modelConfig == null || !$modelConfig->getDisplayField()) {
             $generatedConfig = $this->generatedConfigs[$model->getName()];
+            /* @var $generatedConfig Config */
             return $generatedConfig->getDisplayField();
         } else {
             return $modelConfig->getDisplayField();
