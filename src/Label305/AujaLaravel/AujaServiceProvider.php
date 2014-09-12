@@ -18,7 +18,7 @@ class AujaServiceProvider extends ServiceProvider {
      */
     public function register() {
         // TODO think of something to easily create custom implementations.
-        $this->app->bind('Label305\AujaLaravel\Repositories\DatabaseRepository', 'Label305\AujaLaravel\Repositories\DefaultDatabaseRepository');
+        $this->app->bind('Label305\AujaLaravel\Database\DatabaseHelper', 'Label305\AujaLaravel\Database\MySQLDatabaseHelper');
     }
 
     /**

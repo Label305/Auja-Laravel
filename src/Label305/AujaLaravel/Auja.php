@@ -36,6 +36,9 @@ use Label305\Auja\Menu\ResourceItemsMenuItems;
 use Label305\Auja\Menu\ResourceMenuItem;
 use Label305\Auja\Menu\SpacerMenuItem;
 use Label305\Auja\Page\Form;
+use Label305\Auja\Page\FormItem\PasswordFormItem;
+use Label305\Auja\Page\FormItem\SubmitFormItem;
+use Label305\Auja\Page\FormItem\TextFormItem;
 use Label305\Auja\Page\PageHeader;
 use Label305\Auja\Page\Page;
 use Label305\Auja\Shared\Button;
@@ -69,8 +72,8 @@ class Auja {
     /**
      * Creates a new Auja instance.
      *
-     * @param Application $app        the Illuminate Application instance.
-     * @param String[]    $modelNames the names of the models to use for Auja.
+     * @param Application $app     the Illuminate Application instance.
+     * @param String[] $modelNames the names of the models to use for Auja.
      */
     function __construct(Application $app, array $modelNames) {
         if (empty($modelNames)) {
@@ -92,13 +95,44 @@ class Auja {
     }
 
     /**
+     * Builds a default authentication `Form` to be used in a `Main` instance.
+     *
+     * @return Form
+     */
+    public function buildAuthenticationForm($title, $target) {
+        $result = new Form();
+
+        $result->setAction($target);
+        $result->setMethod('GET');
+
+        // TODO: add Header
+
+        $usernameTextFormItem = new TextFormItem();
+        $usernameTextFormItem->setName("username");
+        $usernameTextFormItem->setLabel("Username"); // TODO: I18N
+        $result->addItem($usernameTextFormItem);
+
+        $passwordFormItem = new PasswordFormItem();
+        $passwordFormItem->setName("password");
+        $passwordFormItem->setLabel("Password"); //TODO: I18N
+        $result->addItem($passwordFormItem);
+
+        $submitFormItem = new SubmitFormItem();
+        $submitFormItem->setText('Login'); // TODO: I18N
+        $result->addItem($submitFormItem);
+
+        return $result;
+    }
+
+    /**
      * Builds the initial Auja view based on the models as initialized in init().
      *
-     * @param String $title the title to be shown.
+     * @param String $title            The title to be shown.
+     * @param Form $authenticationForm (optional) The `Form` to use for authentication, or `null` if none.
      *
      * @return Main the Main instance which can be configured further.
      */
-    public function buildMain($title) {
+    public function buildMain($title, Form $authenticationForm = null) {
         $main = new Main();
 
         $main->setTitle($title);
@@ -121,6 +155,8 @@ class Auja {
             $main->addItem($item);
         }
 
+        $main->setAuthenticationForm($authenticationForm);
+
         return $main;
     }
 
@@ -128,7 +164,7 @@ class Auja {
      * Intelligently builds an index menu for given model, and optionally model id.
      *
      * @param String $modelName the name of the model to build the menu for.
-     * @param int    $modelId   (optional) the id of an instance of the model.
+     * @param int $modelId      (optional) the id of an instance of the model.
      *
      * @return Menu the built menu instance, which can be configured further.
      */
@@ -173,10 +209,10 @@ class Auja {
      * This method also supports pagination, either manually or automatically.
      * To automatically use pagination, simply provide a Paginator as items.
      *
-     * @param String          $modelName   the name of the model the items represent.
-     * @param array|Paginator $items       an array of instances of the model to be shown, or a Paginator containing the instances.
-     * @param String          $nextPageUrl (optional) The url to the next page, if any.
-     * @param int             $offset      (optional) The offset to start the order from.
+     * @param String $modelName      the name of the model the items represent.
+     * @param array|Paginator $items an array of instances of the model to be shown, or a Paginator containing the instances.
+     * @param String $nextPageUrl    (optional) The url to the next page, if any.
+     * @param int $offset            (optional) The offset to start the order from.
      *
      * @return ResourceItemsMenuItems[] the built LinkMenuItems.
      */
@@ -285,9 +321,9 @@ class Auja {
      *  - A SpacerMenuItem with the name of the associated model;
      *  - A ResourceMenuItem to hold entries of the associated model.
      *
-     * @param String   $modelName the name of the model.
-     * @param int      $modelId   the id of the model entry.
-     * @param Relation $relation  the Relation this model has with the associated model.
+     * @param String $modelName  the name of the model.
+     * @param int $modelId       the id of the model entry.
+     * @param Relation $relation the Relation this model has with the associated model.
      *
      * @return Menu the Menu, which can be configured further.
      */
@@ -317,8 +353,8 @@ class Auja {
      *  - An Edit LinkMenuItem;
      *  - For each of the Relations, a LinkMenuItem for the associated model.
      *
-     * @param String     $modelName the name of the model.
-     * @param int        $modelId   the id of the model entry.
+     * @param String $modelName     the name of the model.
+     * @param int $modelId          the id of the model entry.
      * @param Relation[] $relations the Relations this model has with associated models.
      *
      * @return Menu the Menu, which can be configured further.
@@ -350,7 +386,7 @@ class Auja {
      *  - A ResourceMenuItem to hold entries of the associated model.
      *
      * @param String $modelName       the name of the model (i.e. Club).
-     * @param int    $modelId         the id of the model entry.
+     * @param int $modelId            the id of the model entry.
      * @param String $associationName the name of the associated model (i.e. Team).
      *
      * @return Menu the Menu, which can be configured further.
