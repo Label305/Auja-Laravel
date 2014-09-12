@@ -103,7 +103,7 @@ class Auja {
         $result = new Form();
 
         $result->setAction($target);
-        $result->setMethod('GET');
+        $result->setMethod('POST');
 
         // TODO: add Header
 
