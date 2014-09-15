@@ -79,7 +79,7 @@ class AujaConfiguratorTest extends AujaTestCase {
     private $application;
 
     protected function setUp() {
-        $this->application = m::mock('Illuminate\Foundation\Application');
+        $this->application = self::mockApplication();
         $this->databaseHelper = m::mock('Label305\AujaLaravel\Database\DatabaseHelper');
         $this->logger = self::mockLogger();
 
@@ -292,6 +292,14 @@ class AujaConfiguratorTest extends AujaTestCase {
         assertThat($teamRelation->getLeft()->getName(), equalTo($this->teamModel->getName()));
         assertThat($teamRelation->getRight()->getName(), equalTo($this->clubModel->getName()));
         assertThat($teamRelation->getType(), is(Relation::BELONGS_TO));
+    }
+
+    private static function mockApplication() {
+        $result = m::mock('Illuminate\Foundation\Application');
+        $config = m::mock('Label305\AujaLaravel\Config');
+        $config->shouldReceive('getDisplayField')->andReturn('id');
+        $result->shouldReceive('make')->andReturn($config);
+        return $result;
     }
 
     private static function mockLogger() {
