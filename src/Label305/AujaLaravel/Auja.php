@@ -42,6 +42,7 @@ use Label305\Auja\Page\FormItem\TextFormItem;
 use Label305\Auja\Page\PageHeader;
 use Label305\Auja\Page\Page;
 use Label305\Auja\Shared\Button;
+use Label305\AujaLaravel\I18N\Translator;
 
 // TODO: use this class as a delegation class?
 // TODO: Create injectable dependencies for: url targets, icons, logging
@@ -60,9 +61,14 @@ use Label305\Auja\Shared\Button;
 class Auja {
 
     /**
-     * @var Application the Application instance.
+     * @var Application The Application instance.
      */
     private $app;
+
+    /**
+     * @var Translator The Translator to use.
+     */
+    private $translator;
 
     /**
      * @var AujaConfigurator
@@ -72,8 +78,8 @@ class Auja {
     /**
      * Creates a new Auja instance.
      *
-     * @param Application $app     the Illuminate Application instance.
-     * @param String[] $modelNames the names of the models to use for Auja.
+     * @param Application $app        The Illuminate Application instance.
+     * @param String[]    $modelNames The names of the models to use for Auja.
      */
     function __construct(Application $app, array $modelNames) {
         if (empty($modelNames)) {
@@ -81,6 +87,7 @@ class Auja {
         }
 
         $this->app = $app;
+        $this->translator = $this->app->make('Label305\AujaLaravel\I18N\Translator');
 
         Log::debug('Initializing Auja with models:', $modelNames); // TODO: DI
         $this->aujaConfigurator = $app['Label305\AujaLaravel\AujaConfigurator'];
@@ -108,17 +115,17 @@ class Auja {
         // TODO: add Header
 
         $usernameTextFormItem = new TextFormItem();
-        $usernameTextFormItem->setName("username");
-        $usernameTextFormItem->setLabel("Username"); // TODO: I18N
+        $usernameTextFormItem->setName('username');
+        $usernameTextFormItem->setLabel($this->translator->trans('Username'));
         $result->addItem($usernameTextFormItem);
 
         $passwordFormItem = new PasswordFormItem();
-        $passwordFormItem->setName("password");
-        $passwordFormItem->setLabel("Password"); //TODO: I18N
+        $passwordFormItem->setName('password');
+        $passwordFormItem->setLabel($this->translator->trans('Password'));
         $result->addItem($passwordFormItem);
 
         $submitFormItem = new SubmitFormItem();
-        $submitFormItem->setText('Login'); // TODO: I18N
+        $submitFormItem->setText($this->translator->trans('Login'));
         $result->addItem($submitFormItem);
 
         return $result;
@@ -127,8 +134,8 @@ class Auja {
     /**
      * Builds the initial Auja view based on the models as initialized in init().
      *
-     * @param String $title            The title to be shown.
-     * @param Form $authenticationForm (optional) The `Form` to use for authentication, or `null` if none.
+     * @param String $title              The title to be shown.
+     * @param Form   $authenticationForm (optional) The `Form` to use for authentication, or `null` if none.
      *
      * @return Main the Main instance which can be configured further.
      */
@@ -164,7 +171,7 @@ class Auja {
      * Intelligently builds an index menu for given model, and optionally model id.
      *
      * @param String $modelName the name of the model to build the menu for.
-     * @param int $modelId      (optional) the id of an instance of the model.
+     * @param int    $modelId   (optional) the id of an instance of the model.
      *
      * @return Menu the built menu instance, which can be configured further.
      */
@@ -209,10 +216,10 @@ class Auja {
      * This method also supports pagination, either manually or automatically.
      * To automatically use pagination, simply provide a Paginator as items.
      *
-     * @param String $modelName      the name of the model the items represent.
-     * @param array|Paginator $items an array of instances of the model to be shown, or a Paginator containing the instances.
-     * @param String $nextPageUrl    (optional) The url to the next page, if any.
-     * @param int $offset            (optional) The offset to start the order from.
+     * @param String          $modelName   the name of the model the items represent.
+     * @param array|Paginator $items       an array of instances of the model to be shown, or a Paginator containing the instances.
+     * @param String          $nextPageUrl (optional) The url to the next page, if any.
+     * @param int             $offset      (optional) The offset to start the order from.
      *
      * @return ResourceItemsMenuItems[] the built LinkMenuItems.
      */
@@ -298,12 +305,12 @@ class Auja {
         $menu = new Menu();
 
         $addMenuItem = new LinkMenuItem();
-        $addMenuItem->setName('Add'); // TODO I18N
+        $addMenuItem->setName($this->translator->trans('Add'));
         $addMenuItem->setTarget(sprintf('/%s/create', self::toUrlName($modelName)));
         $menu->addMenuItem($addMenuItem);
 
         $spacerMenuItem = new SpacerMenuItem();
-        $spacerMenuItem->setName($modelName); // TODO I18N
+        $spacerMenuItem->setName($this->translator->trans($modelName));
         $menu->addMenuItem($spacerMenuItem);
 
         $resourceMenuItem = new ResourceMenuItem();
@@ -321,9 +328,9 @@ class Auja {
      *  - A SpacerMenuItem with the name of the associated model;
      *  - A ResourceMenuItem to hold entries of the associated model.
      *
-     * @param String $modelName  the name of the model.
-     * @param int $modelId       the id of the model entry.
-     * @param Relation $relation the Relation this model has with the associated model.
+     * @param String   $modelName the name of the model.
+     * @param int      $modelId   the id of the model entry.
+     * @param Relation $relation  the Relation this model has with the associated model.
      *
      * @return Menu the Menu, which can be configured further.
      */
@@ -331,12 +338,12 @@ class Auja {
         $menu = new Menu();
 
         $addMenuItem = new LinkMenuItem();
-        $addMenuItem->setName('Edit'); // TODO I18N
+        $addMenuItem->setName($this->translator->trans('Edit'));
         $addMenuItem->setTarget(sprintf('/%s/%s/edit', self::toUrlName($modelName), $modelId));
         $menu->addMenuItem($addMenuItem);
 
         $headerMenuItem = new SpacerMenuItem();
-        $headerMenuItem->setName($relation->getRight()->getName()); // TODO I18N
+        $headerMenuItem->setName($this->translator->trans($relation->getRight()->getName()));
         $menu->addMenuItem($headerMenuItem);
 
         $resourceMenuItem = new ResourceMenuItem();
@@ -353,8 +360,8 @@ class Auja {
      *  - An Edit LinkMenuItem;
      *  - For each of the Relations, a LinkMenuItem for the associated model.
      *
-     * @param String $modelName     the name of the model.
-     * @param int $modelId          the id of the model entry.
+     * @param String     $modelName the name of the model.
+     * @param int        $modelId   the id of the model entry.
      * @param Relation[] $relations the Relations this model has with associated models.
      *
      * @return Menu the Menu, which can be configured further.
@@ -363,7 +370,7 @@ class Auja {
         $menu = new Menu();
 
         $addMenuItem = new LinkMenuItem();
-        $addMenuItem->setName('Edit'); // TODO I18N
+        $addMenuItem->setName($this->translator->trans('Edit'));
         $addMenuItem->setTarget(sprintf('/%s/%s/edit', self::toUrlName($modelName), $modelId));
         $menu->addMenuItem($addMenuItem);
 
@@ -386,7 +393,7 @@ class Auja {
      *  - A ResourceMenuItem to hold entries of the associated model.
      *
      * @param String $modelName       the name of the model (i.e. Club).
-     * @param int $modelId            the id of the model entry.
+     * @param int    $modelId         the id of the model entry.
      * @param String $associationName the name of the associated model (i.e. Team).
      *
      * @return Menu the Menu, which can be configured further.
@@ -395,12 +402,12 @@ class Auja {
         $menu = new Menu();
 
         $addMenuItem = new LinkMenuItem();
-        $addMenuItem->setName('Add ' . $associationName); // TODO I18N
+        $addMenuItem->setName('Add ' . $this->translator->trans($associationName));
         $addMenuItem->setTarget(sprintf('/%s/create?%s=%s', self::toUrlName($associationName), self::toForeignColumnName($modelName), $modelId));
         $menu->addMenuItem($addMenuItem);
 
         $headerMenuItem = new SpacerMenuItem();
-        $headerMenuItem->setName($modelName); // TODO I18N
+        $headerMenuItem->setName($this->translator->trans($modelName));
         $menu->addMenuItem($headerMenuItem);
 
         $resourceMenuItem = new ResourceMenuItem();

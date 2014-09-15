@@ -17,8 +17,8 @@ class AujaServiceProvider extends ServiceProvider {
      * @return void
      */
     public function register() {
-        // TODO think of something to easily create custom implementations.
         $this->app->bind('Label305\AujaLaravel\Database\DatabaseHelper', 'Label305\AujaLaravel\Database\MySQLDatabaseHelper');
+        $this->app->bind('Label305\AujaLaravel\I18N\Translator', 'Label305\AujaLaravel\I18N\LaravelTranslator');
     }
 
     /**
