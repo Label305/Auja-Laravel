@@ -27,6 +27,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Label305\AujaLaravel\Database\DatabaseHelper;
+use Label305\AujaLaravel\Logging\Logger;
 use ReflectionException;
 
 /**
@@ -49,6 +50,11 @@ class AujaConfigurator {
     private $databaseRepository;
 
     /**
+     * @var Logger The Logger to use.
+     */
+    private $logger;
+
+    /**
      * @var array a key-value pair of model names and the Model instances.
      */
     private $models = array();
@@ -66,12 +72,14 @@ class AujaConfigurator {
     /**
      * Creates a new AujaConfigurator.
      *
-     * @param  $app                 Application
-     * @param  $databaseRepository  DatabaseHelper
+     * @param Application    $app
+     * @param DatabaseHelper $databaseRepository
+     * @param Logger         $logger ;
      */
-    public function __construct(Application $app, DatabaseHelper $databaseRepository) {
+    public function __construct(Application $app, DatabaseHelper $databaseRepository, Logger $logger) {
         $this->app = $app;
         $this->databaseRepository = $databaseRepository;
+        $this->logger = $logger;
     }
 
     /**
@@ -159,7 +167,7 @@ class AujaConfigurator {
      * @param Model $model the Model to find the Columns for.
      */
     private function findColumns(Model $model) {
-//        Log::debug('Finding columns for model ' . $model->getName());
+        $this->logger->debug('Finding columns for model ' . $model->getName());
         $tableName = $model->getTableName();
 
         if (!$this->databaseRepository->hasTable($tableName)) {
@@ -168,7 +176,7 @@ class AujaConfigurator {
 
         $columns = $this->databaseRepository->getColumnListing($tableName);
         foreach ($columns as $columnName) {
-//            Log::debug(sprintf('Adding column %s to %s', $column, $model->getName()));
+            $this->logger->debug(sprintf('Adding column %s to %s', $columnName, $model->getName()));
             $columnType = $this->databaseRepository->getColumnType($tableName, $columnName);
             $model->addColumn(new Column($columnName, $columnType));
         }
@@ -190,7 +198,7 @@ class AujaConfigurator {
      * @param $model Model the Model to find the relations for.
      */
     private function findSimpleRelations(Model $model) {
-//        Log::debug(sprintf('Finding relations for %s', $model->getName()));
+//        $this->logger->debug(sprintf('Finding relations for %s', $model->getName()));
         foreach ($model->getColumns() as $column) {
             if (ends_with($column->getName(), self::ID_PREFIX)) {
                 $this->defineRelation($model, $column->getName());
@@ -209,11 +217,11 @@ class AujaConfigurator {
         $otherModelName = ucfirst(camel_case(substr($columnName, 0, strpos($columnName, self::ID_PREFIX))));
 
         if (!in_array($otherModelName, array_keys($this->models))) {
-//            Log::warning(sprintf('Found foreign id %s in model %s, but no model with name %s was registered', $columnName, $model->getName(), $otherModelName));
+            $this->logger->warn(sprintf('Found foreign id %s in model %s, but no model with name %s was registered', $columnName, $model->getName(), $otherModelName));
             return;
         }
 
-//        Log::info(sprintf('%s has a %s', $model->getName(), $otherModelName));
+        $this->logger->info(sprintf('%s has a %s', $model->getName(), $otherModelName));
 
         $this->relations[$model->getName()][] = new Relation($model, $this->models[$otherModelName], Relation::BELONGS_TO);
         $this->relations[$otherModelName][] = new Relation($this->models[$otherModelName], $model, Relation::HAS_MANY);
@@ -225,7 +233,7 @@ class AujaConfigurator {
      * @param $models Model[] the model names to look for relations for.
      */
     private function findManyToManyRelations(array $models) {
-//        Log::debug('Finding many to many relations');
+        $this->logger->debug('Finding many to many relations');
         for ($i = 0; $i < sizeof($models); $i++) {
             for ($j = $i + 1; $j < sizeof($models); $j++) {
                 $model1 = $models[$i];
@@ -252,7 +260,7 @@ class AujaConfigurator {
      * @param $model2 Model the second model.
      */
     private function defineManyToManyRelation(Model $model1, Model $model2) {
-//        Log::info(sprintf('%s has and belongs to many %s', $model1->getName(), str_plural($model2->getName())));
+        $this->logger->info(sprintf('%s has and belongs to many %s', $model1->getName(), str_plural($model2->getName())));
         $this->relations[$model1->getName()][] = new Relation($model1, $model2, Relation::HAS_AND_BELONGS_TO);
         $this->relations[$model2->getName()][] = new Relation($model2, $model1, Relation::HAS_AND_BELONGS_TO);
     }

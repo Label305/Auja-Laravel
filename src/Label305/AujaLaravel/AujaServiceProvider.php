@@ -19,6 +19,7 @@ class AujaServiceProvider extends ServiceProvider {
     public function register() {
         $this->app->bind('Label305\AujaLaravel\Database\DatabaseHelper', 'Label305\AujaLaravel\Database\MySQLDatabaseHelper');
         $this->app->bind('Label305\AujaLaravel\I18N\Translator', 'Label305\AujaLaravel\I18N\LaravelTranslator');
+        $this->app->bind('Label305\AujaLaravel\Logging\Logger', 'Label305\AujaLaravel\Logging\LaravelLogger');
     }
 
     /**

@@ -43,6 +43,7 @@ use Label305\Auja\Page\PageHeader;
 use Label305\Auja\Page\Page;
 use Label305\Auja\Shared\Button;
 use Label305\AujaLaravel\I18N\Translator;
+use Label305\AujaLaravel\Logging\Logger;
 
 // TODO: use this class as a delegation class?
 // TODO: Create injectable dependencies for: url targets, icons, logging
@@ -71,6 +72,11 @@ class Auja {
     private $translator;
 
     /**
+     * @var Logger The Logger to use.
+     */
+    private $logger;
+
+    /**
      * @var AujaConfigurator
      */
     private $aujaConfigurator;
@@ -88,8 +94,9 @@ class Auja {
 
         $this->app = $app;
         $this->translator = $this->app->make('Label305\AujaLaravel\I18N\Translator');
+        $this->logger = $this->app->make('Label305\AujaLaravel\Logging\Logger');
 
-        Log::debug('Initializing Auja with models:', $modelNames); // TODO: DI
+        $this->logger->debug('Initializing Auja with models:', $modelNames); // TODO: DI
         $this->aujaConfigurator = $app['Label305\AujaLaravel\AujaConfigurator'];
         $this->aujaConfigurator->configure($modelNames);
     }

@@ -26,6 +26,7 @@ namespace Label305\AujaLaravel;
 
 use Illuminate\Foundation\Application;
 use Label305\AujaLaravel\Database\DatabaseHelper;
+use Label305\AujaLaravel\Logging\Logger;
 use \Mockery as m;
 
 require_once 'AujaTestCase.php';
@@ -63,18 +64,24 @@ class AujaConfiguratorTest extends AujaTestCase {
     private $matchModel;
 
     /**
-     * @var DatabaseHelper a mocked DatabaseHelper.
+     * @var DatabaseHelper A mocked DatabaseHelper.
      */
     private $databaseHelper;
 
     /**
-     * @var Application a mocked Application.
+     * @var Logger A mocked Logger.
+     */
+    private $logger;
+
+    /**
+     * @var Application A mocked Application.
      */
     private $application;
 
     protected function setUp() {
-        $this->databaseHelper = m::mock('Label305\AujaLaravel\Database\DatabaseHelper');
         $this->application = m::mock('Illuminate\Foundation\Application');
+        $this->databaseHelper = m::mock('Label305\AujaLaravel\Database\DatabaseHelper');
+        $this->logger = self::mockLogger();
 
         $this->countryModel = m::mock('Label305\AujaLaravel\Model');
         $this->countryModel->shouldReceive('getName')->andReturn('Country');
@@ -87,7 +94,7 @@ class AujaConfiguratorTest extends AujaTestCase {
         $this->matchModel = m::mock('Label305\AujaLaravel\Model');
         $this->matchModel->shouldReceive('getName')->andReturn('Match');
 
-        $this->aujaConfigurator = new AujaConfigurator($this->application, $this->databaseHelper);
+        $this->aujaConfigurator = new AujaConfigurator($this->application, $this->databaseHelper, $this->logger);
     }
 
     public function testInitialState() {
@@ -101,7 +108,7 @@ class AujaConfiguratorTest extends AujaTestCase {
         /* Given there is a table for 'Club' */
         $this->databaseHelper->shouldReceive('hasTable')->times(1)->with('clubs')->andReturn(true);
         $this->databaseHelper->shouldReceive('getColumnListing')->times(1)->with('clubs')->andReturn(array('id', 'name'));
-        $this->databaseHelper->shouldReceive('getColumnType')->times(1)->with('clubs','id')->andReturn("integer");
+        $this->databaseHelper->shouldReceive('getColumnType')->times(1)->with('clubs', 'id')->andReturn("integer");
         $this->databaseHelper->shouldReceive('getColumnType')->times(1)->with('clubs', 'name')->andReturn("string");
 
         /* When we configure with Club */
@@ -124,9 +131,9 @@ class AujaConfiguratorTest extends AujaTestCase {
         $this->databaseHelper->shouldReceive('hasTable')->times(1)->with('club_team')->andReturn(false);
         $this->databaseHelper->shouldReceive('getColumnListing')->times(1)->with('clubs')->andReturn(array('id', 'name'));
         $this->databaseHelper->shouldReceive('getColumnListing')->times(1)->with('teams')->andReturn(array('id', 'name', 'club_id'));
-        $this->databaseHelper->shouldReceive('getColumnType')->times(1)->with('clubs','id')->andReturn("integer");
+        $this->databaseHelper->shouldReceive('getColumnType')->times(1)->with('clubs', 'id')->andReturn("integer");
         $this->databaseHelper->shouldReceive('getColumnType')->times(1)->with('clubs', 'name')->andReturn("string");
-        $this->databaseHelper->shouldReceive('getColumnType')->times(1)->with('teams','id')->andReturn("integer");
+        $this->databaseHelper->shouldReceive('getColumnType')->times(1)->with('teams', 'id')->andReturn("integer");
         $this->databaseHelper->shouldReceive('getColumnType')->times(1)->with('teams', 'name')->andReturn("string");
         $this->databaseHelper->shouldReceive('getColumnType')->times(1)->with('teams', 'club_id')->andReturn("integer");
 
@@ -174,12 +181,12 @@ class AujaConfiguratorTest extends AujaTestCase {
         $this->databaseHelper->shouldReceive('getColumnListing')->times(1)->with('countries')->andReturn(array('id', 'name'));
         $this->databaseHelper->shouldReceive('getColumnListing')->times(1)->with('clubs')->andReturn(array('id', 'name', 'country_id'));
         $this->databaseHelper->shouldReceive('getColumnListing')->times(1)->with('teams')->andReturn(array('id', 'name', 'club_id'));
-        $this->databaseHelper->shouldReceive('getColumnType')->times(1)->with('countries','id')->andReturn("integer");
+        $this->databaseHelper->shouldReceive('getColumnType')->times(1)->with('countries', 'id')->andReturn("integer");
         $this->databaseHelper->shouldReceive('getColumnType')->times(1)->with('countries', 'name')->andReturn("string");
-        $this->databaseHelper->shouldReceive('getColumnType')->times(1)->with('clubs','id')->andReturn("integer");
+        $this->databaseHelper->shouldReceive('getColumnType')->times(1)->with('clubs', 'id')->andReturn("integer");
         $this->databaseHelper->shouldReceive('getColumnType')->times(1)->with('clubs', 'name')->andReturn("string");
         $this->databaseHelper->shouldReceive('getColumnType')->times(1)->with('clubs', 'country_id')->andReturn("integer");
-        $this->databaseHelper->shouldReceive('getColumnType')->times(1)->with('teams','id')->andReturn("integer");
+        $this->databaseHelper->shouldReceive('getColumnType')->times(1)->with('teams', 'id')->andReturn("integer");
         $this->databaseHelper->shouldReceive('getColumnType')->times(1)->with('teams', 'name')->andReturn("string");
         $this->databaseHelper->shouldReceive('getColumnType')->times(1)->with('teams', 'club_id')->andReturn("integer");
 
@@ -236,12 +243,12 @@ class AujaConfiguratorTest extends AujaTestCase {
         $this->databaseHelper->shouldReceive('getColumnListing')->times(1)->with('clubs')->andReturn(array('id', 'name'));
         $this->databaseHelper->shouldReceive('getColumnListing')->times(1)->with('club_houses')->andReturn(array('id', 'name', 'club_id'));
         $this->databaseHelper->shouldReceive('getColumnListing')->times(1)->with('teams')->andReturn(array('id', 'name', 'club_id'));
-        $this->databaseHelper->shouldReceive('getColumnType')->times(1)->with('clubs','id')->andReturn("integer");
+        $this->databaseHelper->shouldReceive('getColumnType')->times(1)->with('clubs', 'id')->andReturn("integer");
         $this->databaseHelper->shouldReceive('getColumnType')->times(1)->with('clubs', 'name')->andReturn("string");
-        $this->databaseHelper->shouldReceive('getColumnType')->times(1)->with('club_houses','id')->andReturn("integer");
+        $this->databaseHelper->shouldReceive('getColumnType')->times(1)->with('club_houses', 'id')->andReturn("integer");
         $this->databaseHelper->shouldReceive('getColumnType')->times(1)->with('club_houses', 'name')->andReturn("string");
         $this->databaseHelper->shouldReceive('getColumnType')->times(1)->with('club_houses', 'club_id')->andReturn("integer");
-        $this->databaseHelper->shouldReceive('getColumnType')->times(1)->with('teams','id')->andReturn("integer");
+        $this->databaseHelper->shouldReceive('getColumnType')->times(1)->with('teams', 'id')->andReturn("integer");
         $this->databaseHelper->shouldReceive('getColumnType')->times(1)->with('teams', 'name')->andReturn("string");
         $this->databaseHelper->shouldReceive('getColumnType')->times(1)->with('teams', 'club_id')->andReturn("integer");
 
@@ -287,4 +294,11 @@ class AujaConfiguratorTest extends AujaTestCase {
         assertThat($teamRelation->getType(), is(Relation::BELONGS_TO));
     }
 
+    private static function mockLogger() {
+        $result = m::mock('Label305\AujaLaravel\Logging\Logger');
+        $result->shouldReceive('debug');
+        $result->shouldReceive('info');
+        $result->shouldReceive('warn');
+        return $result;
+    }
 }
