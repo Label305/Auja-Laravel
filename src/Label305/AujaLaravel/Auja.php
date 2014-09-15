@@ -96,7 +96,7 @@ class Auja {
         $this->translator = $this->app->make('Label305\AujaLaravel\I18N\Translator');
         $this->logger = $this->app->make('Label305\AujaLaravel\Logging\Logger');
 
-        $this->logger->debug('Initializing Auja with models:', $modelNames); // TODO: DI
+        $this->logger->debug('Initializing Auja with models:', $modelNames);
         $this->aujaConfigurator = $app['Label305\AujaLaravel\AujaConfigurator'];
         $this->aujaConfigurator->configure($modelNames);
     }
@@ -164,7 +164,7 @@ class Auja {
         foreach ($this->aujaConfigurator->getModels() as $model) {
             $item = new Item();
             $item->setTitle($model->getName());
-            $item->setIcon('tower'); //TODO proper icon - DI
+            $item->setIcon($this->aujaConfigurator->getIcon($model));
             $item->setTarget(sprintf('/%s/menu', self::toUrlName($model->getName())));
             $main->addItem($item);
         }
@@ -278,11 +278,13 @@ class Auja {
         /* Build the actual items to return */
         $resourceItems = new ResourceItemsMenuItems();
         $displayField = $this->aujaConfigurator->getDisplayField($model);
+        $icon = $this->aujaConfigurator->getIcon($model);
         for ($i = 0; $i < count($items); $i++) {
             $menuItem = new LinkMenuItem();
             $menuItem->setName($items[$i]->$displayField);
             $menuItem->setTarget(sprintf($target, $items[$i]->id));
             $menuItem->setOrder($offset + $i);
+            $menuItem->setIcon($icon);
             $resourceItems->add($menuItem);
         }
 

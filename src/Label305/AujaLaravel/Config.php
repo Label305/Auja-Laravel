@@ -28,7 +28,7 @@ class Config {
 
     private $displayField = false;
 
-    private $searchable = false;
+    private $icon = '';
 
     public function getDisplayField() {
         return $this->displayField;
@@ -37,5 +37,14 @@ class Config {
     public function setDisplayField($displayField) {
         $this->displayField = $displayField;
     }
+
+    public function getIcon() {
+        return $this->icon;
+    }
+
+    public function setIcon($icon) {
+        $this->icon = $icon;
+    }
+
 
 } 

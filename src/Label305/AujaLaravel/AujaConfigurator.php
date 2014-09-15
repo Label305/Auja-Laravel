@@ -143,7 +143,7 @@ class AujaConfigurator {
     }
 
     /**
-     * Finds which display field to use for given Model.
+     * Finds which display field to use for given Model, using the Config class for the Model.
      * Uses the overridden value if present, or falls back to the generated value.
      *
      * @param $model Model the Model to find the display field for.
@@ -158,6 +158,25 @@ class AujaConfigurator {
             return $generatedConfig->getDisplayField();
         } else {
             return $modelConfig->getDisplayField();
+        }
+    }
+
+    /**
+     * Finds the icon to use for given Model, using the Config class for the Model.
+     * Uses the overridden value if present, or falls back to the generated value.
+     *
+     * @param Model $model The Model to find the icon for.
+     *
+     * @return String The name of the icon.
+     */
+    public function getIcon(Model $model){
+        $modelConfig = $this->getModelConfig($model);
+        if ($modelConfig == null || !$modelConfig->getDisplayField()) {
+            $generatedConfig = $this->generatedConfigs[$model->getName()];
+            /* @var $generatedConfig Config */
+            return $generatedConfig->getIcon();
+        } else {
+            return $modelConfig->getIcon();
         }
     }
 
