@@ -23,25 +23,57 @@
 
 namespace Label305\AujaLaravel;
 
-
+/**
+ * A class for providing configurations for individual models.
+ *
+ * Extend this class and override the get functions to provide your configuration for a specific model.
+ * Auja-Laravel will try to find a class called $modelName.'Config' (e.g. ClubConfig),
+ * and uses it to configure the models.
+ *
+ * You don't need to override all the getters. If a getter is not overridden,
+ * Auja-Laravel will try to guess the value itself.
+ *
+ * @author  Niek Haarman - <niek@label305.com>
+ *
+ * @package Label305\AujaLaravel
+ * @license http://www.apache.org/licenses/LICENSE-2.0
+ */
 class Config {
 
-    private $displayField = false;
+    /**
+     * @var String The name of the column to use for displaying an entry.
+     */
+    private $displayField;
 
+    /**
+     * @var String The name of the icon to use, as defined in Icons.
+     */
     private $icon = '';
 
+    /**
+     * @return String The name of the column that is used for displaying an entry.
+     */
     public function getDisplayField() {
         return $this->displayField;
     }
 
+    /**
+     * @param String $displayField The name of the column to use for displaying an entry.
+     */
     public function setDisplayField($displayField) {
         $this->displayField = $displayField;
     }
 
+    /**
+     * @return String The name of the icon that is used, as defined in Icons.
+     */
     public function getIcon() {
         return $this->icon;
     }
 
+    /**
+     * @param String $icon The name of the icon to use, as defined in Icons.
+     */
     public function setIcon($icon) {
         $this->icon = $icon;
     }

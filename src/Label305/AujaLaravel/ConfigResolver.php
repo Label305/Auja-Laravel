@@ -25,26 +25,57 @@ namespace Label305\AujaLaravel;
 
 
 use Doctrine\DBAL\Types\Type;
+use Illuminate\Foundation\Application;
 
+/**
+ * A class for resolving configuration for a model.
+ *
+ * @author  Niek Haarman - <niek@label305.com>
+ *
+ * @package Label305\AujaLaravel
+ * @license http://www.apache.org/licenses/LICENSE-2.0
+ */
 class ConfigResolver {
 
     private $displayFieldNames = ['name', 'title'];
+
+    /**
+     * @var Config
+     */
+    private $config;
 
     /**
      * @var Model
      */
     private $model;
 
-    function __construct(Model $model) {
+    /**
+     * Creates a new ConfigResolver for given Model.
+     *
+     * @param Application $app
+     * @param Model       $model The Model to generate a
+     */
+    public function __construct(Application $app, Model $model) {
         $this->model = $model;
+
+        try {
+            $this->config = $app->make($model->getName() . 'Config');
+        } catch (\ReflectionException $e) {
+            $this->config = new Config();
+        }
     }
 
+    /**
+     * Resolves a Config instance.
+     *
+     * @return Config The resolved config.
+     */
     public function resolve() {
-        $result = new Config();
+        if (is_null($this->config->getDisplayField())) {
+            $this->config->setDisplayField($this->resolveDisplayField());
+        }
 
-        $result->setDisplayField($this->resolveDisplayField());
-
-        return $result;
+        return $this->config;
     }
 
     /**

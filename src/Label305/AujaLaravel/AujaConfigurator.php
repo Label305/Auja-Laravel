@@ -28,7 +28,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Label305\AujaLaravel\Database\DatabaseHelper;
 use Label305\AujaLaravel\Logging\Logger;
-use ReflectionException;
 
 /**
  * A class which determines properties and relations for models.
@@ -67,7 +66,7 @@ class AujaConfigurator {
     /**
      * @var array a key-value pair of model names and their generated configs.
      */
-    private $generatedConfigs = array();
+    private $configs = array();
 
     /**
      * Creates a new AujaConfigurator.
@@ -86,7 +85,7 @@ class AujaConfigurator {
      * Defines Models, Columns and Relations between the Models.
      * This method should be called before using any other methods.
      *
-     * @param array $modelNames String[] an array of model names to use.
+     * @param  String[] $modelNames an array of model names to use.
      */
     public function configure(array $modelNames) {
         /* First define the models and their columns. */
@@ -96,8 +95,8 @@ class AujaConfigurator {
 
             $this->findColumns($this->models[$modelName]);
 
-            $configResolver = new ConfigResolver($this->models[$modelName]);
-            $this->generatedConfigs[$modelName] = $configResolver->resolve();
+            $configResolver = new ConfigResolver($this->app, $this->models[$modelName]);
+            $this->configs[$modelName] = $configResolver->resolve();
         }
 
         /* Find relations */
@@ -151,14 +150,9 @@ class AujaConfigurator {
      * @return String the name of the field to use for displaying the Model.
      */
     public function getDisplayField(Model $model) {
-        $modelConfig = $this->getModelConfig($model);
-        if ($modelConfig == null || !$modelConfig->getDisplayField()) {
-            $generatedConfig = $this->generatedConfigs[$model->getName()];
-            /* @var $generatedConfig Config */
-            return $generatedConfig->getDisplayField();
-        } else {
-            return $modelConfig->getDisplayField();
-        }
+        $modelConfig = $this->configs[$model->getName()];
+        /* @var $modelConfig Config */
+        return $modelConfig->getDisplayField();
     }
 
     /**
@@ -169,15 +163,10 @@ class AujaConfigurator {
      *
      * @return String The name of the icon.
      */
-    public function getIcon(Model $model){
-        $modelConfig = $this->getModelConfig($model);
-        if ($modelConfig == null || !$modelConfig->getDisplayField()) {
-            $generatedConfig = $this->generatedConfigs[$model->getName()];
-            /* @var $generatedConfig Config */
-            return $generatedConfig->getIcon();
-        } else {
-            return $modelConfig->getIcon();
-        }
+    public function getIcon(Model $model) {
+        $modelConfig = $this->configs[$model->getName()];
+        /* @var $modelConfig Config */
+        return $modelConfig->getIcon();
     }
 
     /**
@@ -217,7 +206,7 @@ class AujaConfigurator {
      * @param $model Model the Model to find the relations for.
      */
     private function findSimpleRelations(Model $model) {
-//        $this->logger->debug(sprintf('Finding relations for %s', $model->getName()));
+        $this->logger->debug(sprintf('Finding relations for %s', $model->getName()));
         foreach ($model->getColumns() as $column) {
             if (ends_with($column->getName(), self::ID_PREFIX)) {
                 $this->defineRelation($model, $column->getName());
@@ -282,22 +271,6 @@ class AujaConfigurator {
         $this->logger->info(sprintf('%s has and belongs to many %s', $model1->getName(), str_plural($model2->getName())));
         $this->relations[$model1->getName()][] = new Relation($model1, $model2, Relation::HAS_AND_BELONGS_TO);
         $this->relations[$model2->getName()][] = new Relation($model2, $model1, Relation::HAS_AND_BELONGS_TO);
-    }
-
-    /**
-     * Returns the user specified Config for given Model if available, null otherwise.
-     * Specifically looks for a class represented by the binding with key $model->getName.'Config'.
-     *
-     * @param Model $model the Model.
-     *
-     * @return Config|null
-     */
-    private function getModelConfig(Model $model) {
-        try {
-            return $this->app[$model->getName() . 'Config'];
-        } catch (ReflectionException $e) {
-            return null;
-        }
     }
 
 }
