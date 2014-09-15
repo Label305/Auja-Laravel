@@ -21,7 +21,7 @@
  * limitations under the License.
  */
 
-namespace Label305\AujaLaravel;
+namespace Label305\AujaLaravel\Config;
 
 /**
  * A class for providing configurations for individual models.
@@ -38,7 +38,7 @@ namespace Label305\AujaLaravel;
  * @package Label305\AujaLaravel
  * @license http://www.apache.org/licenses/LICENSE-2.0
  */
-class Config {
+class ModelConfig {
 
     /**
      * @var String The name of the column to use for displaying an entry.

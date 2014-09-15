@@ -56,37 +56,37 @@ class FormItemFactory {
         $result = null;
         switch ($type) {
             case Type::TEXT:
-            case TYPE::TARRAY:
-            case TYPE::SIMPLE_ARRAY:
-            case TYPE::JSON_ARRAY:
-            case TYPE::OBJECT:
-            case TYPE::BLOB:
+            case Type::TARRAY:
+            case Type::SIMPLE_ARRAY:
+            case Type::JSON_ARRAY:
+            case Type::OBJECT:
+            case Type::BLOB:
                 $result = new TextAreaFormItem();
                 break;
-            case TYPE::INTEGER:
-            case TYPE::SMALLINT:
-            case TYPE::BIGINT:
+            case Type::INTEGER:
+            case Type::SMALLINT:
+            case Type::BIGINT:
                 $result = new IntegerFormItem();
                 break;
-            case TYPE::DECIMAL:
-            case TYPE::FLOAT:
+            case Type::DECIMAL:
+            case Type::FLOAT:
                 $result = new NumberFormItem();
                 break;
-            case TYPE::BOOLEAN:
+            case Type::BOOLEAN:
                 $result = new CheckboxFormItem();
                 break;
-            case TYPE::DATE:
+            case Type::DATE:
                 $result = new DateFormItem();
                 break;
-            case TYPE::DATETIME:
-            case TYPE::DATETIMETZ:
+            case Type::DATETIME:
+            case Type::DATETIMETZ:
                 $result = new DateTimeFormItem();
                 break;
-            case TYPE::TIME:
+            case Type::TIME:
                 $result = new TimeFormItem();
                 break;
             case Type::STRING:
-            case TYPE::GUID:
+            case Type::GUID:
             default:
                 $result = new TextFormItem();
                 break;

@@ -21,7 +21,7 @@
  * limitations under the License.
  */
 
-namespace Label305\AujaLaravel;
+namespace Label305\AujaLaravel\Config;
 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Log;
@@ -151,7 +151,7 @@ class AujaConfigurator {
      */
     public function getDisplayField(Model $model) {
         $modelConfig = $this->configs[$model->getName()];
-        /* @var $modelConfig Config */
+        /* @var $modelConfig ModelConfig */
         return $modelConfig->getDisplayField();
     }
 
@@ -165,7 +165,7 @@ class AujaConfigurator {
      */
     public function getIcon(Model $model) {
         $modelConfig = $this->configs[$model->getName()];
-        /* @var $modelConfig Config */
+        /* @var $modelConfig ModelConfig */
         return $modelConfig->getIcon();
     }
 

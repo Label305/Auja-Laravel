@@ -21,7 +21,7 @@
  * limitations under the License.
  */
 
-namespace Label305\AujaLaravel;
+namespace Label305\AujaLaravel\Config;
 
 
 use Doctrine\DBAL\Types\Type;
@@ -40,7 +40,7 @@ class ConfigResolver {
     private $displayFieldNames = ['name', 'title'];
 
     /**
-     * @var Config
+     * @var ModelConfig
      */
     private $config;
 
@@ -61,14 +61,14 @@ class ConfigResolver {
         try {
             $this->config = $app->make($model->getName() . 'Config');
         } catch (\ReflectionException $e) {
-            $this->config = new Config();
+            $this->config = new ModelConfig();
         }
     }
 
     /**
      * Resolves a Config instance.
      *
-     * @return Config The resolved config.
+     * @return ModelConfig The resolved config.
      */
     public function resolve() {
         if (is_null($this->config->getDisplayField())) {

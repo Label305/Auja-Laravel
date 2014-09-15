@@ -21,7 +21,7 @@
  * limitations under the License.
  */
 
-namespace Label305\AujaLaravel;
+namespace Label305\AujaLaravel\Config;
 
 
 class Model {

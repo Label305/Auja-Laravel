@@ -44,6 +44,6 @@ class LaravelTranslator implements Translator {
      * @return string
      */
     function trans($id, $parameters = array(), $domain = 'messages', $locale = null) {
-        trans($id, $parameters, $domain, $locale);
+        return trans($id, $parameters, $domain, $locale);
     }
 }
