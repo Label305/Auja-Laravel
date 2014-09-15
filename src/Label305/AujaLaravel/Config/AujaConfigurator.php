@@ -89,6 +89,8 @@ class AujaConfigurator {
      */
     public function configure(array $modelNames) {
         /* First define the models and their columns. */
+
+        $this->app['debugbar']->startMeasure('config');
         foreach ($modelNames as $modelName) {
             $this->models[$modelName] = new Model($modelName);
             $this->relations[$modelName] = array();
@@ -98,6 +100,7 @@ class AujaConfigurator {
             $configResolver = new ConfigResolver($this->app, $this->models[$modelName]);
             $this->configs[$modelName] = $configResolver->resolve();
         }
+        $this->app['debugbar']->stopMeasure('config');
 
         /* Find relations */
         $this->findRelations(array_values($this->models));
