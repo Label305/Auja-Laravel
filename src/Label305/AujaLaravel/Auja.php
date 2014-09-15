@@ -151,8 +151,9 @@ class Auja {
 
         $main->setTitle($title);
 
-        $main->setColor('main', '#1ebab8'); // TODO: remove colors
-        $main->setColor('secondary', '#E7EFEF');
+        $main->setColor(MAIN::COLOR_MAIN, '#1ebab8'); // TODO: remove colors
+        $main->setColor(MAIN::COLOR_SECONDARY, '#E7EFEF');
+        $main->setColor(Main::COLOR_ALERT, '#e85840');
 
         $button = new Button();
         $button->setTitle('Logout');
