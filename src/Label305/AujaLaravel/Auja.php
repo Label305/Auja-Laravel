@@ -112,6 +112,19 @@ class Auja {
         return $this->aujaConfigurator->getModels();
     }
 
+    public function getModel($modelName) {
+        return $this->aujaConfigurator->getModel($modelName);
+    }
+
+    /**
+     * @param Model $model
+     *
+     * @return Config\Relation[]
+     */
+    public function getRelationsForModel(Model $model) {
+        return $this->aujaConfigurator->getRelationsForModel($model);
+    }
+
     /**
      * Builds a default authentication `Form` to be used in a `Main` instance.
      *

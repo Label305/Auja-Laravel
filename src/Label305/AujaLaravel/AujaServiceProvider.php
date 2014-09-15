@@ -1,6 +1,7 @@
 <?php namespace Label305\AujaLaravel;
 
 use Illuminate\Support\ServiceProvider;
+use Label305\AujaLaravel\Routing\AujaRouter;
 
 class AujaServiceProvider extends ServiceProvider {
 
@@ -22,6 +23,8 @@ class AujaServiceProvider extends ServiceProvider {
         $this->app->bind('Label305\AujaLaravel\Logging\Logger', 'Label305\AujaLaravel\Logging\LaravelLogger');
 
         $this->app->singleton('Label305\AujaLaravel\Config\AujaConfigurator');
+
+        $this->app->bind('AujaRouter', 'Label305\AujaLaravel\Routing\AujaRouter');
     }
 
     /**

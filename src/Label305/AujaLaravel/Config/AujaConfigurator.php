@@ -138,7 +138,7 @@ class AujaConfigurator {
      * @return Relation[] the Relations.
      */
     public function getRelationsForModel(Model $model) {
-        return isset($this->relations[$model->getName()]) ? $this->relations[$model->getName()] : array();
+        return !is_null($model) && isset($this->relations[$model->getName()]) ? $this->relations[$model->getName()] : array();
     }
 
     /**
