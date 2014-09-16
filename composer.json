@@ -1,14 +1,20 @@
 {
     "name": "label305/auja-laravel",
-    "description": "",
+	"type": "library",
+    "description": "A Laravel implementation for the Auja backend",
+	"keywords": ["Auja", "interface", "laravel"],
+	"homepage": "https://github.com/Label305/Auja-Laravel",
+	"license": "Apache-2.0",
     "authors": [
         {
             "name": "Niek Haarman",
-            "email": "niek@label305.com"
+            "email": "niek@label305.com",
+			"role": "developer"
         }
     ],
     "require": {
         "php": ">=5.4.0",
+		"label305/auja": "dev-dev",
         "illuminate/support": "4.2.*",
         "doctrine/dbal": "2.4.2"
     },
@@ -27,8 +33,7 @@
             "Label305\\AujaLaravel\\": "src/"
         },
         "classmap": [
-            "src/",
-            "workbench/label305/auja-php/src/"
+            "src/"
         ]
     },
     "minimum-stability": "stable"
