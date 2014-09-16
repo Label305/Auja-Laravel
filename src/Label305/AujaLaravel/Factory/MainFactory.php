@@ -24,12 +24,14 @@
 namespace Label305\AujaLaravel\Factory;
 
 
+use Illuminate\Support\Facades\HTML;
 use Illuminate\Support\Facades\URL;
 use Label305\Auja\Main\Item;
 use Label305\Auja\Main\Main;
 use Label305\Auja\Page\Form;
 use Label305\Auja\Shared\Button;
 use Label305\AujaLaravel\Config\AujaConfigurator;
+use Label305\AujaLaravel\Routing\AujaRouter;
 
 class MainFactory {
 
@@ -38,8 +40,14 @@ class MainFactory {
      */
     private $aujaConfigurator;
 
-    public function __construct(AujaConfigurator $aujaConfigurator) {
+    /**
+     * @var AujaRouter
+     */
+    private $aujaRouter;
+
+    public function __construct(AujaConfigurator $aujaConfigurator, AujaRouter $aujaRouter) {
         $this->aujaConfigurator = $aujaConfigurator;
+        $this->aujaRouter = $aujaRouter;
     }
 
     public function create($title, Form $authenticationForm = null) {
@@ -62,7 +70,7 @@ class MainFactory {
             $item = new Item();
             $item->setTitle($model->getName());
             $item->setIcon($this->aujaConfigurator->getIcon($model));
-//            $item->setTarget(sprintf('/%s/menu', self::toUrlName($model->getName()))); //  TODO: proper target
+            $item->setTarget(route($this->aujaRouter->getMenuName($model->getName())));
             $main->addItem($item);
         }
 

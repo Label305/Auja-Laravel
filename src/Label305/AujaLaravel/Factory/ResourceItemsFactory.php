@@ -30,6 +30,7 @@ use Label305\Auja\Menu\LinkMenuItem;
 use Label305\Auja\Menu\ResourceItemsMenuItems;
 use Label305\AujaLaravel\Config\AujaConfigurator;
 use Label305\AujaLaravel\Config\Relation;
+use Label305\AujaLaravel\Routing\AujaRouter;
 
 class ResourceItemsFactory {
 
@@ -38,8 +39,14 @@ class ResourceItemsFactory {
      */
     private $aujaConfigurator;
 
-    public function __construct(AujaConfigurator $aujaConfigurator) {
+    /**
+     * @var AujaRouter
+     */
+    private $aujaRouter;
+
+    public function __construct(AujaConfigurator $aujaConfigurator, AujaRouter $aujaRouter) {
         $this->aujaConfigurator = $aujaConfigurator;
+        $this->aujaRouter = $aujaRouter;
     }
 
     /**
@@ -94,33 +101,32 @@ class ResourceItemsFactory {
             }
         }
 
-//        if (count($associationRelations) == 0) {
-//            $target = sprintf('/%s/%s/edit', self::toUrlName($modelName), '%s');
-//        } else {
-//            $target = sprintf('/%s/%s/menu', self::toUrlName($modelName), '%s');
-//        }
-        $target = ''; // TODO: proper target
-
         /* Build the actual items to return */
         $resourceItems = new ResourceItemsMenuItems();
         $displayField = $this->aujaConfigurator->getDisplayField($model);
         $icon = $this->aujaConfigurator->getIcon($model);
         for ($i = 0; $i < count($items); $i++) {
+            if (count($associationRelations) == 0) {
+                $target = route($this->aujaRouter->getEditName($modelName), $items[$i]->id);
+            } else {
+                $target = route($this->aujaRouter->getShowMenuName($modelName), $items[$i]->id);
+            }
+
             $menuItem = new LinkMenuItem();
             $menuItem->setName($items[$i]->$displayField);
-            $menuItem->setTarget(sprintf($target, $items[$i]->id));
+            $menuItem->setTarget($target);
             $menuItem->setOrder($offset + $i);
             $menuItem->setIcon($icon);
             $resourceItems->add($menuItem);
         }
 
         /* Add pagination if necessary */
-//        if ($nextPageUrl != null) {
+        if ($nextPageUrl != null) {
             $resourceItems->setNextPageUrl($nextPageUrl);
-//        } else if ($paginator != null && $paginator->getCurrentPage() != $paginator->getLastPage()) {
-//            $resourceItems->setNextPageUrl(sprintf('/%s?page=%d', self::toUrlName($modelName), $paginator->getCurrentPage() + 1));
-//        }
-        // TODO: proper target
+        } else if ($paginator != null && $paginator->getCurrentPage() != $paginator->getLastPage()) {
+            $target = route($this->aujaRouter->getIndexName($modelName), ['page' => ($paginator->getCurrentPage() + 1)]);
+            $resourceItems->setNextPageUrl($target);
+        }
 
         return $resourceItems;
     }
