@@ -14,6 +14,7 @@
     ],
     "require": {
         "php": ">=5.4.0",
+		"label305/auja": "dev-dev",
         "illuminate/support": "4.2.*",
         "doctrine/dbal": "2.4.2"
     },
@@ -32,8 +33,7 @@
             "Label305\\AujaLaravel\\": "src/"
         },
         "classmap": [
-            "src/",
-            "workbench/label305/auja-php/src/"
+            "src/"
         ]
     },
     "minimum-stability": "stable"
