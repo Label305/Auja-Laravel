@@ -27,8 +27,25 @@ namespace Label305\AujaLaravel\Factory;
 use Label305\Auja\Menu\LinkMenuItem;
 use Label305\Auja\Menu\Menu;
 use Label305\AujaLaravel\Config\Relation;
+use Label305\AujaLaravel\I18N\Translator;
+use Label305\AujaLaravel\Routing\AujaRouter;
 
 class MultipleAssociationsIndexMenuFactory {
+
+    /**
+     * @var Translator
+     */
+    private $translator;
+
+    /**
+     * @var AujaRouter
+     */
+    private $aujaRouter;
+
+    public function __construct(Translator $translator, AujaRouter $aujaRouter) {
+        $this->translator = $translator;
+        $this->aujaRouter = $aujaRouter;
+    }
 
     /**
      * Builds a menu for a single model entry, where the model has multiple relationships with other models.
@@ -48,13 +65,15 @@ class MultipleAssociationsIndexMenuFactory {
 
         $addMenuItem = new LinkMenuItem();
         $addMenuItem->setName($this->translator->trans('Edit'));
-//        $addMenuItem->setTarget(sprintf('/%s/%s/edit', self::toUrlName($modelName), $modelId)); // TODO: proper target
+        $addMenuItem->setTarget(route($this->aujaRouter->getEditName($modelName), $modelId));
         $menu->addMenuItem($addMenuItem);
 
         foreach ($relations as $relation) {
+            $otherModelName = $relation->getRight()->getName();
+
             $associationMenuItem = new LinkMenuItem();
-            $associationMenuItem->setName($relation->getRight()->getName());
-//            $associationMenuItem->setTarget(sprintf('/%s/%s/%s/menu', self::toUrlName($modelName), $modelId, self::toUrlName($relation->getRight()->getName()))); // TODO: proper target
+            $associationMenuItem->setName($this->translator->trans($otherModelName));
+            $associationMenuItem->setTarget(route($this->aujaRouter->getAssociationMenuName($modelName, $otherModelName), $modelId));
             $menu->addMenuItem($associationMenuItem);
         }
 
