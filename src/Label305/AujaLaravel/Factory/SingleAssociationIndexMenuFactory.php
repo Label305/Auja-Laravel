@@ -24,12 +24,14 @@
 namespace Label305\AujaLaravel\Factory;
 
 
+use Label305\Auja\Icons;
 use Label305\Auja\Menu\LinkMenuItem;
 use Label305\Auja\Menu\Menu;
 use Label305\Auja\Menu\ResourceMenuItem;
 use Label305\Auja\Menu\SpacerMenuItem;
 use Label305\AujaLaravel\Config\Relation;
 use Label305\AujaLaravel\I18N\Translator;
+use Label305\AujaLaravel\Routing\AujaRouter;
 
 class SingleAssociationIndexMenuFactory {
 
@@ -38,16 +40,23 @@ class SingleAssociationIndexMenuFactory {
      */
     private $translator;
 
-    public function __construct(Translator $translator) {
+    /**
+     * @var AujaRouter
+     */
+    private $aujaRouter;
+
+    public function __construct(Translator $translator, AujaRouter $aujaRouter) {
         $this->translator = $translator;
+        $this->aujaRouter = $aujaRouter;
     }
 
     /**
      * Builds a menu for a single model entry, where the model has exactly one relationship with another model.
      *
      * The menu will include:
-     *  - An Edit LinkMenuItem;
+     *  - An Edit LinkMenuItem to edit the model entry.
      *  - A SpacerMenuItem with the name of the associated model;
+     *  - An Add LinkMenuItem to add an entry of the associated model;
      *  - A ResourceMenuItem to hold entries of the associated model.
      *
      * @param String   $modelName the name of the model.
@@ -57,19 +66,27 @@ class SingleAssociationIndexMenuFactory {
      * @return Menu the Menu, which can be configured further.
      */
     public function create($modelName, $modelId, Relation $relation) {
+        $otherModelName = $relation->getRight()->getName();
+
         $menu = new Menu();
 
-        $addMenuItem = new LinkMenuItem();
-        $addMenuItem->setName($this->translator->trans('Edit'));
-//        $addMenuItem->setTarget(sprintf('/%s/%s/edit', self::toUrlName($modelName), $modelId)); // TODO: proper target
-        $menu->addMenuItem($addMenuItem);
+        $editMenuItem = new LinkMenuItem();
+        $editMenuItem->setName($this->translator->trans('Edit'));
+        $editMenuItem->setTarget(route($this->aujaRouter->getEditName($modelName), $modelId));
+        $menu->addMenuItem($editMenuItem);
 
         $headerMenuItem = new SpacerMenuItem();
-        $headerMenuItem->setName($this->translator->trans($relation->getRight()->getName()));
+        $headerMenuItem->setName($this->translator->trans(str_plural($otherModelName)));
         $menu->addMenuItem($headerMenuItem);
 
+        $addMenuItem = new LinkMenuItem();
+        $addMenuItem->setName(sprintf('%s %s', $this->translator->trans('Add'), $this->translator->trans($otherModelName)));
+        $addMenuItem->setIcon(Icons::plus);
+        $addMenuItem->setTarget(route($this->aujaRouter->getCreateAssociationName($modelName, $otherModelName), $modelId));
+        $menu->addMenuItem($addMenuItem);
+
         $resourceMenuItem = new ResourceMenuItem();
-//        $resourceMenuItem->setTarget(sprintf('/%s/%s/%s', self::toUrlName($modelName), $modelId, self::toUrlName($relation->getRight()->getName()))); // TODO: proper target
+        $resourceMenuItem->setTarget(route($this->aujaRouter->getAssociationName($modelName, $otherModelName), $modelId));
         $menu->addMenuItem($resourceMenuItem);
 
         return $menu;

@@ -23,12 +23,9 @@
 
 namespace Label305\AujaLaravel\Routing;
 
-
-use Illuminate\Container\Container;
-use Illuminate\Events\Dispatcher;
 use Illuminate\Routing\Router;
-use Illuminate\Support\Facades\Route;
 use Label305\AujaLaravel\Auja;
+use Label305\AujaLaravel\Config\Relation;
 
 class AujaRouter {
 
@@ -61,6 +58,10 @@ class AujaRouter {
 
     public function getCreateName($modelName) {
         return sprintf('auja.%s.create', $this->toUrlName($modelName));
+    }
+
+    public function getCreateAssociationName($modelName, $otherModelName) {
+        return sprintf('auja.%s.%s.create', $this->toUrlName($modelName), $this->toUrlName($otherModelName));
     }
 
     public function getStoreName($modelName) {
@@ -104,17 +105,22 @@ class AujaRouter {
         $this->registerDelete($modelName, $controller);
 
         /* Associated routes */
-        $model = $this->auja->getModel(ucfirst(str_singular(camel_case($modelName))));
+        $model = $this->auja->getModel(ucfirst(str_singular(camel_case($modelName)))); // TODO: prettify
         $relations = $this->auja->getRelationsForModel($model);
         foreach ($relations as $relation) {
             $otherModelName = $relation->getRight()->getName();
-            $this->registerAssociation($modelName, $otherModelName, $controller);
-            $this->registerAssociationMenu($modelName, $otherModelName, $controller);
+            if ($relation->getType() == Relation::BELONGS_TO) {
+                $this->registerBelongsToAssociationMenu($modelName, $otherModelName, $controller);
+            } else {
+                $this->registerAssociation($modelName, $otherModelName, $controller);
+                $this->registerAssociationMenu($modelName, $otherModelName, $controller);
+                $this->registerCreateAssociation($modelName, $otherModelName, $controller);
+            }
         }
     }
 
     private function registerIndex($modelName, $controller) {
-        $url = sprintf('%s/index', $this->toUrlName($modelName));
+        $url = sprintf('%s', $this->toUrlName($modelName));
         $routeName = $this->getIndexName($modelName);
         $action = $controller . '@index';
 
@@ -158,7 +164,7 @@ class AujaRouter {
         $routeName = $this->getShowName($modelName);
         $action = $controller . '@show';
 
-        $this->router->post($url, array('as' => $routeName, 'uses' => $action));
+        $this->router->get($url, array('as' => $routeName, 'uses' => $action));
     }
 
     private function registerEdit($modelName, $controller) {
@@ -166,7 +172,7 @@ class AujaRouter {
         $routeName = $this->getEditName($modelName);
         $action = $controller . '@edit';
 
-        $this->router->post($url, array('as' => $routeName, 'uses' => $action));
+        $this->router->get($url, array('as' => $routeName, 'uses' => $action));
     }
 
     private function registerUpdate($modelName, $controller) {
@@ -182,7 +188,7 @@ class AujaRouter {
         $routeName = $this->getDeleteName($modelName);
         $action = $controller . '@delete';
 
-        $this->router->post($url, array('as' => $routeName, 'uses' => $action));
+        $this->router->delete($url, array('as' => $routeName, 'uses' => $action));
     }
 
     private function registerAssociation($modelName, $otherModelName, $controller) {
@@ -190,15 +196,32 @@ class AujaRouter {
         $routeName = $this->getAssociationName($modelName, $otherModelName);
         $action = $controller . '@' . str_plural(camel_case($otherModelName));
 
-        $this->router->post($url, array('as' => $routeName, 'uses' => $action));
+        $this->router->get($url, array('as' => $routeName, 'uses' => $action));
     }
+
+    private function registerBelongsToAssociationMenu($modelName, $otherModelName, $controller) {
+        $url = sprintf('%s/{id}/%s/menu', $this->toUrlName($modelName), $this->toUrlName($otherModelName));
+        $routeName = $this->getAssociationMenuName($modelName, $otherModelName);
+        $action = $controller . '@' . camel_case($otherModelName) . 'Menu';
+
+        $this->router->get($url, array('as' => $routeName, 'uses' => $action));
+    }
+
 
     private function registerAssociationMenu($modelName, $otherModelName, $controller) {
         $url = sprintf('%s/{id}/%s/menu', $this->toUrlName($modelName), $this->toUrlName($otherModelName));
         $routeName = $this->getAssociationMenuName($modelName, $otherModelName);
-        $action = $controller . '@' . str_plural(camel_case($otherModelName)).'Menu';
+        $action = $controller . '@' . str_plural(camel_case($otherModelName)) . 'Menu';
 
-        $this->router->post($url, array('as' => $routeName, 'uses' => $action));
+        $this->router->get($url, array('as' => $routeName, 'uses' => $action));
+    }
+
+    private function registerCreateAssociation($modelName, $otherModelName, $controller) {
+        $url = sprintf('%s/{id}/%s/create', $this->toUrlName($modelName), $this->toUrlName($otherModelName));
+        $routeName = $this->getCreateAssociationName($modelName, $otherModelName);
+        $action = $controller . '@' . 'create' . ucfirst(camel_case($otherModelName));
+
+        $this->router->get($url, array('as' => $routeName, 'uses' => $action));
     }
 
     private function toUrlName($modelName) {

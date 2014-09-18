@@ -178,7 +178,7 @@ class Auja {
 
         $associationRelations = array();
         foreach ($relations as $relation) {
-            if ($relation->getType() == Relation::HAS_MANY || $relation->getType() == Relation::HAS_AND_BELONGS_TO) {
+            if ($relation->getType() == Relation::HAS_MANY || $relation->getType() == Relation::HAS_AND_BELONGS_TO) { // TODO: What to do with one-to-one relations?
                 $associationRelations[] = $relation;
             }
         }
@@ -299,18 +299,6 @@ class Auja {
         $pageFactory = $this->app->make('Label305\AujaLaravel\Factory\PageFactory');
         /* @var $pageFactory PageFactory */
         return $pageFactory->create($modelName, $modelId);
-    }
-
-    private static function toHumanReadableName($modelName) {
-        return preg_replace('/(?<=\\w)(?=[A-Z])/', ' $1', camel_case($modelName));
-    }
-
-    private static function toUrlName($modelName) {
-        return strtolower($modelName);
-    }
-
-    private static function toForeignColumnName($modelName) {
-        return strtolower($modelName) . '_id';
     }
 
 }

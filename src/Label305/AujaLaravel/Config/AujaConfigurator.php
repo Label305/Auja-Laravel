@@ -24,8 +24,6 @@
 namespace Label305\AujaLaravel\Config;
 
 use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Schema;
 use Label305\AujaLaravel\Database\DatabaseHelper;
 use Label305\AujaLaravel\Logging\Logger;
 
@@ -59,7 +57,7 @@ class AujaConfigurator {
     private $models = array();
 
     /**
-     * @var array a key-value pair of model names and an array of their relations.
+     * @var Relation[][] a key-value pair of model names and an array of their relations.
      */
     private $relations = array();
 
@@ -198,6 +196,28 @@ class AujaConfigurator {
         foreach ($models as $model) {
             $this->findSimpleRelations($model);
         }
+
+        // TODO: Can this be prettier?
+        /* Find BELONGS_TO relations which do not have a BELONGS_TO reverse relation. These need to have a HAS_MANY reverse relation. */
+        foreach ($this->relations as $modelRelations) {
+            foreach ($modelRelations as $relation) {
+                if ($relation->getType() == Relation::BELONGS_TO) {
+                    /* Try to find a matching reversed relation */
+                    $otherModelRelations = &$this->relations[$relation->getRight()->getName()];
+                    $hasReverseRelation = false;
+                    foreach ($otherModelRelations as $otherModelRelation) {
+                        if ($otherModelRelation->getRight() == $relation->getLeft()) {
+                            $hasReverseRelation = true;
+                        }
+                    }
+                    if (!$hasReverseRelation) {
+                        /* There is no one-to-one relation. Define a hasMany relation. */
+                        $otherModelRelations[] = new Relation($relation->getRight(), $relation->getLeft(), Relation::HAS_MANY);
+                    }
+                }
+            }
+        }
+
         $this->findManyToManyRelations(array_values($this->models));
     }
 
@@ -223,7 +243,7 @@ class AujaConfigurator {
      * @param $columnName String the column name, which corresponds to another model.
      */
     private function defineRelation(Model $model, $columnName) {
-        $otherModelName = ucfirst(camel_case(substr($columnName, 0, strpos($columnName, self::ID_PREFIX))));
+        $otherModelName = ucfirst(camel_case(substr($columnName, 0, strpos($columnName, self::ID_PREFIX)))); // TODO: prettify
 
         if (!in_array($otherModelName, array_keys($this->models))) {
             $this->logger->warn(sprintf('Found foreign id %s in model %s, but no model with name %s was registered', $columnName, $model->getName(), $otherModelName));
@@ -233,7 +253,6 @@ class AujaConfigurator {
         $this->logger->info(sprintf('%s has a %s', $model->getName(), $otherModelName));
 
         $this->relations[$model->getName()][] = new Relation($model, $this->models[$otherModelName], Relation::BELONGS_TO);
-        $this->relations[$otherModelName][] = new Relation($this->models[$otherModelName], $model, Relation::HAS_MANY);
     }
 
     /**

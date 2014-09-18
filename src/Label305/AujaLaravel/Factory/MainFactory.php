@@ -60,7 +60,7 @@ class MainFactory {
         $main->setColor(Main::COLOR_ALERT, '#e85840');
 
         $button = new Button();
-        $button->setTitle('Logout');
+        $button->setText('Logout');
         $button->setTarget('#logout'); // TODO proper url
         $main->addButton($button);
 

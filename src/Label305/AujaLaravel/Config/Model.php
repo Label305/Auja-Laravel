@@ -81,7 +81,7 @@ class Model {
      *
      * @return Column the column with given name.
      */
-    public function getColumn($columnName){
+    public function getColumn($columnName) {
         return $this->columns[$columnName];
     }
 
@@ -97,5 +97,9 @@ class Model {
      */
     public function getTableName() {
         return $this->tableName;
+    }
+
+    public function __toString() {
+        return $this->name;
     }
 }

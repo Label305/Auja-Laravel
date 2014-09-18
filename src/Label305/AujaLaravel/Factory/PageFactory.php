@@ -25,10 +25,14 @@ namespace Label305\AujaLaravel\Factory;
 
 
 use Label305\Auja\Page\Form;
+use Label305\Auja\Page\FormItem\SubmitFormItem;
 use Label305\Auja\Page\Page;
 use Label305\Auja\Page\PageHeader;
+use Label305\Auja\Shared\Button;
 use Label305\AujaLaravel\Config\AujaConfigurator;
 use Label305\AujaLaravel\FormItemFactory;
+use Label305\AujaLaravel\I18N\Translator;
+use Label305\AujaLaravel\Routing\AujaRouter;
 
 class PageFactory {
 
@@ -37,8 +41,20 @@ class PageFactory {
      */
     private $aujaConfigurator;
 
-    public function __construct(AujaConfigurator $aujaConfigurator) {
+    /**
+     * @var AujaRouter
+     */
+    private $aujaRouter;
+
+    /**
+     * @var Translator
+     */
+    private $translator;
+
+    public function __construct(AujaConfigurator $aujaConfigurator, AujaRouter $aujaRouter, Translator $translator) {
         $this->aujaConfigurator = $aujaConfigurator;
+        $this->aujaRouter = $aujaRouter;
+        $this->translator = $translator;
     }
 
     public function create($modelName, $modelId = 0) {
@@ -46,10 +62,21 @@ class PageFactory {
 
         $header = new PageHeader();
         $header->setText('Create ' . $modelName);
+
+        if ($modelId != 0) {
+            $deleteButton = new Button();
+            $deleteButton->setText($this->translator->trans('Delete'));
+            $deleteButton->setConfirmationMessage($this->translator->trans('Are you sure?'));
+            $deleteButton->setTarget(route($this->aujaRouter->getDeleteName($modelName), $modelId));
+            $deleteButton->setMethod('delete');
+            $header->addButton($deleteButton);
+        }
+
         $page->addPageComponent($header);
 
         $form = new Form();
-//        $form->setAction(sprintf('/%s%s', self::toUrlName($modelName), $modelId == 0 ? '' : '/' . $modelId)); // TODO: proper target
+        $action = $modelId == 0 ? route($this->aujaRouter->getStoreName($modelName)) : route($this->aujaRouter->getUpdateName($modelName), $modelId);
+        $form->setAction($action);
         $form->setMethod($modelId == 0 ? 'POST' : 'PUT');
 
         $instance = new $modelName;
@@ -63,9 +90,13 @@ class PageFactory {
             $column = $model->getColumn($columnName);
             $item = FormItemFactory::getFormItem($column->getType(), in_array($columnName, $hidden));
             $item->setName($column->getName());
-//            $item->setLabel(self::toHumanReadableName($column->getName())); // TODO: proper human readable names
+            $item->setLabel($this->translator->trans($column->getName())); // TODO: 'Human readable name'
             $form->addItem($item);
         }
+
+        $submit = new SubmitFormItem();
+        $submit->setText($this->translator->trans('Submit'));
+        $form->addItem($submit);
 
         $page->addPageComponent($form);
 

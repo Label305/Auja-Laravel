@@ -26,6 +26,7 @@ namespace Label305\AujaLaravel\Factory;
 
 use Label305\Auja\Menu\LinkMenuItem;
 use Label305\Auja\Menu\Menu;
+use Label305\Auja\Menu\SpacerMenuItem;
 use Label305\AujaLaravel\Config\Relation;
 use Label305\AujaLaravel\I18N\Translator;
 use Label305\AujaLaravel\Routing\AujaRouter;
@@ -52,6 +53,7 @@ class MultipleAssociationsIndexMenuFactory {
      *
      * The menu will include:
      *  - An Edit LinkMenuItem;
+     *  - A SpacerMenuItem;
      *  - For each of the Relations, a LinkMenuItem for the associated model.
      *
      * @param String     $modelName the name of the model.
@@ -68,11 +70,15 @@ class MultipleAssociationsIndexMenuFactory {
         $addMenuItem->setTarget(route($this->aujaRouter->getEditName($modelName), $modelId));
         $menu->addMenuItem($addMenuItem);
 
+        $spacerMenuItem = new SpacerMenuItem();
+        $spacerMenuItem->setName($this->translator->trans('Properties'));
+        $menu->addMenuItem($spacerMenuItem);
+
         foreach ($relations as $relation) {
             $otherModelName = $relation->getRight()->getName();
 
             $associationMenuItem = new LinkMenuItem();
-            $associationMenuItem->setName($this->translator->trans($otherModelName));
+            $associationMenuItem->setName($this->translator->trans(str_plural($otherModelName)));
             $associationMenuItem->setTarget(route($this->aujaRouter->getAssociationMenuName($modelName, $otherModelName), $modelId));
             $menu->addMenuItem($associationMenuItem);
         }
