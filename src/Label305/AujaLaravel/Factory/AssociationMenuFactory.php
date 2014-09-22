@@ -66,12 +66,12 @@ class AssociationMenuFactory {
         $menu = new Menu();
 
         $addMenuItem = new LinkMenuItem();
-        $addMenuItem->setName('Add ' . $this->translator->trans($associationName));
+        $addMenuItem->setText('Add ' . $this->translator->trans($associationName));
         $addMenuItem->setTarget(route($this->aujaRouter->getCreateAssociationName($modelName, $associationName), $modelId));
         $menu->addMenuItem($addMenuItem);
 
         $headerMenuItem = new SpacerMenuItem();
-        $headerMenuItem->setName($this->translator->trans(str_plural($associationName)));
+        $headerMenuItem->setText($this->translator->trans(str_plural($associationName)));
         $menu->addMenuItem($headerMenuItem);
 
         $resourceMenuItem = new ResourceMenuItem();

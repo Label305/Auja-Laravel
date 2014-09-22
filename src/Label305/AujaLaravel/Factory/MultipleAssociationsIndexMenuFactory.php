@@ -66,19 +66,19 @@ class MultipleAssociationsIndexMenuFactory {
         $menu = new Menu();
 
         $addMenuItem = new LinkMenuItem();
-        $addMenuItem->setName($this->translator->trans('Edit'));
+        $addMenuItem->setText($this->translator->trans('Edit'));
         $addMenuItem->setTarget(route($this->aujaRouter->getEditName($modelName), $modelId));
         $menu->addMenuItem($addMenuItem);
 
         $spacerMenuItem = new SpacerMenuItem();
-        $spacerMenuItem->setName($this->translator->trans('Properties'));
+        $spacerMenuItem->setText($this->translator->trans('Properties'));
         $menu->addMenuItem($spacerMenuItem);
 
         foreach ($relations as $relation) {
             $otherModelName = $relation->getRight()->getName();
 
             $associationMenuItem = new LinkMenuItem();
-            $associationMenuItem->setName($this->translator->trans(str_plural($otherModelName)));
+            $associationMenuItem->setText($this->translator->trans(str_plural($otherModelName)));
             $associationMenuItem->setTarget(route($this->aujaRouter->getAssociationMenuName($modelName, $otherModelName), $modelId));
             $menu->addMenuItem($associationMenuItem);
         }

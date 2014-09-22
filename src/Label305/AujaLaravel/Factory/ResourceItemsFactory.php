@@ -27,7 +27,7 @@ namespace Label305\AujaLaravel\Factory;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Label305\Auja\Menu\LinkMenuItem;
-use Label305\Auja\Menu\ResourceItemsMenuItems;
+use Label305\Auja\Menu\Resource;
 use Label305\AujaLaravel\Config\AujaConfigurator;
 use Label305\AujaLaravel\Config\Relation;
 use Label305\AujaLaravel\Routing\AujaRouter;
@@ -61,7 +61,7 @@ class ResourceItemsFactory {
      * @param String          $nextPageUrl (optional) The url to the next page, if any.
      * @param int             $offset      (optional) The offset to start the order from.
      *
-     * @return ResourceItemsMenuItems[] the built LinkMenuItems.
+     * @return Resource The built LinkMenuItems.
      */
     public function create($modelName, $items, $nextPageUrl = null, $offset = -1) { // TODO: create separate methods for pagination and no pagination?
         /* Extract items from Paginator if necessary */
@@ -82,7 +82,7 @@ class ResourceItemsFactory {
 
         /* No items. */
         if (count($items) == 0) {
-            return new ResourceItemsMenuItems();
+            return new Resource();
         }
 
         /* If the items are not iterable */
@@ -102,7 +102,7 @@ class ResourceItemsFactory {
         }
 
         /* Build the actual items to return */
-        $resourceItems = new ResourceItemsMenuItems();
+        $resourceItems = new Resource();
         $displayField = $this->aujaConfigurator->getDisplayField($model);
         $icon = $this->aujaConfigurator->getIcon($model);
         for ($i = 0; $i < count($items); $i++) {
@@ -113,7 +113,7 @@ class ResourceItemsFactory {
             }
 
             $menuItem = new LinkMenuItem();
-            $menuItem->setName($items[$i]->$displayField);
+            $menuItem->setText($items[$i]->$displayField);
             $menuItem->setTarget($target);
             $menuItem->setOrder($offset + $i);
             $menuItem->setIcon($icon);
