@@ -27,6 +27,14 @@ use Illuminate\Routing\Router;
 use Label305\AujaLaravel\Auja;
 use Label305\AujaLaravel\Config\Relation;
 
+/**
+ * A class for quick Auja Routing.
+ *
+ * @author  Niek Haarman - <niek@label305.com>
+ *
+ * @package Label305\AujaLaravel\Routing
+ * @license http://www.apache.org/licenses/LICENSE-2.0
+ */
 class AujaRouter {
 
     /**
@@ -44,54 +52,151 @@ class AujaRouter {
         $this->router = $router;
     }
 
+    /**
+     * Returns the name of the route used for the index url of a model.
+     *
+     * @param String $modelName The name of the model.
+     *
+     * @return String The name of the route.
+     */
     public function getIndexName($modelName) {
         return sprintf('auja.%s.index', $this->toUrlName($modelName));
     }
 
+    /**
+     * Returns the name of the route used for the menu url of a model.
+     *
+     * @param String $modelName The name of the model.
+     *
+     * @return String The name of the route.
+     */
     public function getMenuName($modelName) {
         return sprintf('auja.%s.menu', $this->toUrlName($modelName));
     }
 
+    /**
+     * Returns the name of the route used for the menu url of an entry of a model.
+     * The resulting route will take the id of the entry as a parameter.
+     *
+     * @param String $modelName The name of the model.
+     *
+     * @return String The name of the route.
+     */
     public function getShowMenuName($modelName) {
         return sprintf('auja.%s.show.menu', $this->toUrlName($modelName));
     }
 
+    /**
+     * Returns the name of the route used for the create url of a model.
+     *
+     * @param String $modelName The name of the model.
+     *
+     * @return String The name of the route.
+     */
     public function getCreateName($modelName) {
         return sprintf('auja.%s.create', $this->toUrlName($modelName));
     }
 
+    /**
+     * Returns the name of the route used for the url that corresponds to the creation of an associated model.
+     *
+     * @param String $modelName      The name of the model.
+     * @param String $otherModelName The name of the associated model.
+     *
+     * @return String The name of the route.
+     */
     public function getCreateAssociationName($modelName, $otherModelName) {
         return sprintf('auja.%s.%s.create', $this->toUrlName($modelName), $this->toUrlName($otherModelName));
     }
 
+    /**
+     * Returns the name of the route used for the store url of a model.
+     *
+     * @param String $modelName The name of the model.
+     *
+     * @return String The name of the route.
+     */
     public function getStoreName($modelName) {
         return sprintf('auja.%s.store', $this->toUrlName($modelName));
     }
 
+    /**
+     * Returns the name of the route used for the show url of an entry of a model.
+     * The resulting route will take the id of the entry as a parameter.
+     *
+     * @param String $modelName The name of the model.
+     *
+     * @return String The name of the route.
+     */
     public function getShowName($modelName) {
         return sprintf('auja.%s.show', $this->toUrlName($modelName));
     }
 
+    /**
+     * Returns the name of the route used for the edit url of an entry of a model.
+     * The resulting route will take the id of the entry as a parameter.
+     *
+     * @param String $modelName The name of the model.
+     *
+     * @return String The name of the route.
+     */
     public function getEditName($modelName) {
         return sprintf('auja.%s.edit', $this->toUrlName($modelName));
     }
 
+    /**
+     * Returns the name of the route used for the update url of an entry of a model.
+     * The resulting route will take the id of the entry as a parameter.
+     *
+     * @param String $modelName The name of the model.
+     *
+     * @return String The name of the route.
+     */
     public function getUpdateName($modelName) {
         return sprintf('auja.%s.update', $this->toUrlName($modelName));
     }
 
+    /**
+     * Returns the name of the route used for the delete url of an entry of a model.
+     *
+     * @param String $modelName The name of the model.
+     *
+     * @return String The name of the route.
+     */
     public function getDeleteName($modelName) {
         return sprintf('auja.%s.delete', $this->toUrlName($modelName));
     }
 
+    /**
+     * Returns the name of the route used for the index url of an associated model.
+     *
+     * @param String $modelName      The name of the model.
+     * @param String $otherModelName The name of the associated model.
+     *
+     * @return String The name of the route.
+     */
     public function getAssociationName($modelName, $otherModelName) {
         return sprintf('auja.%s.%s', $this->toUrlName($modelName), $this->toUrlName($otherModelName));
     }
 
+    /**
+     * Returns the name of the route used for the menu url of an associated model.
+     *
+     * @param String $modelName      The name of the model.
+     * @param String $otherModelName The name of the associated model.
+     *
+     * @return String The name of the route.
+     */
     public function getAssociationMenuName($modelName, $otherModelName) {
         return sprintf('auja.%s.%s.menu', $this->toUrlName($modelName), $this->toUrlName($otherModelName));
     }
 
+    /**
+     * Route an Auja configuration for a model to a controller.
+     *
+     * @param String $modelName  The name of the model.
+     * @param String $controller The name of the Controller.
+     */
     public function resource($modelName, $controller) {
         /* Default routes */
         $this->registerIndex($modelName, $controller);

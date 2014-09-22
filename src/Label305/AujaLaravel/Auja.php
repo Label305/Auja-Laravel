@@ -23,22 +23,13 @@
 
 namespace Label305\AujaLaravel;
 
+use Clockwork;
 use Illuminate\Foundation\Application;
 use Illuminate\Pagination\Paginator;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Log;
-use Label305\Auja\Main\Item;
 use Label305\Auja\Main\Main;
-use Label305\Auja\Menu\LinkMenuItem;
 use Label305\Auja\Menu\Menu;
 use Label305\Auja\Menu\ResourceItemsMenuItems;
-use Label305\Auja\Menu\ResourceMenuItem;
-use Label305\Auja\Menu\SpacerMenuItem;
 use Label305\Auja\Page\Form;
-use Label305\Auja\Page\PageHeader;
-use Label305\Auja\Page\Page;
-use Label305\Auja\Shared\Button;
 use Label305\AujaLaravel\Config\AujaConfigurator;
 use Label305\AujaLaravel\Config\Model;
 use Label305\AujaLaravel\Config\Relation;
@@ -48,6 +39,7 @@ use Label305\AujaLaravel\Factory\MainFactory;
 use Label305\AujaLaravel\Factory\MultipleAssociationsIndexMenuFactory;
 use Label305\AujaLaravel\Factory\NoAssociationsIndexMenuFactory;
 use Label305\AujaLaravel\Factory\PageFactory;
+use Label305\AujaLaravel\Factory\ResourceItemsFactory;
 use Label305\AujaLaravel\Factory\SingleAssociationIndexMenuFactory;
 use Label305\AujaLaravel\I18N\Translator;
 use Label305\AujaLaravel\Logging\Logger;
@@ -96,13 +88,19 @@ class Auja {
             throw new \InvalidArgumentException('Provide models!');
         }
 
+        Clockwork::startEvent('Auja__construct', 'Constructing Auja');
+
         $this->app = $app;
         $this->translator = $this->app->make('Label305\AujaLaravel\I18N\Translator');
         $this->logger = $this->app->make('Label305\AujaLaravel\Logging\Logger');
 
+
         $this->logger->debug('Initializing Auja with models:', $modelNames);
+
         $this->aujaConfigurator = $app['Label305\AujaLaravel\Config\AujaConfigurator'];
+
         $this->aujaConfigurator->configure($modelNames);
+        Clockwork::endEvent('Auja__construct');
     }
 
     /**
@@ -214,7 +212,7 @@ class Auja {
      */
     public function buildResourceItems($modelName, $items, $nextPageUrl = null, $offset = -1) {
         $factory = $this->app->make('Label305\AujaLaravel\Factory\ResourceItemsFactory');
-        /* @var $factory MainFactory */
+        /* @var $factory ResourceItemsFactory */
         return $factory->create($modelName, $items, $nextPageUrl, $offset);
     }
 
