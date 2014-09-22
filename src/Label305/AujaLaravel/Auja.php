@@ -23,12 +23,10 @@
 
 namespace Label305\AujaLaravel;
 
-use Clockwork;
 use Illuminate\Foundation\Application;
 use Illuminate\Pagination\Paginator;
 use Label305\Auja\Main\Main;
 use Label305\Auja\Menu\Menu;
-use Label305\Auja\Menu\ResourceItemsMenuItems;
 use Label305\Auja\Page\Form;
 use Label305\AujaLaravel\Config\AujaConfigurator;
 use Label305\AujaLaravel\Config\Model;
@@ -88,8 +86,6 @@ class Auja {
             throw new \InvalidArgumentException('Provide models!');
         }
 
-        Clockwork::startEvent('Auja__construct', 'Constructing Auja');
-
         $this->app = $app;
         $this->translator = $this->app->make('Label305\AujaLaravel\I18N\Translator');
         $this->logger = $this->app->make('Label305\AujaLaravel\Logging\Logger');
@@ -100,7 +96,6 @@ class Auja {
         $this->aujaConfigurator = $app['Label305\AujaLaravel\Config\AujaConfigurator'];
 
         $this->aujaConfigurator->configure($modelNames);
-        Clockwork::endEvent('Auja__construct');
     }
 
     /**
@@ -208,7 +203,7 @@ class Auja {
      * @param String          $nextPageUrl (optional) The url to the next page, if any.
      * @param int             $offset      (optional) The offset to start the order from.
      *
-     * @return ResourceItemsMenuItems[] the built LinkMenuItems.
+     * @return Resource The built LinkMenuItems.
      */
     public function buildResourceItems($modelName, $items, $nextPageUrl = null, $offset = -1) {
         $factory = $this->app->make('Label305\AujaLaravel\Factory\ResourceItemsFactory');

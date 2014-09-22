@@ -23,7 +23,6 @@
 
 namespace Label305\AujaLaravel\Database;
 
-use Clockwork;
 use Doctrine\DBAL\Schema\Table;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -36,8 +35,6 @@ class FasterCachedMySQLDatabaseHelper implements DatabaseHelper {
     private $tables = array();
 
     public function __construct() {
-        Clockwork::startEvent('DatabaseHelper__construct', 'Constructing DatabaseHelper');
-
         if (Cache::has('tableinfo')) {
             $this->tables = Cache::get('tableinfo');
         } else {
@@ -49,8 +46,6 @@ class FasterCachedMySQLDatabaseHelper implements DatabaseHelper {
 
             Cache::put('tableinfo', $this->tables, 1);
         }
-
-        Clockwork::endEvent('DatabaseHelper__construct');
     }
 
     public function hasTable($tableName) {
