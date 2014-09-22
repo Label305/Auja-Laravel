@@ -1,5 +1,11 @@
 # Auja-Laravel
 
+[![Build Status](https://travis-ci.org/Label305/Auja-Laravel.svg?branch=dev)](https://travis-ci.org/Label305/Auja-Laravel)
+[![Coverage Status](https://coveralls.io/repos/Label305/Auja-Laravel/badge.png?branch=dev)](https://coveralls.io/r/Label305/Auja-Laravel?branch=dev)
+[![Latest Stable Version](https://poser.pugx.org/label305/auja-laravel/v/stable.svg)](https://packagist.org/packages/label305/auja-laravel)
+[![Total Downloads](https://poser.pugx.org/label305/auja-laravel/downloads.svg)](https://packagist.org/packages/label305/auja-laravel)
+[![Latest Unstable Version](https://poser.pugx.org/label305/auja-laravel/v/unstable.svg)](https://packagist.org/packages/label305/auja-laravel)
+
 Auja for Laravel.
 
 ## Setup
