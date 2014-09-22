@@ -22,14 +22,15 @@
  * limitations under the License.
  */
 
-namespace Label305\AujaLaravel;
+namespace Label305\AujaLaravel\Config;
 
 use Illuminate\Foundation\Application;
+use Label305\AujaLaravel\AujaTestCase;
 use Label305\AujaLaravel\Database\DatabaseHelper;
 use Label305\AujaLaravel\Logging\Logger;
 use \Mockery as m;
 
-require_once 'AujaTestCase.php';
+//require_once '..'.DIRECTORY_SEPARATOR.'AujaTestCase.php';
 
 class AujaConfiguratorTest extends AujaTestCase {
 
@@ -83,15 +84,15 @@ class AujaConfiguratorTest extends AujaTestCase {
         $this->databaseHelper = m::mock('Label305\AujaLaravel\Database\DatabaseHelper');
         $this->logger = self::mockLogger();
 
-        $this->countryModel = m::mock('Label305\AujaLaravel\Model');
+        $this->countryModel = m::mock('Label305\AujaLaravel\Config\Model');
         $this->countryModel->shouldReceive('getName')->andReturn('Country');
-        $this->clubModel = m::mock('Label305\AujaLaravel\Model');
+        $this->clubModel = m::mock('Label305\AujaLaravel\Config\Model');
         $this->clubModel->shouldReceive('getName')->andReturn('Club');
-        $this->teamModel = m::mock('Label305\AujaLaravel\Model');
+        $this->teamModel = m::mock('Label305\AujaLaravel\Config\Model');
         $this->teamModel->shouldReceive('getName')->andReturn('Team');
-        $this->clubHouseModel = m::mock('Label305\AujaLaravel\Model');
+        $this->clubHouseModel = m::mock('Label305\AujaLaravel\Config\Model');
         $this->clubHouseModel->shouldReceive('getName')->andReturn('ClubHouse');
-        $this->matchModel = m::mock('Label305\AujaLaravel\Model');
+        $this->matchModel = m::mock('Label305\AujaLaravel\Config\Model');
         $this->matchModel->shouldReceive('getName')->andReturn('Match');
 
         $this->aujaConfigurator = new AujaConfigurator($this->application, $this->databaseHelper, $this->logger);
