@@ -8,8 +8,16 @@ before_script:
 script:
   - bin/phpspec run --format=pretty
   - phpunit
+  
+after_script:
+  - bin/coveralls -v
 
 notifications:
   - email:
     on_success: change
     on_failure: change
+	
+matrix:
+  allow_failures:
+    - php: hhvm
+  fast_finish: true
