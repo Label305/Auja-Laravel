@@ -9,3 +9,4 @@ bin/**
 output/**
 
 coverage/**
+coverage.xml
