@@ -23,7 +23,6 @@
 
 namespace Label305\AujaLaravel\Config;
 
-use Clockwork;
 use Illuminate\Foundation\Application;
 use Label305\AujaLaravel\Database\DatabaseHelper;
 use Label305\AujaLaravel\Logging\Logger;
@@ -87,8 +86,6 @@ class AujaConfigurator {
      * @param  String[] $modelNames an array of model names to use.
      */
     public function configure(array $modelNames) {
-        Clockwork::startEvent('Auja::configure', 'Configuring Auja');
-
         /* First define the models and their columns. */
         foreach ($modelNames as $modelName) {
             $this->models[$modelName] = new Model($modelName);
@@ -102,7 +99,6 @@ class AujaConfigurator {
 
         /* Find relations */
         $this->findRelations(array_values($this->models));
-        Clockwork::endEvent('Auja::configure');
     }
 
     /**

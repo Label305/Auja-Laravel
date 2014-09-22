@@ -1,8 +1,8 @@
 <?php
 
-namespace spec\Label305\AujaLaravel;
+namespace spec\Label305\AujaLaravel\Config;
 
-use Label305\AujaLaravel\Column;
+use Label305\AujaLaravel\Config\Column;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -13,7 +13,7 @@ class ModelSpec extends ObjectBehavior {
     }
 
     function it_is_initializable() {
-        $this->shouldHaveType('Label305\AujaLaravel\Model');
+        $this->shouldHaveType('Label305\AujaLaravel\Config\Model');
     }
 
     function it_has_a_name() {
