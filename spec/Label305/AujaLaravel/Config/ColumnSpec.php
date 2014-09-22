@@ -1,6 +1,6 @@
 <?php
 
-namespace spec\Label305\AujaLaravel;
+namespace spec\Label305\AujaLaravel\Config;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -12,7 +12,7 @@ class ColumnSpec extends ObjectBehavior {
     }
 
     function it_is_initializable() {
-        $this->shouldHaveType('Label305\AujaLaravel\Column');
+        $this->shouldHaveType('Label305\AujaLaravel\Config\Column');
     }
 
     function it_should_have_a_name() {
