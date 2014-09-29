@@ -163,7 +163,7 @@ class AujaConfigurator {
      *
      * @return String The name of table for given Model.
      */
-    public function getTableName(Model $model){
+    public function getTableName(Model $model) {
         if (empty($this->models)) {
             throw new \LogicException('AujaConfigurator not configured yet! Call configure first.');
         }
@@ -243,7 +243,7 @@ class AujaConfigurator {
     }
 
     /**
-     * @param array $models Finds Relations for given Models.
+     * @param Model[] $models Finds Relations for given Models.
      */
     private function findRelations(array $models) {
         foreach ($models as $model) {

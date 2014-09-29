@@ -75,9 +75,9 @@ class FeatureContext extends BehatContext {
     }
 
     /**
-     * @Given /^I have a model "([^"]*)"$/
+     * @Given /^there is a model "([^"]*)"$/
      */
-    public function iHaveAModel($modelName) {
+    public function thereIsAModel($modelName) {
         foreach ($this->models as $model) {
             $this->databaseHelper->shouldReceive('hasTable')->with(sprintf('%s_%s', strtolower($modelName), strtolower($model)))->andReturn(false);
             $this->databaseHelper->shouldReceive('hasTable')->with(sprintf('%s_%s', strtolower($model), strtolower($modelName)))->andReturn(false);
@@ -102,7 +102,7 @@ class FeatureContext extends BehatContext {
             $columns[] = $columnHash['column'];
             $this->databaseHelper->shouldReceive('getColumnType')->with($this->lastModel, $columnHash['column'])->andReturn($columnHash['type']);
         }
-        $this->databaseHelper->shouldReceive('getColumnListing')->andReturn($columns);
+        $this->databaseHelper->shouldReceive('getColumnListing')->with($this->lastModel)->andReturn($columns);
     }
 
     /**
@@ -112,18 +112,14 @@ class FeatureContext extends BehatContext {
         $this->aujaConfigurator->configure($this->models);
     }
 
-    private function mockLogger() {
-        $result = m::mock('Label305\AujaLaravel\Logging\Logger');
-        $result->shouldReceive('debug');
-        $result->shouldReceive('info');
-        $result->shouldReceive('warn');
-        return $result;
-    }
-
     /**
      * @Then /^I should get a configuration with the following models:$/
      */
     public function iShouldGetAConfigurationWithTheFollowingModels(TableNode $table) {
+        if (sizeof($table->getHash()) != sizeof($this->aujaConfigurator->getModels())) {
+            throw new Exception('Invalid model count');
+        }
+
         foreach ($table->getHash() as $modelHash) {
             $name = $modelHash['name'];
             $model = $this->aujaConfigurator->getModel($name);
@@ -159,5 +155,28 @@ class FeatureContext extends BehatContext {
                 throw new Exception(sprintf('There is no belongs to relationship between %s and %s.', $leftModelName, $rightModelName));
             }
         }
+    }
+
+    /**
+     * @Given /^there should be no relations\.$/
+     */
+    public function thereShouldBeNoRelations() {
+        $modelRelations = $this->aujaConfigurator->getRelations();
+        foreach ($modelRelations as $relations) {
+            /**
+             * @var $relations Relation[]
+             */
+            if (!empty($relations)) {
+                throw new Exception(sprintf('Found a %s relation between %s and %s', $relations[0]->getType(), $relations[0]->getLeft(), $relations[0]->getRight()));
+            }
+        }
+    }
+
+    private function mockLogger() {
+        $result = m::mock('Label305\AujaLaravel\Logging\Logger');
+        $result->shouldReceive('debug');
+        $result->shouldReceive('info');
+        $result->shouldReceive('warn');
+        return $result;
     }
 }
