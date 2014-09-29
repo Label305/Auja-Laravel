@@ -71,7 +71,7 @@ class ConfigResolver {
      * @return ModelConfig The resolved config.
      */
     public function resolve() {
-        if (is_null($this->config->getDisplayField()) || empty($this->config->getDisplayField())) {
+        if (is_null($this->config->getDisplayField()) || $this->config->getDisplayField() == '') {
             $this->config->setDisplayField($this->resolveDisplayField());
         }
 
