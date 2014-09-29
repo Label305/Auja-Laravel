@@ -32,11 +32,6 @@ class Model {
     private $name;
 
     /**
-     * @var String the name of the table. Defaults to the pluralized form of $name.
-     */
-    private $tableName;
-
-    /**
      * @var array an array of key value pairs with the column names and the columns in the Model.
      */
     private $columns = array();
@@ -48,7 +43,6 @@ class Model {
      */
     function __construct($name) {
         $this->name = $name;
-        $this->tableName = str_plural(snake_case($name)); // TODO: is this the proper name? Where do we define this definition?
     }
 
     /**
@@ -83,20 +77,6 @@ class Model {
      */
     public function getColumn($columnName) {
         return $this->columns[$columnName];
-    }
-
-    /**
-     * @param $tableName String table name to set.
-     */
-    public function setTableName($tableName) {
-        $this->tableName = $tableName;
-    }
-
-    /**
-     * @return String the table name.
-     */
-    public function getTableName() {
-        return $this->tableName;
     }
 
     public function __toString() {

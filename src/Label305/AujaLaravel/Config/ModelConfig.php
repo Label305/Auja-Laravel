@@ -41,6 +41,11 @@ namespace Label305\AujaLaravel\Config;
 class ModelConfig {
 
     /**
+     * @var String The name of the table for this model.
+     */
+    private $tableName;
+
+    /**
      * @var String The name of the column to use for displaying an entry.
      */
     private $displayField;
@@ -49,6 +54,20 @@ class ModelConfig {
      * @var String The name of the icon to use, as defined in Icons.
      */
     private $icon = '';
+
+    /**
+     * @return String The name of the table for this model.
+     */
+    public function getTableName() {
+        return $this->tableName;
+    }
+
+    /**
+     * @param String $tableName The name of the table for this model.
+     */
+    public function setTableName($tableName) {
+        $this->tableName = $tableName;
+    }
 
     /**
      * @return String The name of the column that is used for displaying an entry.
@@ -78,5 +97,4 @@ class ModelConfig {
         $this->icon = $icon;
     }
 
-
-} 
+}

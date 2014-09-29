@@ -34,7 +34,7 @@ use Label305\AujaLaravel\Logging\Logger;
  */
 class AujaConfigurator {
 
-    const ID_PREFIX = '_id';
+    const ID_SUFFIX = '_id';
 
     /**
      * @var Application
@@ -95,10 +95,10 @@ class AujaConfigurator {
             $this->models[$modelName] = new Model($modelName);
             $this->relations[$modelName] = [];
 
-            $this->findColumns($this->models[$modelName]);
-
             $configResolver = new ConfigResolver($this->app, $this->models[$modelName]);
             $this->configs[$modelName] = $configResolver->resolve();
+
+            $this->findColumns($this->models[$modelName]);
         }
 
         /* Find relations */
@@ -156,12 +156,34 @@ class AujaConfigurator {
     }
 
     /**
+     * Finds the name of the table for given Model, using the Config class for the Model.
+     * Uses the overridden value if present, or falls back to the generated value.
+     *
+     * @param $model Model the Model to find the table name for.
+     *
+     * @return String The name of table for given Model.
+     */
+    public function getTableName(Model $model){
+        if (empty($this->models)) {
+            throw new \LogicException('AujaConfigurator not configured yet! Call configure first.');
+        }
+
+        if (!isset($this->configs[$model->getName()])) {
+            throw new \LogicException(sprintf('AujaConfigurator not configured for model %s', $model->getName()));
+        }
+
+        $modelConfig = $this->configs[$model->getName()];
+        /* @var $modelConfig ModelConfig */
+        return $modelConfig->getTableName();
+    }
+
+    /**
      * Finds which display field to use for given Model, using the Config class for the Model.
      * Uses the overridden value if present, or falls back to the generated value.
      *
      * @param $model Model the Model to find the display field for.
      *
-     * @return String the name of the field to use for displaying the Model.
+     * @return String The name of the field to use for displaying the Model.
      */
     public function getDisplayField(Model $model) {
         if (empty($this->models)) {
@@ -206,7 +228,7 @@ class AujaConfigurator {
      */
     private function findColumns(Model $model) {
         $this->logger->debug('Finding columns for model ' . $model->getName());
-        $tableName = $model->getTableName();
+        $tableName = $this->getTableName($model);
 
         if (!$this->databaseRepository->hasTable($tableName)) {
             throw new \InvalidArgumentException(sprintf('Table for %s does not exist!', $model->getName()));
@@ -260,7 +282,7 @@ class AujaConfigurator {
     private function findSimpleRelations(Model $model) {
         $this->logger->debug(sprintf('Finding relations for %s', $model->getName()));
         foreach ($model->getColumns() as $column) {
-            if (ends_with($column->getName(), self::ID_PREFIX)) {
+            if (ends_with($column->getName(), self::ID_SUFFIX)) {
                 $this->defineRelation($model, $column->getName());
             }
         }
@@ -274,7 +296,7 @@ class AujaConfigurator {
      * @param $columnName String the column name, which corresponds to another model.
      */
     private function defineRelation(Model $model, $columnName) {
-        $otherModelName = ucfirst(camel_case(substr($columnName, 0, strpos($columnName, self::ID_PREFIX)))); // TODO: prettify
+        $otherModelName = ucfirst(camel_case(substr($columnName, 0, strpos($columnName, self::ID_SUFFIX)))); // TODO: prettify
 
         if (!in_array($otherModelName, array_keys($this->models))) {
             $this->logger->warn(sprintf('Found foreign id %s in model %s, but no model with name %s was registered', $columnName, $model->getName(), $otherModelName));
