@@ -55,6 +55,10 @@ class ModelConfig {
      */
     private $icon = '';
 
+    public function __construct($modelName){
+        $this->tableName = str_plural(snake_case($modelName));
+    }
+
     /**
      * @return String The name of the table for this model.
      */

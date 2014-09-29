@@ -20,11 +20,6 @@ class ModelSpec extends ObjectBehavior {
         $this->getName()->shouldBe('MyName');
     }
 
-    function it_has_a_table_name() {
-        $this->setTableName('MyTableName');
-        $this->getTableName()->shouldBe('MyTableName');
-    }
-
     function it_can_store_columns(Column $column1, Column $column2) {
         $column1->getName()->willReturn('Column 1');
         $column2->getName()->willReturn('Column 2');

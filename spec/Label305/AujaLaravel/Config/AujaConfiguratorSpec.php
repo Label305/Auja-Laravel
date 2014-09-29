@@ -112,9 +112,9 @@ class AujaConfiguratorSpec extends ObjectBehavior {
     }
 
     private function configureClubConfigStubs() {
-        $config = new ModelConfig();
+        $config = new ModelConfig('Club');
         $config->setIcon('Icon');
-        $this->application->make('ClubConfig')->willReturn($config);
+        $this->application->make('ClubConfig', 'Club')->willReturn($config);
 
         $this->databaseHelper->hasTable('clubs')->willReturn(true);
         $this->databaseHelper->getColumnListing('clubs')->willReturn(['id']);

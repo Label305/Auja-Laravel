@@ -59,9 +59,9 @@ class ConfigResolver {
         $this->model = $model;
 
         try {
-            $this->config = $app->make($model->getName() . 'Config');
+            $this->config = $app->make($model->getName() . 'Config', $model->getName());
         } catch (\ReflectionException $e) {
-            $this->config = new ModelConfig();
+            $this->config = new ModelConfig($model->getName());
         }
     }
 
@@ -71,7 +71,7 @@ class ConfigResolver {
      * @return ModelConfig The resolved config.
      */
     public function resolve() {
-        if (is_null($this->config->getDisplayField())) {
+        if (is_null($this->config->getDisplayField()) || empty($this->config->getDisplayField())) {
             $this->config->setDisplayField($this->resolveDisplayField());
         }
 
@@ -96,7 +96,7 @@ class ConfigResolver {
 
         if ($result == null) {
             /* If we couldn't find a display field, just return the first one */
-            return empty($columns) ? '' : $columns[0]->getName();
+            $result = empty($columns) ? '' : $columns[0]->getName();
         }
 
         return $result;

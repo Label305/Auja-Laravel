@@ -97,8 +97,8 @@ class AujaConfigurator {
 
             $configResolver = new ConfigResolver($this->app, $this->models[$modelName]);
             $this->configs[$modelName] = $configResolver->resolve();
-
             $this->findColumns($this->models[$modelName]);
+            $this->configs[$modelName] = $configResolver->resolve(); // TODO: Find a workaround for doing this twice.
         }
 
         /* Find relations */
