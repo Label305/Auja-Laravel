@@ -1,5 +1,5 @@
 suites:
-  auja-laravel: Label305\AujaLaravel
+  auja-laravel: Label305\AujaLaravel\Config
 
 formatter.name: pretty
 

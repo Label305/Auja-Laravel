@@ -2,15 +2,15 @@ language: php
 
 php: [5.4, 5.5, hhvm]
 
-before_script:
-  - composer install
+install:
+  - if [[ $TRAVIS_PHP_VERSION != 'hhvm' ]]; then composer update ; fi
+  - if [[ $TRAVIS_PHP_VERSION == 'hhvm' ]]; then composer update php phpspec/phpspec; fi
 
 script:
   - bin/phpspec run --format=pretty
   - phpunit
-  
-after_script:
-  - bin/coveralls -v
+  - if [[ $TRAVIS_PHP_VERSION != 'hhvm' ]]; then bin/coveralls -v ; fi
+
 
 notifications:
   - email:
@@ -18,6 +18,6 @@ notifications:
     on_failure: change
 
 matrix:
+  fast_finish: true
   allow_failures:
     - php: hhvm
-  fast_finish: true

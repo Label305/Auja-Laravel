@@ -20,7 +20,7 @@ class AujaConfiguratorSpec extends ObjectBehavior {
     }
 
     function it_is_configurable() {
-        $this->configure(array());
+        $this->configure([]);
     }
 
     function it_should_haveModels() {
