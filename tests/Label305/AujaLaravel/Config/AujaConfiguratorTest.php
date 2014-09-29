@@ -98,13 +98,6 @@ class AujaConfiguratorTest extends AujaTestCase {
         $this->aujaConfigurator = new AujaConfigurator($this->application, $this->databaseHelper, $this->logger);
     }
 
-    public function testInitialState() {
-        assertThat($this->aujaConfigurator->getModels(), is(emptyArray()));
-        assertThat($this->aujaConfigurator->getRelations(), is(emptyArray()));
-
-        assertThat($this->aujaConfigurator->getRelationsForModel($this->clubModel), is(emptyArray()));
-    }
-
     public function testConfigureSimpleSingleModel() {
         /* Given there is a table for 'Club' */
         $this->databaseHelper->shouldReceive('hasTable')->times(1)->with('clubs')->andReturn(true);

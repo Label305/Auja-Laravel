@@ -54,28 +54,28 @@ class AujaConfigurator {
     /**
      * @var array a key-value pair of model names and the Model instances.
      */
-    private $models = array();
+    private $models = [];
 
     /**
      * @var Relation[][] a key-value pair of model names and an array of their relations.
      */
-    private $relations = array();
+    private $relations = [];
 
     /**
      * @var array a key-value pair of model names and their generated configs.
      */
-    private $configs = array();
+    private $configs = [];
 
     /**
      * Creates a new AujaConfigurator.
      *
      * @param Application    $app
-     * @param DatabaseHelper $databaseRepository
+     * @param DatabaseHelper $databaseHelper
      * @param Logger         $logger ;
      */
-    public function __construct(Application $app, DatabaseHelper $databaseRepository, Logger $logger) {
+    public function __construct(Application $app, DatabaseHelper $databaseHelper, Logger $logger) {
         $this->app = $app;
-        $this->databaseRepository = $databaseRepository;
+        $this->databaseRepository = $databaseHelper;
         $this->logger = $logger;
     }
 
@@ -86,10 +86,14 @@ class AujaConfigurator {
      * @param  String[] $modelNames an array of model names to use.
      */
     public function configure(array $modelNames) {
+        if (empty($modelNames)) {
+            throw new \LogicException('Supply at least one model name!');
+        }
+
         /* First define the models and their columns. */
         foreach ($modelNames as $modelName) {
             $this->models[$modelName] = new Model($modelName);
-            $this->relations[$modelName] = array();
+            $this->relations[$modelName] = [];
 
             $this->findColumns($this->models[$modelName]);
 
@@ -105,6 +109,10 @@ class AujaConfigurator {
      * @return Model[] the array of Model instances.
      */
     public function getModels() {
+        if (empty($this->models)) {
+            throw new \LogicException('AujaConfigurator not configured yet! Call configure first.');
+        }
+
         return array_values($this->models);
     }
 
@@ -115,7 +123,7 @@ class AujaConfigurator {
      */
     public function getModel($modelName) {
         if (!isset($this->models[$modelName])) {
-            throw new \LogicException(sprintf("Model for name %s doesn't exist!", $modelName));
+            throw new \LogicException(sprintf('Model for name %s doesn\'t exist!', $modelName));
         }
 
         return $this->models[$modelName];
@@ -125,6 +133,10 @@ class AujaConfigurator {
      * @return array a key-value pair of model names and an array of their relations.
      */
     public function getRelations() {
+        if (empty($this->models)) {
+            throw new \LogicException('AujaConfigurator not configured yet! Call configure first.');
+        }
+
         return $this->relations;
     }
 
@@ -136,7 +148,11 @@ class AujaConfigurator {
      * @return Relation[] the Relations.
      */
     public function getRelationsForModel(Model $model) {
-        return !is_null($model) && isset($this->relations[$model->getName()]) ? $this->relations[$model->getName()] : array();
+        if (empty($this->models)) {
+            throw new \LogicException('AujaConfigurator not configured yet! Call configure first.');
+        }
+
+        return !is_null($model) && isset($this->relations[$model->getName()]) ? $this->relations[$model->getName()] : [];
     }
 
     /**
@@ -148,6 +164,14 @@ class AujaConfigurator {
      * @return String the name of the field to use for displaying the Model.
      */
     public function getDisplayField(Model $model) {
+        if (empty($this->models)) {
+            throw new \LogicException('AujaConfigurator not configured yet! Call configure first.');
+        }
+
+        if (!isset($this->configs[$model->getName()])) {
+            throw new \LogicException(sprintf('AujaConfigurator not configured for model %s', $model->getName()));
+        }
+
         $modelConfig = $this->configs[$model->getName()];
         /* @var $modelConfig ModelConfig */
         return $modelConfig->getDisplayField();
@@ -162,6 +186,14 @@ class AujaConfigurator {
      * @return String The name of the icon.
      */
     public function getIcon(Model $model) {
+        if (empty($this->models)) {
+            throw new \LogicException('AujaConfigurator not configured yet! Call configure first.');
+        }
+
+        if (!isset($this->configs[$model->getName()])) {
+            throw new \LogicException(sprintf('AujaConfigurator not configured for model %s', $model->getName()));
+        }
+
         $modelConfig = $this->configs[$model->getName()];
         /* @var $modelConfig ModelConfig */
         return $modelConfig->getIcon();
