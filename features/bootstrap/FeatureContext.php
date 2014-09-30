@@ -143,9 +143,9 @@ class FeatureContext extends BehatContext {
                 throw new Exception(sprintf('No relations for model %s', $leftModelName));
             }
 
-            $relations = $this->aujaConfigurator->getRelationsForModel($this->aujaConfigurator->getModel($leftModelName));
+            $modelRelations = $this->aujaConfigurator->getRelationsForModel($this->aujaConfigurator->getModel($leftModelName));
             $relationshipExists = false;
-            foreach ($relations as $relation) {
+            foreach ($modelRelations as $relation) {
                 if ($relation->getType() == Relation::BELONGS_TO && $relation->getRight()->getName() == $rightModelName) {
                     $relationshipExists = true;
                 }

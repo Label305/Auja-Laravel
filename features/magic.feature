@@ -18,8 +18,8 @@ Feature: Auja Configurator
       | Club |
     And there should be no relations.
 
-    
-  Scenario: Setup Auja with a single belongs to relation.
+
+  Scenario: Setup Auja with two models with a single belongs to relation.
 
     Given there is a model "Club"
     And it has the following columns:
@@ -42,3 +42,29 @@ Feature: Auja Configurator
     And it should have a belongs to relationship between:
       | left | right |
       | Team | Club  |
+
+  Scenario: Setup Auja with two models with a double belongs to relation.
+
+    Given there is a model "Club"
+    And it has the following columns:
+      | column  | type    |
+      | id      | integer |
+      | name    | string  |
+      | team_id | integer |
+    And there is a model "Team"
+    And it has the following columns:
+      | column  | type    |
+      | id      | integer |
+      | name    | string  |
+      | club_id | integer |
+
+    When I configure the Auja Configurator
+
+    Then I should get a configuration with the following models:
+      | name |
+      | Club |
+      | Team |
+    And it should have a belongs to relationship between:
+      | left | right |
+      | Team | Club  |
+      | Club | Team  |
