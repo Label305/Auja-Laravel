@@ -133,28 +133,14 @@ class FeatureContext extends BehatContext {
      * @Given /^it should have a belongs to relationship between:$/
      */
     public function itShouldHaveABelongsToRelationshipBetween(TableNode $table) {
-        $relations = $this->aujaConfigurator->getRelations();
+        $this->assertRelationshipsExist($table, Relation::BELONGS_TO);
+    }
 
-        foreach ($table->getHash() as $relationHash) {
-            $leftModelName = $relationHash['left'];
-            $rightModelName = $relationHash['right'];
-
-            if (!isset($relations[$leftModelName])) {
-                throw new Exception(sprintf('No relations for model %s', $leftModelName));
-            }
-
-            $modelRelations = $this->aujaConfigurator->getRelationsForModel($this->aujaConfigurator->getModel($leftModelName));
-            $relationshipExists = false;
-            foreach ($modelRelations as $relation) {
-                if ($relation->getType() == Relation::BELONGS_TO && $relation->getRight()->getName() == $rightModelName) {
-                    $relationshipExists = true;
-                }
-            }
-
-            if (!$relationshipExists) {
-                throw new Exception(sprintf('There is no belongs to relationship between %s and %s.', $leftModelName, $rightModelName));
-            }
-        }
+    /**
+     * @Given /^it should have a has many relationship between:$/
+     */
+    public function itShouldHaveAHasManyRelationshipBetween(TableNode $table) {
+        $this->assertRelationshipsExist($table, Relation::HAS_MANY);
     }
 
     /**
@@ -178,5 +164,30 @@ class FeatureContext extends BehatContext {
         $result->shouldReceive('info');
         $result->shouldReceive('warn');
         return $result;
+    }
+
+    private function assertRelationshipsExist(TableNode $table, $type) {
+        $relations = $this->aujaConfigurator->getRelations();
+
+        foreach ($table->getHash() as $relationHash) {
+            $leftModelName = $relationHash['left'];
+            $rightModelName = $relationHash['right'];
+
+            if (!isset($relations[$leftModelName])) {
+                throw new Exception(sprintf('No relations for model %s', $leftModelName));
+            }
+
+            $modelRelations = $this->aujaConfigurator->getRelationsForModel($this->aujaConfigurator->getModel($leftModelName));
+            $relationshipExists = false;
+            foreach ($modelRelations as $relation) {
+                if ($relation->getType() == $type && $relation->getRight()->getName() == $rightModelName) {
+                    $relationshipExists = true;
+                }
+            }
+
+            if (!$relationshipExists) {
+                throw new Exception(sprintf('There is no %s relationship between %s and %s.', $type, $leftModelName, $rightModelName));
+            }
+        }
     }
 }
