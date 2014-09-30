@@ -18,6 +18,26 @@ Feature: Auja Configurator
       | Club |
     And there should be no relations.
 
+  Scenario: Setup Auja with two models without relations.
+
+    Given there is a model "Club"
+    And it has the following columns:
+      | column | type    |
+      | id     | integer |
+      | name   | string  |
+    And there is a model "Shop"
+    And it has the following columns:
+      | column | type    |
+      | id     | integer |
+      | name   | string  |
+
+    When I configure the Auja Configurator
+
+    Then I should get a configuration with the following models:
+      | name |
+      | Club |
+      | Shop |
+    And there should be no relations.
 
   Scenario: Setup Auja with two models with a single belongs to relation.
 
