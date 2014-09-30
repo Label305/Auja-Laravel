@@ -59,7 +59,7 @@ class ConfigResolver {
         $this->model = $model;
 
         try {
-            $this->config = $app->make($model->getName() . 'Config', $model->getName());
+            $this->config = $app->make($model->getName() . 'Config', [$model->getName()]);
         } catch (\ReflectionException $e) {
             $this->config = new ModelConfig($model->getName());
         }

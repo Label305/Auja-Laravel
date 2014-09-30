@@ -82,7 +82,7 @@ class FeatureContext extends BehatContext {
 
         $config = new ModelConfig($modelName);
         $config->setTableName($modelName);
-        $this->application->shouldReceive('make')->with($modelName . 'Config', $modelName)->andReturn($config);
+        $this->application->shouldReceive('make')->with($modelName . 'Config', [$modelName])->andReturn($config);
 
         $this->databaseHelper->shouldReceive('hasTable')->with($modelName)->andReturn(true);
     }
