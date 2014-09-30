@@ -22,7 +22,6 @@
  */
 
 use Behat\Behat\Context\BehatContext;
-use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use Illuminate\Foundation\Application;
 use Label305\AujaLaravel\Config\AujaConfigurator;
@@ -78,11 +77,6 @@ class FeatureContext extends BehatContext {
      * @Given /^there is a model "([^"]*)"$/
      */
     public function thereIsAModel($modelName) {
-        foreach ($this->models as $model) {
-            $this->databaseHelper->shouldReceive('hasTable')->with(sprintf('%s_%s', strtolower($modelName), strtolower($model)))->andReturn(false);
-            $this->databaseHelper->shouldReceive('hasTable')->with(sprintf('%s_%s', strtolower($model), strtolower($modelName)))->andReturn(false);
-        }
-
         $this->models[] = $modelName;
         $this->lastModel = $modelName;
 
@@ -109,6 +103,17 @@ class FeatureContext extends BehatContext {
      * @When /^I configure the Auja Configurator$/
      */
     public function iConfigureTheAujaConfigurator() {
+        /* We still need to configure pivot tables that don't exist */
+        for ($i = 0; $i < sizeof($this->models); $i++) {
+            $model = $this->models[$i];
+            for ($j = $i + 1; $j < sizeof($this->models); $j++) {
+                $otherModel = $this->models[$j];
+                $this->databaseHelper->shouldReceive('hasTable')->with(sprintf('%s_%s', strtolower($otherModel), strtolower($model)))->andReturn(false);
+                $this->databaseHelper->shouldReceive('hasTable')->with(sprintf('%s_%s', strtolower($model), strtolower($otherModel)))->andReturn(false);
+            }
+        }
+
+
         $this->aujaConfigurator->configure($this->models);
     }
 
@@ -144,6 +149,13 @@ class FeatureContext extends BehatContext {
     }
 
     /**
+     * @Given /^it should have a many to many relationship between:$/
+     */
+    public function itShouldHaveAManyToManyRelationshipBetween(TableNode $table) {
+        $this->assertRelationshipsExist($table, Relation::HAS_AND_BELONGS_TO);
+    }
+
+    /**
      * @Given /^there should be no relations\.$/
      */
     public function thereShouldBeNoRelations() {
@@ -156,6 +168,13 @@ class FeatureContext extends BehatContext {
                 throw new Exception(sprintf('Found a %s relation between %s and %s', $relations[0]->getType(), $relations[0]->getLeft(), $relations[0]->getRight()));
             }
         }
+    }
+
+    /**
+     * @Given /^there is a pivot table "([^"]*)"$/
+     */
+    public function thereIsAPivotTable($tableName) {
+        $this->databaseHelper->shouldReceive('hasTable', $tableName)->andReturn(true);
     }
 
     private function mockLogger() {

@@ -46,7 +46,8 @@ Feature: Auja Configurator
       | left | right |
       | Club | Team  |
 
-  Scenario: Setup Auja with two models with a double belongs to relation.
+
+  Scenario: Setup Auja with two models with a one-to-one relation.
 
     Given there is a model "Club"
     And it has the following columns:
@@ -71,6 +72,7 @@ Feature: Auja Configurator
       | left | right |
       | Team | Club  |
       | Club | Team  |
+
 
   Scenario: Setup Auja with three models with transitive belongs to relations.
 
@@ -107,3 +109,27 @@ Feature: Auja Configurator
       | left | right  |
       | Club | Team   |
       | Team | Player |
+
+  Scenario: Setup Auja with two models with a many-to-many relation.
+
+    Given there is a model "Team"
+    And it has the following columns:
+      | column | type    |
+      | id     | integer |
+      | name   | string  |
+    And there is a model "Match"
+    And it has the following columns:
+      | column | type     |
+      | id     | integer  |
+      | date   | datetime |
+    And there is a pivot table "match_team"
+
+    When I configure the Auja Configurator
+
+    Then I should get a configuration with the following models:
+      | name  |
+      | Team  |
+      | Match |
+    And it should have a many to many relationship between:
+      | left | right |
+      | Team | Match |
