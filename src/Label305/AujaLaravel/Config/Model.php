@@ -78,8 +78,4 @@ class Model {
     public function getColumn($columnName) {
         return $this->columns[$columnName];
     }
-
-    public function __toString() {
-        return $this->name;
-    }
 }

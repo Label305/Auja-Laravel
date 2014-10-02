@@ -31,4 +31,11 @@ class ModelSpec extends ObjectBehavior {
         $this->getColumns()->shouldContain($column1);
         $this->getColumns()->shouldContain($column2);
     }
+
+    function it_can_return_a_single_column(Column $column) {
+        $column->getName()->willReturn('Column');
+        $this->addColumn($column);
+
+        $this->getColumn('Column')->shouldBe($column);
+    }
 }
