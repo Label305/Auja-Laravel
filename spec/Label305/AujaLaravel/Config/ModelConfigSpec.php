@@ -3,7 +3,6 @@
 namespace spec\Label305\AujaLaravel\Config;
 
 use Label305\Auja\Icons;
-use Label305\AujaLaravel\Config\Column;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 

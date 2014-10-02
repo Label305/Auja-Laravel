@@ -66,7 +66,7 @@ class Relation {
      *
      * @param $left  Model the left hand side of the relationship.
      * @param $right Model the right hand side of the relationship.
-     * @param $type  String the type of the relationship. Must be one of {BELONGS_TO HAS_MANY, HAS_AND_BELONGS_TO}.
+     * @param $type  String the type of the relationship. Must be one of {BELONGS_TO, HAS_MANY, HAS_AND_BELONGS_TO}.
      */
     function __construct(Model $left, Model $right, $type) {
         $this->left = $left;
