@@ -6,12 +6,15 @@
 [![Total Downloads](https://poser.pugx.org/label305/auja-laravel/downloads.svg)](https://packagist.org/packages/label305/auja-laravel)
 [![Latest Unstable Version](https://poser.pugx.org/label305/auja-laravel/v/unstable.svg)](https://packagist.org/packages/label305/auja-laravel)
 
-Auja for Laravel.
+[Auja](http://label305.github.io/Auja/) is an easy-to-use and easy-to-implement back-end interface. It provides an easy and intuitive way for you to view and manipulate your data, so you can focus on more important matters. Auja is designed to be both user-friendly _and_ developer-friendly by providing you with tools to setup your back-end in no more than five minutes.
 
-## Setup
+Auja's basis is the [Auja JavaScript repository](https://github.com/Label305/Auja), which provides the graphical user interface. To determine its content, it relies on specific JSON messages. [Auja-PHP](https://github.com/Label305/Auja-PHP) in turn, provides an Object Oriented approach to provide these JSON messages in PHP. In this repository you will find a Laravel implementation which you can use to setup Auja in a matter of minutes.
 
-To start developing for this project, clone [Auja-Laravel-Example](https://github.com/Label305/Auja-Laravel-Example).
-After running `composer install`, you can find this project in `\vendor\label305\auja-laravel\`.
+## Related repositories
+  
+  - [**Auja**](https://github.com/Label305/Auja) - The JavaScript GUI implementation.
+  - [**Auja-PHP**](https://github.com/Label305/Auja-PHP) - Auja's protocol implemented in an Object Oriented manner, in PHP.
+  - [**Auja-Laravel-Example**](https://github.com/Label305/Auja-Laravel-Example) - An example Laravel project using Auja.
 
 ## License
 Copyright 2014 Label305 B.V.
