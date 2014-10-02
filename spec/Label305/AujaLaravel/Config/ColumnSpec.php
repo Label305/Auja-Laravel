@@ -15,13 +15,11 @@ class ColumnSpec extends ObjectBehavior {
         $this->shouldHaveType('Label305\AujaLaravel\Config\Column');
     }
 
-    function it_should_have_a_name() {
+    function it_has_a_name() {
         $this->getName()->shouldBe('MyName');
     }
 
-    function it_should_have_a_type() {
+    function it_has_a_type() {
         $this->getType()->shouldBe('MyType');
     }
-
-
 }
