@@ -23,20 +23,64 @@
 
 namespace Label305\AujaLaravel\Database;
 
+use Doctrine\DBAL\Schema\Table;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 
+/**
+ * A DatabaseHelper which uses the DB facade to access the DoctrineSchemaManager.
+ * Also caches the data using the Cache facade.
+ *
+ * @author  Niek Haarman - <niek@label305.com>
+ *
+ * @package Label305\AujaLaravel\Database
+ * @license http://www.apache.org/licenses/LICENSE-2.0
+ */
 class MySQLDatabaseHelper implements DatabaseHelper {
 
+    const KEY_TABLE_INFO = 'Label305\AujaLaravel\Database\MySQLDatabaseHelper\table_info';
+
+    /**
+     * @var Table[]
+     */
+    private $tables;
+
     public function hasTable($tableName) {
-        return Schema::hasTable($tableName);
+        $tables = $this->getTables();
+        return isset($tables[$tableName]);
     }
 
     public function getColumnListing($tableName) {
-        return Schema::getColumnListing($tableName);
+        $tables = $this->getTables();
+        $table = $tables[$tableName];
+        return array_keys($table->getColumns());
     }
 
     public function getColumnType($tableName, $columnName) {
-        return DB::connection()->getDoctrineColumn($tableName, $columnName)->getType()->getName();
+        $tables = $this->getTables();
+        $table = $tables[$tableName];
+        return $table->getColumn($columnName)->getType()->getName();
+    }
+
+    /**
+     * @return Table[] The tables, either from cache or from the DoctrineSchemaManager.
+     */
+    private function getTables() {
+        if ($this->tables == null) {
+            if (Cache::has(self::KEY_TABLE_INFO)) {
+                $this->tables = Cache::get(self::KEY_TABLE_INFO);
+            } else {
+                $this->tables = array();
+                $doctrineSchemaManager = DB::getDoctrineSchemaManager();
+                $tables = $doctrineSchemaManager->listTables();
+                /* @var $tables Table[] */
+                foreach ($tables as $table) {
+                    $this->tables[$table->getName()] = $table;
+                }
+
+                Cache::put(self::KEY_TABLE_INFO, $this->tables, 1);
+            }
+        }
+        return $this->tables;
     }
 }

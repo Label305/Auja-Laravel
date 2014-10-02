@@ -7,7 +7,7 @@ install:
   - if [[ $TRAVIS_PHP_VERSION == 'hhvm' ]]; then composer update php phpspec/phpspec; fi
 
 script:
-  - bin/phpspec run --format=pretty
+  - bin/phpspec run --format=pretty --no-code-generation
   - bin/behat
   - if [[ $TRAVIS_PHP_VERSION != 'hhvm' ]]; then bin/coveralls -v ; fi
 
