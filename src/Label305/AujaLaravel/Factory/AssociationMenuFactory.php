@@ -24,6 +24,8 @@
 namespace Label305\AujaLaravel\Factory;
 
 
+use Illuminate\Routing\UrlGenerator;
+use Illuminate\Support\Facades\URL;
 use Label305\Auja\Menu\LinkMenuItem;
 use Label305\Auja\Menu\Menu;
 use Label305\Auja\Menu\ResourceMenuItem;
@@ -67,7 +69,7 @@ class AssociationMenuFactory {
 
         $addMenuItem = new LinkMenuItem();
         $addMenuItem->setText('Add ' . $this->translator->trans($associationName));
-        $addMenuItem->setTarget(route($this->aujaRouter->getCreateAssociationName($modelName, $associationName), $modelId));
+        $addMenuItem->setTarget(Url::route($this->aujaRouter->getCreateAssociationName($modelName, $associationName), $modelId));
         $menu->addMenuItem($addMenuItem);
 
         $headerMenuItem = new SpacerMenuItem();
@@ -75,7 +77,7 @@ class AssociationMenuFactory {
         $menu->addMenuItem($headerMenuItem);
 
         $resourceMenuItem = new ResourceMenuItem();
-        $resourceMenuItem->setTarget(route($this->aujaRouter->getAssociationName($modelName, $associationName), $modelId));
+        $resourceMenuItem->setTarget(Url::route($this->aujaRouter->getAssociationName($modelName, $associationName), $modelId));
         $menu->addMenuItem($resourceMenuItem);
 
         return $menu;
