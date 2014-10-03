@@ -21,7 +21,7 @@
  * limitations under the License.
  */
 
-namespace Label305\AujaLaravel;
+namespace Label305\AujaLaravel\Factory;
 
 use Doctrine\DBAL\Types\Type;
 use Label305\Auja\Page\FormItem\CheckboxFormItem;
@@ -38,7 +38,7 @@ use Label305\Auja\Page\FormItem\TimeFormItem;
 /**
  * A factory class for creating PageComponents out of types.
  *
- * @package Label305\AujaLaravel
+ * @package Label305\AujaLaravel\Factory
  */
 class FormItemFactory {
 
@@ -48,7 +48,7 @@ class FormItemFactory {
      *
      * @return FormItem the created PageFormItem.
      */
-    public static function getFormItem($type, $hidden) {
+    public function getFormItem($type, $hidden) {
         if ($hidden) {
             return new PasswordFormItem();
         }
