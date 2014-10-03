@@ -23,6 +23,7 @@
 
 namespace spec\Label305\AujaLaravel\Factory;
 
+use Doctrine\DBAL\Types\Type;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -33,8 +34,50 @@ class FormItemFactorySpec extends ObjectBehavior {
         $this->shouldHaveType('Label305\AujaLaravel\Factory\FormItemFactory');
     }
 
+    function it_can_return_a_passwordformitem() {
+        $this->getFormItem('type', true)->shouldHaveType('Label305\Auja\Page\FormItem\PasswordFormItem');
+    }
 
-//    function it_can_return_a_passwordformitem(){
-//        $this->getFormItem('type', true)->shouldHaveType('Label305\Auja\Page\FormItem\PasswordFormItem');
-//    }
+    function it_can_return_a_textareaformitem() {
+        $this->getFormItem(Type::TEXT, false)->shouldHaveType('Label305\Auja\Page\FormItem\TextAreaFormItem');
+        $this->getFormItem(Type::TARRAY, false)->shouldHaveType('Label305\Auja\Page\FormItem\TextAreaFormItem');
+        $this->getFormItem(Type::SIMPLE_ARRAY, false)->shouldHaveType('Label305\Auja\Page\FormItem\TextAreaFormItem');
+        $this->getFormItem(Type::JSON_ARRAY, false)->shouldHaveType('Label305\Auja\Page\FormItem\TextAreaFormItem');
+        $this->getFormItem(Type::OBJECT, false)->shouldHaveType('Label305\Auja\Page\FormItem\TextAreaFormItem');
+        $this->getFormItem(Type::BLOB, false)->shouldHaveType('Label305\Auja\Page\FormItem\TextAreaFormItem');
+    }
+
+    function it_can_return_an_integerformitem() {
+        $this->getFormItem(Type::INTEGER, false)->shouldHaveType('Label305\Auja\Page\FormItem\IntegerFormItem');
+        $this->getFormItem(Type::SMALLINT, false)->shouldHaveType('Label305\Auja\Page\FormItem\IntegerFormItem');
+        $this->getFormItem(Type::BIGINT, false)->shouldHaveType('Label305\Auja\Page\FormItem\IntegerFormItem');
+    }
+
+    function it_can_return_a_numberformitem() {
+        $this->getFormItem(Type::DECIMAL, false)->shouldHaveType('Label305\Auja\Page\FormItem\NumberFormItem');
+        $this->getFormItem(Type::FLOAT, false)->shouldHaveType('Label305\Auja\Page\FormItem\NumberFormItem');
+    }
+
+    function it_can_return_a_checkboxformitem() {
+        $this->getFormItem(Type::BOOLEAN, false)->shouldHaveType('Label305\Auja\Page\FormItem\CheckboxFormItem');
+    }
+
+    function it_can_return_a_dateformitem() {
+        $this->getFormItem(Type::DATE, false)->shouldHaveType('Label305\Auja\Page\FormItem\DateFormItem');
+    }
+
+    function it_can_return_a_datetimeformitem() {
+        $this->getFormItem(Type::DATETIME, false)->shouldHaveType('Label305\Auja\Page\FormItem\DateTimeFormItem');
+        $this->getFormItem(Type::DATETIMETZ, false)->shouldHaveType('Label305\Auja\Page\FormItem\DateTimeFormItem');
+    }
+
+    function it_can_return_a_timeformitem() {
+        $this->getFormItem(Type::TIME, false)->shouldHaveType('Label305\Auja\Page\FormItem\TimeFormItem');
+    }
+
+    function it_can_return_a_textformitem() {
+        $this->getFormItem(Type::STRING, false)->shouldHaveType('Label305\Auja\Page\FormItem\TextFormItem');
+        $this->getFormItem(Type::GUID, false)->shouldHaveType('Label305\Auja\Page\FormItem\TextFormItem');
+        $this->getFormItem('someunknowntype', false)->shouldHaveType('Label305\Auja\Page\FormItem\TextFormItem');
+    }
 }
