@@ -52,16 +52,16 @@ class AuthenticationFormFactory {
         $usernameTextFormItem = new TextFormItem();
         $usernameTextFormItem->setName('username');
         $usernameTextFormItem->setLabel($this->translator->trans('Username'));
-        $result->addItem($usernameTextFormItem);
+        $result->addFormItem($usernameTextFormItem);
 
         $passwordFormItem = new PasswordFormItem();
         $passwordFormItem->setName('password');
         $passwordFormItem->setLabel($this->translator->trans('Password'));
-        $result->addItem($passwordFormItem);
+        $result->addFormItem($passwordFormItem);
 
         $submitFormItem = new SubmitFormItem();
         $submitFormItem->setText($this->translator->trans('Login'));
-        $result->addItem($submitFormItem);
+        $result->addFormItem($submitFormItem);
 
         return $result;
     }
