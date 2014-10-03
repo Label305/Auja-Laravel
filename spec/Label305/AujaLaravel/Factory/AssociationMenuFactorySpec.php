@@ -46,11 +46,11 @@ class AssociationMenuFactorySpec extends ObjectBehavior {
      */
     private $aujaRouter;
 
-    function let(Translator $translator, AujaRouter $aujaRouter) {
-        $this->beConstructedWith($translator, $aujaRouter);
-
-        $this->translator = $translator;
+    function let(AujaRouter $aujaRouter) {
         $this->aujaRouter = $aujaRouter;
+        $this->translator = \Mockery::mock('Label305\AujaLaravel\I18N\Translator');
+
+        $this->beConstructedWith($this->translator, $aujaRouter);
     }
 
     function it_is_initializable() {
@@ -59,12 +59,15 @@ class AssociationMenuFactorySpec extends ObjectBehavior {
 
     function it_can_create_a_menu() {
         Url::shouldReceive('route');
+        $this->translator->shouldReceive('trans');
 
         $this->create('Name', 1, 'Association')->shouldHaveType('Label305\Auja\Menu\Menu');
     }
 
     function its_created_menu_should_have_an_add_linkmenuitem_as_a_first_item() {
         Url::shouldReceive('route');
+        $this->translator->shouldReceive('trans')->with('Add')->andReturn('Add');
+        $this->translator->shouldReceive('trans');
 
         $result = $this->create('Name', 1, 'Association');
 
@@ -77,13 +80,14 @@ class AssociationMenuFactorySpec extends ObjectBehavior {
 
         $item = $menu->getMenuItems()[0];
         /* @var $item LinkMenuItem */
-        if (strpos($item->getText(), 'Add') === -1) {
+        if (strpos($item->getText(), 'Add') === false) {
             throw new Exception('First item does not contain \'Add\'');
         }
     }
 
     function its_created_menu_should_have_a_spacermenuitem_as_a_second_item() {
         Url::shouldReceive('route');
+        $this->translator->shouldReceive('trans');
 
         $result = $this->create('Name', 1, 'Association');
 
@@ -97,6 +101,7 @@ class AssociationMenuFactorySpec extends ObjectBehavior {
 
     function its_created_menu_should_have_a_resourcemenuitem_as_a_third_item() {
         Url::shouldReceive('route');
+        $this->translator->shouldReceive('trans');
 
         $result = $this->create('Name', 1, 'Association');
 

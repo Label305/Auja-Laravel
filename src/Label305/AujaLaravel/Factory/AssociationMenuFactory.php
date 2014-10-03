@@ -68,7 +68,7 @@ class AssociationMenuFactory {
         $menu = new Menu();
 
         $addMenuItem = new LinkMenuItem();
-        $addMenuItem->setText('Add ' . $this->translator->trans($associationName));
+        $addMenuItem->setText($this->translator->trans('Add') . ' ' . $this->translator->trans($associationName));
         $addMenuItem->setTarget(Url::route($this->aujaRouter->getCreateAssociationName($modelName, $associationName), $modelId));
         $menu->addMenuItem($addMenuItem);
 

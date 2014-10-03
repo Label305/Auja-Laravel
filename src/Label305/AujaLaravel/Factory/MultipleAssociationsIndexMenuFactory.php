@@ -24,6 +24,7 @@
 namespace Label305\AujaLaravel\Factory;
 
 
+use Illuminate\Support\Facades\URL;
 use Label305\Auja\Menu\LinkMenuItem;
 use Label305\Auja\Menu\Menu;
 use Label305\Auja\Menu\SpacerMenuItem;
@@ -67,7 +68,7 @@ class MultipleAssociationsIndexMenuFactory {
 
         $addMenuItem = new LinkMenuItem();
         $addMenuItem->setText($this->translator->trans('Edit'));
-        $addMenuItem->setTarget(route($this->aujaRouter->getEditName($modelName), $modelId));
+        $addMenuItem->setTarget(URL::route($this->aujaRouter->getEditName($modelName), $modelId));
         $menu->addMenuItem($addMenuItem);
 
         $spacerMenuItem = new SpacerMenuItem();
@@ -79,7 +80,7 @@ class MultipleAssociationsIndexMenuFactory {
 
             $associationMenuItem = new LinkMenuItem();
             $associationMenuItem->setText($this->translator->trans(str_plural($otherModelName)));
-            $associationMenuItem->setTarget(route($this->aujaRouter->getAssociationMenuName($modelName, $otherModelName), $modelId));
+            $associationMenuItem->setTarget(URL::route($this->aujaRouter->getAssociationMenuName($modelName, $otherModelName), $modelId));
             $menu->addMenuItem($associationMenuItem);
         }
 
