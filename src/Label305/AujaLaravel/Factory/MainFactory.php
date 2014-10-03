@@ -50,27 +50,25 @@ class MainFactory {
         $this->aujaRouter = $aujaRouter;
     }
 
-    public function create($title, Form $authenticationForm = null) {
+    public function create($title, $username = null, $logoutTarget = null, Form $authenticationForm = null) {
         $main = new Main();
 
         $main->setTitle($title);
 
-        $main->setColor(MAIN::COLOR_MAIN, '#1ebab8'); // TODO: remove colors
-        $main->setColor(MAIN::COLOR_SECONDARY, '#E7EFEF');
-        $main->setColor(Main::COLOR_ALERT, '#e85840');
+        if($logoutTarget != null) {
+            $button = new Button();
+            $button->setText('Logout');
+            $button->setTarget($logoutTarget);
+            $main->addButton($button);
+        }
 
-        $button = new Button();
-        $button->setText('Logout');
-        $button->setTarget('#logout'); // TODO proper url
-        $main->addButton($button);
-
-        $main->setUsername('Niek Haarman'); // TODO proper user
+        $main->setUsername($username);
 
         foreach ($this->aujaConfigurator->getModels() as $model) {
             $item = new Item();
             $item->setTitle($model->getName());
             $item->setIcon($this->aujaConfigurator->getIcon($model));
-            $item->setTarget(route($this->aujaRouter->getMenuName($model->getName())));
+            $item->setTarget(Url::route($this->aujaRouter->getMenuName($model->getName())));
             $main->addItem($item);
         }
 
