@@ -24,27 +24,22 @@
 namespace Label305\AujaLaravel\Factory;
 
 
+use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\URL;
 use Label305\Auja\Menu\LinkMenuItem;
 use Label305\Auja\Menu\Menu;
 use Label305\Auja\Menu\ResourceMenuItem;
 use Label305\Auja\Menu\SpacerMenuItem;
-use Label305\AujaLaravel\I18N\Translator;
 use Label305\AujaLaravel\Routing\AujaRouter;
 
 class NoAssociationsIndexMenuFactory {
-
-    /**
-     * @var Translator
-     */
-    private $translator;
 
     /**
      * @var AujaRouter
      */
     private $aujaRouter;
 
-    public function __construct(Translator $translator, AujaRouter $aujaRouter) {
-        $this->translator = $translator;
+    public function __construct(AujaRouter $aujaRouter) {
         $this->aujaRouter = $aujaRouter;
     }
 
@@ -65,7 +60,7 @@ class NoAssociationsIndexMenuFactory {
 
         $addMenuItem = new LinkMenuItem();
         $addMenuItem->setText(Lang::trans('Add'));
-        $addMenuItem->setTarget(route($this->aujaRouter->getCreateName($modelName)));
+        $addMenuItem->setTarget(URL::route($this->aujaRouter->getCreateName($modelName)));
         $menu->addMenuItem($addMenuItem);
 
         $spacerMenuItem = new SpacerMenuItem();
@@ -73,10 +68,9 @@ class NoAssociationsIndexMenuFactory {
         $menu->addMenuItem($spacerMenuItem);
 
         $resourceMenuItem = new ResourceMenuItem();
-        $resourceMenuItem->setTarget(route($this->aujaRouter->getIndexName($modelName)));
+        $resourceMenuItem->setTarget(URL::route($this->aujaRouter->getIndexName($modelName)));
         $menu->addMenuItem($resourceMenuItem);
 
         return $menu;
     }
-
-} 
+}
