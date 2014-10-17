@@ -3,8 +3,9 @@ language: php
 php: [5.4, 5.5, hhvm]
 
 install:
-  - if [[ $TRAVIS_PHP_VERSION != 'hhvm' ]]; then composer update ; fi
-  - if [[ $TRAVIS_PHP_VERSION == 'hhvm' ]]; then composer update php phpspec/phpspec; fi
+  - if [[ $TRAVIS_PHP_VERSION != 'hhvm' ]]; then printf "\nextensions:\n  - PhpSpec\\\\Extension\CodeCoverageExtension" >> phpspec.yml ; fi
+  - if [[ $TRAVIS_PHP_VERSION != 'hhvm' ]]; then composer require henrikbjorn/phpspec-code-coverage:~0.2 satooshi/php-coveralls:~0.6 ; fi
+  - if [[ $TRAVIS_PHP_VERSION == 'hhvm' ]]; then composer update ; fi
 
 script:
   - bin/phpspec run --format=pretty --no-code-generation
@@ -19,5 +20,3 @@ notifications:
 
 matrix:
   fast_finish: true
-  allow_failures:
-    - php: hhvm
