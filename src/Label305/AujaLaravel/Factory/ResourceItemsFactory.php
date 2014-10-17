@@ -117,7 +117,7 @@ class ResourceItemsFactory {
             $menuItem->setTarget($target);
             $menuItem->setOrder($offset + $i);
             $menuItem->setIcon($icon);
-            $resourceItems->add($menuItem);
+            $resourceItems->addItem($menuItem);
         }
 
         /* Add pagination if necessary */
