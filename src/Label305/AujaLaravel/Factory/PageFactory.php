@@ -24,14 +24,14 @@
 namespace Label305\AujaLaravel\Factory;
 
 
+use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\URL;
 use Label305\Auja\Page\Form;
 use Label305\Auja\Page\FormItem\SubmitFormItem;
 use Label305\Auja\Page\Page;
 use Label305\Auja\Page\PageHeader;
 use Label305\Auja\Shared\Button;
 use Label305\AujaLaravel\Config\AujaConfigurator;
-use Label305\AujaLaravel\FormItemFactory;
-use Label305\AujaLaravel\I18N\Translator;
 use Label305\AujaLaravel\Routing\AujaRouter;
 
 class PageFactory {
@@ -46,15 +46,9 @@ class PageFactory {
      */
     private $aujaRouter;
 
-    /**
-     * @var Translator
-     */
-    private $translator;
-
-    public function __construct(AujaConfigurator $aujaConfigurator, AujaRouter $aujaRouter, Translator $translator) {
+    public function __construct(AujaConfigurator $aujaConfigurator, AujaRouter $aujaRouter) {
         $this->aujaConfigurator = $aujaConfigurator;
         $this->aujaRouter = $aujaRouter;
-        $this->translator = $translator;
     }
 
     public function create($modelName, $modelId = 0) {
@@ -64,10 +58,11 @@ class PageFactory {
         $header->setText('Create ' . $modelName);
 
         if ($modelId != 0) {
+            $header->setText('Edit '. $modelName);
             $deleteButton = new Button();
             $deleteButton->setText(Lang::trans('Delete'));
             $deleteButton->setConfirmationMessage(Lang::trans('Are you sure?'));
-            $deleteButton->setTarget(route($this->aujaRouter->getDeleteName($modelName), $modelId));
+            $deleteButton->setTarget(URL::route($this->aujaRouter->getDeleteName($modelName), $modelId));
             $deleteButton->setMethod('delete');
             $header->addButton($deleteButton);
         }
@@ -75,28 +70,23 @@ class PageFactory {
         $page->addPageComponent($header);
 
         $form = new Form();
-        $action = $modelId == 0 ? route($this->aujaRouter->getStoreName($modelName)) : route($this->aujaRouter->getUpdateName($modelName), $modelId);
+        $action = $modelId == 0 ? URL::route($this->aujaRouter->getStoreName($modelName)) : URL::route($this->aujaRouter->getUpdateName($modelName), $modelId);
         $form->setAction($action);
         $form->setMethod($modelId == 0 ? 'POST' : 'PUT');
 
-        $instance = new $modelName;
-        $fillable = $instance->getFillable(); // TODO: other stuff (hidden?)
-        /* @var $fillable String[] */
-        $hidden = $instance->getHidden();
-        /* @var $hidden String[] */
-
         $model = $this->aujaConfigurator->getModel($modelName);
-        foreach ($fillable as $columnName) {
+        $visibleFields = $this->aujaConfigurator->getVisibleFields($model);
+        foreach ($visibleFields as $columnName) {
             $column = $model->getColumn($columnName);
-            $item = FormItemFactory::getFormItem($column->getType(), in_array($columnName, $hidden));
+            $item = FormItemFactory::getFormItem($column->getType(), false); // TODO: Password?
             $item->setName($column->getName());
             $item->setLabel(Lang::trans($column->getName())); // TODO: 'Human readable name'
-            $form->addItem($item);
+            $form->addFormItem($item);
         }
 
         $submit = new SubmitFormItem();
         $submit->setText(Lang::trans('Submit'));
-        $form->addItem($submit);
+        $form->addFormItem($submit);
 
         $page->addPageComponent($form);
 

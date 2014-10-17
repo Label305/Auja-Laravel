@@ -55,6 +55,11 @@ class ModelConfig {
      */
     private $icon = '';
 
+    /**
+     * @var String[] The fields to display in a Page.
+     */
+    private $visibleFields;
+
     public function __construct($modelName){
         $this->tableName = str_plural(snake_case($modelName));
     }
@@ -101,4 +106,17 @@ class ModelConfig {
         $this->icon = $icon;
     }
 
+    /**
+     * @return String[]
+     */
+    public function getVisibleFields() {
+        return $this->visibleFields;
+    }
+
+    /**
+     * @param String[] $visibleFields
+     */
+    public function setVisibleFields($visibleFields) {
+        $this->visibleFields = $visibleFields;
+    }
 }

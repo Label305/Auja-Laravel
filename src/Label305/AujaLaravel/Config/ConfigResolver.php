@@ -73,6 +73,7 @@ class ConfigResolver {
     public function resolve() {
         if (is_null($this->config->getDisplayField()) || $this->config->getDisplayField() == '') {
             $this->config->setDisplayField($this->resolveDisplayField());
+            $this->config->setVisibleFields($this->resolveVisibleFields());
         }
 
         return $this->config;
@@ -97,6 +98,22 @@ class ConfigResolver {
         if ($result == null) {
             /* If we couldn't find a display field, just return the first one */
             $result = empty($columns) ? '' : $columns[0]->getName();
+        }
+
+        return $result;
+    }
+
+    /**
+     * Resolves the fields to display in a Page.
+     *
+     * @return String[] The names of the fields to display.
+     */
+    private function resolveVisibleFields() {
+        $result = [];
+
+        $columns = $this->model->getColumns();
+        foreach($columns as $column){
+            $result[] = $column->getName();
         }
 
         return $result;

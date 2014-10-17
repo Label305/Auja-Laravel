@@ -221,6 +221,20 @@ class AujaConfigurator {
         return $modelConfig->getIcon();
     }
 
+    public function getVisibleFields(Model $model) {
+        if (empty($this->models)) {
+            throw new \LogicException('AujaConfigurator not configured yet! Call configure first.');
+        }
+
+        if (!isset($this->configs[$model->getName()])) {
+            throw new \LogicException(sprintf('AujaConfigurator not configured for model %s', $model->getName()));
+        }
+
+        $modelConfig = $this->configs[$model->getName()];
+        /* @var $modelConfig ModelConfig */
+        return $modelConfig->getVisibleFields();
+    }
+
     /**
      * Finds and configures the Columns for given Model.
      *
