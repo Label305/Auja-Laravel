@@ -23,24 +23,18 @@
 
 namespace spec\Label305\AujaLaravel\Factory;
 
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\URL;
 use Label305\Auja\Menu\LinkMenuItem;
 use Label305\Auja\Menu\Menu;
 use Label305\Auja\Menu\ResourceMenuItem;
 use Label305\Auja\Menu\SpacerMenuItem;
-use Label305\AujaLaravel\I18N\Translator;
 use Label305\AujaLaravel\Routing\AujaRouter;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Symfony\Component\Config\Definition\Exception\Exception;
 
 class AssociationMenuFactorySpec extends ObjectBehavior {
-
-    /**
-     * @var Translator
-     */
-    private $translator;
-
     /**
      * @var AujaRouter
      */
@@ -48,9 +42,14 @@ class AssociationMenuFactorySpec extends ObjectBehavior {
 
     function let(AujaRouter $aujaRouter) {
         $this->aujaRouter = $aujaRouter;
-        $this->translator = \Mockery::mock('Label305\AujaLaravel\I18N\Translator');
 
-        $this->beConstructedWith($this->translator, $aujaRouter);
+        $this->beConstructedWith($aujaRouter);
+
+        Url::shouldReceive('route');
+        Lang::shouldReceive('trans')->with('Add')->andReturn('Add');
+        Lang::shouldReceive('trans')->with('Username')->andReturn('Username');
+        Lang::shouldReceive('trans')->with('Association')->andReturn('Association');
+        Lang::shouldReceive('trans')->with('Password')->andReturn('Password');
     }
 
     function it_is_initializable() {
@@ -58,17 +57,10 @@ class AssociationMenuFactorySpec extends ObjectBehavior {
     }
 
     function it_can_create_a_menu() {
-        Url::shouldReceive('route');
-        $this->translator->shouldReceive('trans');
-
         $this->create('Name', 1, 'Association')->shouldHaveType('Label305\Auja\Menu\Menu');
     }
 
     function its_created_menu_should_have_an_add_linkmenuitem_as_a_first_item() {
-        Url::shouldReceive('route');
-        $this->translator->shouldReceive('trans')->with('Add')->andReturn('Add');
-        $this->translator->shouldReceive('trans');
-
         $result = $this->create('Name', 1, 'Association');
 
         $menu = $result->getWrappedObject();
@@ -86,9 +78,6 @@ class AssociationMenuFactorySpec extends ObjectBehavior {
     }
 
     function its_created_menu_should_have_a_spacermenuitem_as_a_second_item() {
-        Url::shouldReceive('route');
-        $this->translator->shouldReceive('trans');
-
         $result = $this->create('Name', 1, 'Association');
 
         $menu = $result->getWrappedObject();
@@ -100,9 +89,6 @@ class AssociationMenuFactorySpec extends ObjectBehavior {
     }
 
     function its_created_menu_should_have_a_resourcemenuitem_as_a_third_item() {
-        Url::shouldReceive('route');
-        $this->translator->shouldReceive('trans');
-
         $result = $this->create('Name', 1, 'Association');
 
         $menu = $result->getWrappedObject();

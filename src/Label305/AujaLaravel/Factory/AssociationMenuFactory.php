@@ -25,6 +25,7 @@ namespace Label305\AujaLaravel\Factory;
 
 
 use Illuminate\Routing\UrlGenerator;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\URL;
 use Label305\Auja\Menu\LinkMenuItem;
 use Label305\Auja\Menu\Menu;
@@ -36,17 +37,11 @@ use Label305\AujaLaravel\Routing\AujaRouter;
 class AssociationMenuFactory {
 
     /**
-     * @var Translator
-     */
-    private $translator;
-
-    /**
      * @var AujaRouter
      */
     private $aujaRouter;
 
-    public function __construct(Translator $translator, AujaRouter $aujaRouter) {
-        $this->translator = $translator;
+    public function __construct(AujaRouter $aujaRouter) {
         $this->aujaRouter = $aujaRouter;
     }
 
@@ -68,12 +63,12 @@ class AssociationMenuFactory {
         $menu = new Menu();
 
         $addMenuItem = new LinkMenuItem();
-        $addMenuItem->setText($this->translator->trans('Add') . ' ' . $this->translator->trans($associationName));
+        $addMenuItem->setText(Lang::trans('Add') . ' ' . Lang::trans($associationName));
         $addMenuItem->setTarget(Url::route($this->aujaRouter->getCreateAssociationName($modelName, $associationName), $modelId));
         $menu->addMenuItem($addMenuItem);
 
         $headerMenuItem = new SpacerMenuItem();
-        $headerMenuItem->setText($this->translator->trans(str_plural($associationName)));
+        $headerMenuItem->setText(Lang::trans(str_plural($associationName)));
         $menu->addMenuItem($headerMenuItem);
 
         $resourceMenuItem = new ResourceMenuItem();

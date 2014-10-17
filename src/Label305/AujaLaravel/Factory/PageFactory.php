@@ -65,8 +65,8 @@ class PageFactory {
 
         if ($modelId != 0) {
             $deleteButton = new Button();
-            $deleteButton->setText($this->translator->trans('Delete'));
-            $deleteButton->setConfirmationMessage($this->translator->trans('Are you sure?'));
+            $deleteButton->setText(Lang::trans('Delete'));
+            $deleteButton->setConfirmationMessage(Lang::trans('Are you sure?'));
             $deleteButton->setTarget(route($this->aujaRouter->getDeleteName($modelName), $modelId));
             $deleteButton->setMethod('delete');
             $header->addButton($deleteButton);
@@ -90,12 +90,12 @@ class PageFactory {
             $column = $model->getColumn($columnName);
             $item = FormItemFactory::getFormItem($column->getType(), in_array($columnName, $hidden));
             $item->setName($column->getName());
-            $item->setLabel($this->translator->trans($column->getName())); // TODO: 'Human readable name'
+            $item->setLabel(Lang::trans($column->getName())); // TODO: 'Human readable name'
             $form->addItem($item);
         }
 
         $submit = new SubmitFormItem();
-        $submit->setText($this->translator->trans('Submit'));
+        $submit->setText(Lang::trans('Submit'));
         $form->addItem($submit);
 
         $page->addPageComponent($form);

@@ -71,16 +71,16 @@ class SingleAssociationIndexMenuFactory {
         $menu = new Menu();
 
         $editMenuItem = new LinkMenuItem();
-        $editMenuItem->setText($this->translator->trans('Edit'));
+        $editMenuItem->setText(Lang::trans('Edit'));
         $editMenuItem->setTarget(route($this->aujaRouter->getEditName($modelName), $modelId));
         $menu->addMenuItem($editMenuItem);
 
         $headerMenuItem = new SpacerMenuItem();
-        $headerMenuItem->setText($this->translator->trans(str_plural($otherModelName)));
+        $headerMenuItem->setText(Lang::trans(str_plural($otherModelName)));
         $menu->addMenuItem($headerMenuItem);
 
         $addMenuItem = new LinkMenuItem();
-        $addMenuItem->setText(sprintf('%s %s', $this->translator->trans('Add'), $this->translator->trans($otherModelName)));
+        $addMenuItem->setText(sprintf('%s %s', Lang::trans('Add'), Lang::trans($otherModelName)));
         $addMenuItem->setIcon(Icons::plus);
         $addMenuItem->setTarget(route($this->aujaRouter->getCreateAssociationName($modelName, $otherModelName), $modelId));
         $menu->addMenuItem($addMenuItem);

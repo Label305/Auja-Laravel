@@ -23,18 +23,13 @@
 
 namespace spec\Label305\AujaLaravel\Factory;
 
-use Doctrine\DBAL\Types\Type;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\URL;
-use Label305\Auja\Main\Main;
 use Label305\Auja\Menu\LinkMenuItem;
 use Label305\Auja\Menu\Menu;
 use Label305\Auja\Menu\SpacerMenuItem;
-use Label305\Auja\Page\Form;
-use Label305\AujaLaravel\Config\AujaConfigurator;
 use Label305\AujaLaravel\Config\Model;
 use Label305\AujaLaravel\Config\Relation;
-use Label305\AujaLaravel\I18N\Translator;
 use Label305\AujaLaravel\Routing\AujaRouter;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -42,19 +37,12 @@ use Prophecy\Argument;
 class MultipleAssociationsIndexMenuFactorySpec extends ObjectBehavior {
 
     /**
-     * @var Translator
-     */
-    private $translator;
-
-    /**
      * @var Relation[]
      */
     private $relations;
 
     function let(AujaRouter $aujaRouter, Relation $relation, Model $left, Model $right) {
-        $this->translator = \Mockery::mock('Label305\AujaLaravel\I18N\Translator');
-
-        $this->beConstructedWith($this->translator, $aujaRouter);
+        $this->beConstructedWith($aujaRouter);
 
         $this->relations = [$relation];
         $relation->getLeft()->willReturn($left);
@@ -63,6 +51,11 @@ class MultipleAssociationsIndexMenuFactorySpec extends ObjectBehavior {
 
         $left->getName()->willReturn('Model');
         $right->getName()->willReturn('OtherModel');
+
+        URL::shouldReceive('route');
+        Lang::shouldReceive('trans')->with('Edit')->andReturn('Edit');
+        Lang::shouldReceive('trans')->with('Properties')->andReturn('Properties');
+        Lang::shouldReceive('trans')->with('OtherModels')->andReturn('OtherModels');
     }
 
     function it_is_initializable() {
@@ -70,68 +63,53 @@ class MultipleAssociationsIndexMenuFactorySpec extends ObjectBehavior {
     }
 
     function it_can_create_a_menu() {
-        URL::shouldReceive('route');
-        $this->translator->shouldReceive('trans');
-
         $this->create('Model', 1, [])->shouldHaveType('Label305\Auja\Menu\Menu');
     }
 
     function its_created_menu_should_have_an_edit_linkmenuitem_as_a_first_item() {
-        URL::shouldReceive('route');
-        $this->translator->shouldReceive('trans')->with('Edit')->andReturn('Edit');
-        $this->translator->shouldReceive('trans');
-
         $menu = $this->create('Model', 1, $this->relations)->getWrappedObject();
         /* @var Menu $menu */
 
-        if(!($menu->getMenuItems()[0] instanceof LinkMenuItem)){
+        if (!($menu->getMenuItems()[0] instanceof LinkMenuItem)) {
             throw new \Exception('Created Menu has no LinkMenuItem as a first item');
         }
 
         $menuItem = $menu->getMenuItems()[0];
         /* @var $menuItem LinkMenuItem */
 
-        if(strpos($menuItem->getText(), 'Edit') === false){
+        if (strpos($menuItem->getText(), 'Edit') === false) {
             throw new \Exception('Text of LinkMenuItem does not start with \'Edit\'');
         }
     }
 
     function its_created_menu_should_have_a_spacermenuitem_as_a_second_item() {
-        URL::shouldReceive('route');
-        $this->translator->shouldReceive('trans')->with('Properties')->andReturn('Properties');
-        $this->translator->shouldReceive('trans');
-
         $menu = $this->create('Model', 1, $this->relations)->getWrappedObject();
         /* @var Menu $menu */
 
-        if(!($menu->getMenuItems()[1] instanceof SpacerMenuItem)){
+        if (!($menu->getMenuItems()[1] instanceof SpacerMenuItem)) {
             throw new \Exception('Created Menu has no SpacerMenuItem as a second item');
         }
 
         $menuItem = $menu->getMenuItems()[1];
         /* @var $menuItem SpacerMenuItem */
 
-        if($menuItem->getText()!= 'Properties'){
+        if ($menuItem->getText() != 'Properties') {
             throw new \Exception('Text of SpacerMenuItem does equal \'Properties\'');
         }
     }
 
     function its_created_menu_should_have_model_linkmenuitems() {
-        URL::shouldReceive('route');
-        $this->translator->shouldReceive('trans')->with('OtherModels')->andReturn('OtherModels');
-        $this->translator->shouldReceive('trans');
-
         $menu = $this->create('Model', 1, $this->relations)->getWrappedObject();
         /* @var Menu $menu */
 
-        if(!($menu->getMenuItems()[2] instanceof LinkMenuItem)){
+        if (!($menu->getMenuItems()[2] instanceof LinkMenuItem)) {
             throw new \Exception('Created Menu has no LinkMenuItem as a third item');
         }
 
         $menuItem = $menu->getMenuItems()[2];
         /* @var $menuItem LinkMenuItem */
 
-        if($menuItem->getText()!= 'OtherModels'){
+        if ($menuItem->getText() != 'OtherModels') {
             throw new \Exception('Text of LinkMenuItem does equal \'OtherModels\'');
         }
     }

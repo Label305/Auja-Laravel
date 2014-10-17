@@ -24,22 +24,13 @@
 namespace Label305\AujaLaravel\Factory;
 
 
+use Illuminate\Support\Facades\Lang;
 use Label305\Auja\Page\Form;
 use Label305\Auja\Page\FormItem\PasswordFormItem;
 use Label305\Auja\Page\FormItem\SubmitFormItem;
 use Label305\Auja\Page\FormItem\TextFormItem;
-use Label305\AujaLaravel\I18N\Translator;
 
 class AuthenticationFormFactory {
-
-    /**
-     * @var Translator
-     */
-    private $translator;
-
-    public function __construct(Translator $translator) {
-        $this->translator = $translator;
-    }
 
     public function create($title, $target) {
         $result = new Form();
@@ -51,16 +42,16 @@ class AuthenticationFormFactory {
 
         $usernameTextFormItem = new TextFormItem();
         $usernameTextFormItem->setName('username');
-        $usernameTextFormItem->setLabel($this->translator->trans('Username'));
+        $usernameTextFormItem->setLabel(Lang::trans('Username'));
         $result->addFormItem($usernameTextFormItem);
 
         $passwordFormItem = new PasswordFormItem();
         $passwordFormItem->setName('password');
-        $passwordFormItem->setLabel($this->translator->trans('Password'));
+        $passwordFormItem->setLabel(Lang::trans('Password'));
         $result->addFormItem($passwordFormItem);
 
         $submitFormItem = new SubmitFormItem();
-        $submitFormItem->setText($this->translator->trans('Login'));
+        $submitFormItem->setText(Lang::trans('Login'));
         $result->addFormItem($submitFormItem);
 
         return $result;

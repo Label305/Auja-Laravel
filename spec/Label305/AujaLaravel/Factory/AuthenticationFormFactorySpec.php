@@ -21,17 +21,6 @@ use Symfony\Component\Config\Definition\Exception\Exception;
 
 class AuthenticationFormFactorySpec extends ObjectBehavior {
 
-    /**
-     * @var Translator
-     */
-    private $translator;
-
-    function let(Translator $translator) {
-        $this->beConstructedWith($translator);
-
-        $this->translator = $translator;
-    }
-
     function it_is_initializable() {
         $this->shouldHaveType('Label305\AujaLaravel\Factory\AuthenticationFormFactory');
     }

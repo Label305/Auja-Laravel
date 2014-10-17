@@ -64,12 +64,12 @@ class NoAssociationsIndexMenuFactory {
         $menu = new Menu();
 
         $addMenuItem = new LinkMenuItem();
-        $addMenuItem->setText($this->translator->trans('Add'));
+        $addMenuItem->setText(Lang::trans('Add'));
         $addMenuItem->setTarget(route($this->aujaRouter->getCreateName($modelName)));
         $menu->addMenuItem($addMenuItem);
 
         $spacerMenuItem = new SpacerMenuItem();
-        $spacerMenuItem->setText($this->translator->trans($modelName));
+        $spacerMenuItem->setText(Lang::trans($modelName));
         $menu->addMenuItem($spacerMenuItem);
 
         $resourceMenuItem = new ResourceMenuItem();

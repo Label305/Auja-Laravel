@@ -24,28 +24,22 @@
 namespace Label305\AujaLaravel\Factory;
 
 
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\URL;
 use Label305\Auja\Menu\LinkMenuItem;
 use Label305\Auja\Menu\Menu;
 use Label305\Auja\Menu\SpacerMenuItem;
 use Label305\AujaLaravel\Config\Relation;
-use Label305\AujaLaravel\I18N\Translator;
 use Label305\AujaLaravel\Routing\AujaRouter;
 
 class MultipleAssociationsIndexMenuFactory {
-
-    /**
-     * @var Translator
-     */
-    private $translator;
 
     /**
      * @var AujaRouter
      */
     private $aujaRouter;
 
-    public function __construct(Translator $translator, AujaRouter $aujaRouter) {
-        $this->translator = $translator;
+    public function __construct(AujaRouter $aujaRouter) {
         $this->aujaRouter = $aujaRouter;
     }
 
@@ -67,19 +61,19 @@ class MultipleAssociationsIndexMenuFactory {
         $menu = new Menu();
 
         $addMenuItem = new LinkMenuItem();
-        $addMenuItem->setText($this->translator->trans('Edit'));
+        $addMenuItem->setText(Lang::trans('Edit'));
         $addMenuItem->setTarget(URL::route($this->aujaRouter->getEditName($modelName), $modelId));
         $menu->addMenuItem($addMenuItem);
 
         $spacerMenuItem = new SpacerMenuItem();
-        $spacerMenuItem->setText($this->translator->trans('Properties'));
+        $spacerMenuItem->setText(Lang::trans('Properties'));
         $menu->addMenuItem($spacerMenuItem);
 
         foreach ($relations as $relation) {
             $otherModelName = $relation->getRight()->getName();
 
             $associationMenuItem = new LinkMenuItem();
-            $associationMenuItem->setText($this->translator->trans(str_plural($otherModelName)));
+            $associationMenuItem->setText(Lang::trans(str_plural($otherModelName)));
             $associationMenuItem->setTarget(URL::route($this->aujaRouter->getAssociationMenuName($modelName, $otherModelName), $modelId));
             $menu->addMenuItem($associationMenuItem);
         }
