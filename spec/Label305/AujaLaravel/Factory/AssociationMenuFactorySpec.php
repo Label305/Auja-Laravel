@@ -49,6 +49,7 @@ class AssociationMenuFactorySpec extends ObjectBehavior {
         Lang::shouldReceive('trans')->with('Add')->andReturn('Add');
         Lang::shouldReceive('trans')->with('Username')->andReturn('Username');
         Lang::shouldReceive('trans')->with('Association')->andReturn('Association');
+        Lang::shouldReceive('trans')->with('Associations')->andReturn('Associations');
         Lang::shouldReceive('trans')->with('Password')->andReturn('Password');
     }
 

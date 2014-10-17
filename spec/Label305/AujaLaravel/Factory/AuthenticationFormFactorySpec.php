@@ -2,22 +2,13 @@
 
 namespace spec\Label305\AujaLaravel\Factory;
 
-use Illuminate\Routing\UrlGenerator;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\URL;
-use Label305\Auja\Menu\LinkMenuItem;
-use Label305\Auja\Menu\Menu;
-use Label305\Auja\Menu\ResourceMenuItem;
-use Label305\Auja\Menu\SpacerMenuItem;
+use Illuminate\Support\Facades\Lang;
 use Label305\Auja\Page\Form;
 use Label305\Auja\Page\FormItem\PasswordFormItem;
 use Label305\Auja\Page\FormItem\SubmitFormItem;
 use Label305\Auja\Page\FormItem\TextFormItem;
-use Label305\AujaLaravel\I18N\Translator;
-use Label305\AujaLaravel\Routing\AujaRouter;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-use Symfony\Component\Config\Definition\Exception\Exception;
 
 class AuthenticationFormFactorySpec extends ObjectBehavior {
 
@@ -26,10 +17,14 @@ class AuthenticationFormFactorySpec extends ObjectBehavior {
     }
 
     function it_can_create_a_form() {
+        Lang::shouldReceive('trans')->with('Login')->andReturn('Login');
+
         $this->create('Title', 'Target')->shouldHaveType('Label305\Auja\Page\Form');
     }
 
     function its_created_form_has_a_proper_action() {
+        Lang::shouldReceive('trans')->with('Login')->andReturn('Login');
+
         $form = $this->create('Title', 'Target')->getWrappedObject();
         /* @var $form Form */
 
@@ -43,6 +38,8 @@ class AuthenticationFormFactorySpec extends ObjectBehavior {
     }
 
     function its_created_form_has_a_proper_header() {
+        Lang::shouldReceive('trans')->with('Login')->andReturn('Login');
+
         $form = $this->create('Title', 'Target')->getWrappedObject();
         /* @var $form Form */
 
@@ -50,6 +47,8 @@ class AuthenticationFormFactorySpec extends ObjectBehavior {
     }
 
     function its_created_form_has_a_username_textformitem() {
+        Lang::shouldReceive('trans')->with('Login')->andReturn('Login');
+
         $form = $this->create('Title', 'Target')->getWrappedObject();
         /* @var $form Form */
 
@@ -67,6 +66,8 @@ class AuthenticationFormFactorySpec extends ObjectBehavior {
     }
 
     function its_created_form_has_a_passwordformitem() {
+        Lang::shouldReceive('trans')->with('Login')->andReturn('Login');
+
         $form = $this->create('Title', 'Target')->getWrappedObject();
         /* @var $form Form */
 
@@ -84,6 +85,8 @@ class AuthenticationFormFactorySpec extends ObjectBehavior {
     }
 
     function its_created_form_has_a_submitformitem() {
+        Lang::shouldReceive('trans')->with('Login')->andReturn('Login');
+
         $form = $this->create('Title', 'Target')->getWrappedObject();
         /* @var $form Form */
 

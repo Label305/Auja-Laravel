@@ -3,9 +3,6 @@ suites:
 
 formatter.name: pretty
 
-extensions:
-  - PhpSpec\Extension\CodeCoverageExtension
-
 code_coverage:
   format:
     - clover
