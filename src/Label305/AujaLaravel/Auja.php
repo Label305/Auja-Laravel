@@ -39,7 +39,6 @@ use Label305\AujaLaravel\Factory\NoAssociationsIndexMenuFactory;
 use Label305\AujaLaravel\Factory\PageFactory;
 use Label305\AujaLaravel\Factory\ResourceItemsFactory;
 use Label305\AujaLaravel\Factory\SingleAssociationIndexMenuFactory;
-use Label305\AujaLaravel\I18N\Translator;
 use Label305\AujaLaravel\Logging\Logger;
 
 /**
@@ -59,11 +58,6 @@ class Auja {
      * @var Application The Application instance.
      */
     private $app;
-
-    /**
-     * @var Translator The Translator to use.
-     */
-    private $translator;
 
     /**
      * @var Logger The Logger to use.
@@ -87,9 +81,7 @@ class Auja {
         }
 
         $this->app = $app;
-        $this->translator = $this->app->make('Label305\AujaLaravel\I18N\Translator');
         $this->logger = $this->app->make('Label305\AujaLaravel\Logging\Logger');
-
 
         $this->logger->debug('Initializing Auja with models:', $modelNames);
 
