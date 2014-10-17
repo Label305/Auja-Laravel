@@ -9,7 +9,7 @@ install:
 
 script:
   - bin/phpspec run --format=pretty --no-code-generation
-  - bin/behat
+  - if [[ $TRAVIS_PHP_VERSION != 'hhvm' ]]; then bin/behat ; fi
   - if [[ $TRAVIS_PHP_VERSION != 'hhvm' ]]; then bin/coveralls -v ; fi
 
 
