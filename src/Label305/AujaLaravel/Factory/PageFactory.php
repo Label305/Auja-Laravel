@@ -46,9 +46,15 @@ class PageFactory {
      */
     private $aujaRouter;
 
-    public function __construct(AujaConfigurator $aujaConfigurator, AujaRouter $aujaRouter) {
+    /**
+     * @var FormItemFactory
+     */
+    private $formItemFactory;
+
+    public function __construct(AujaConfigurator $aujaConfigurator, AujaRouter $aujaRouter, FormItemFactory $formItemFactory) {
         $this->aujaConfigurator = $aujaConfigurator;
         $this->aujaRouter = $aujaRouter;
+        $this->formItemFactory = $formItemFactory;
     }
 
     public function create($modelName, $modelId = 0) {
@@ -58,7 +64,7 @@ class PageFactory {
         $header->setText('Create ' . $modelName);
 
         if ($modelId != 0) {
-            $header->setText('Edit '. $modelName);
+            $header->setText('Edit ' . $modelName);
             $deleteButton = new Button();
             $deleteButton->setText(Lang::trans('Delete'));
             $deleteButton->setConfirmationMessage(Lang::trans('Are you sure?'));
@@ -78,7 +84,7 @@ class PageFactory {
         $visibleFields = $this->aujaConfigurator->getVisibleFields($model);
         foreach ($visibleFields as $columnName) {
             $column = $model->getColumn($columnName);
-            $item = FormItemFactory::getFormItem($column->getType(), false); // TODO: Password?
+            $item = $this->formItemFactory->getFormItem($column->getType(), false); // TODO: Password?
             $item->setName($column->getName());
             $item->setLabel(Lang::trans($column->getName())); // TODO: 'Human readable name'
             $form->addFormItem($item);
