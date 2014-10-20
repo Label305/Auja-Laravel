@@ -53,7 +53,7 @@ class ConfigResolver {
      * Creates a new ConfigResolver for given Model.
      *
      * @param Application $app
-     * @param Model       $model The Model to generate a
+     * @param Model       $model The Model to generate a ModelConfig for.
      */
     public function __construct(Application $app, Model $model) {
         $this->model = $model;

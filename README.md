@@ -16,6 +16,53 @@ Auja's basis is the [Auja JavaScript repository](https://github.com/Label305/Auj
   - [**Auja-PHP**](https://github.com/Label305/Auja-PHP) - Auja's protocol implemented in an Object Oriented manner, in PHP.
   - [**Auja-Laravel-Example**](https://github.com/Label305/Auja-Laravel-Example) - An example Laravel project using Auja.
 
+## Setup
+
+Auja-Laravel is available on [Packagist](https://packagist.org/packages/label305/auja-laravel).
+
+ - Run `composer require label305/auja:v3.0.0-alpha1 label305/auja-laravel:dev-dev`;
+ - Add `'Auja' => 'Label305\AujaLaravel\AujaFacade'` to your list of aliases in `app\config\app.php`;
+ 
+## Getting Started
+
+ - Setup Resources (Tip: [Way Generators](https://github.com/JeffreyWay/Laravel-4-Generators));
+ - For each of your resources, add `AujaRoute::resource('{model name}', '{controller name}')` to `routes.php`; // TODO Link naar uitleg
+ - Create a new ServiceProvider class, which extends `'Label305\AujaLaravel\AujaServiceProvider'`, add it to your providers in `app\config\app.php` and implement the `getModelNames()` function:
+ 
+```php
+use Label305\AujaLaravel\AujaServiceProvider;
+
+class AujaPresenterServiceProvider extends AujaServiceProvider {
+
+    /**
+     * Returns a String array of model names, e.g. ['Club', 'Team'].
+     *
+     * @return String[] The model names.
+     */
+    function getModelNames() {
+        return ['Club', 'Team'];
+    }
+}
+```
+
+ - In each of your resource controllers, implement at least the following functions:
+   - `index()`
+   - `menu($id = 0)`
+    // TODO: Create list example?
+    
+ - Copy `assets/index.php` to your `views` folder;
+ - Copy `assets/AujaController.php` to your `controllers` folder;
+ - Copy the folders `assets/assets`, `assets/bower_components` and `build` to your `public` folder;
+ - Add the following to `routes.php`:
+ 
+```php
+Route::get('/', 'AujaController@index');
+Route::get('main', 'AujaController@main');
+``` 
+
+That's it, you're done!
+## Usage
+
 ## License
 Copyright 2014 Label305 B.V.
 

@@ -3,7 +3,7 @@
 use Illuminate\Support\ServiceProvider;
 use Label305\AujaLaravel\Routing\AujaRouter;
 
-class AujaServiceProvider extends ServiceProvider {
+abstract class AujaServiceProvider extends ServiceProvider {
 
     /**
      * Indicates if loading of the provider is deferred.
@@ -25,6 +25,11 @@ class AujaServiceProvider extends ServiceProvider {
         $this->app->singleton('Label305\AujaLaravel\Config\AujaConfigurator');
 
         $this->app->bind('AujaRouter', 'Label305\AujaLaravel\Routing\AujaRouter');
+
+        $this->app->singleton('Label305\AujaLaravel\Auja', function () {
+            return new Auja($this->app, $this->getModels());
+        });
+
     }
 
     /**
@@ -35,5 +40,12 @@ class AujaServiceProvider extends ServiceProvider {
     public function provides() {
         return array();
     }
+
+    /**
+     * Returns a String array of model names, e.g. ['Club', 'Team'].
+     *
+     * @return String[] The model names.
+     */
+    abstract function getModelNames();
 
 }
