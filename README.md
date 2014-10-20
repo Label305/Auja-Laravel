@@ -21,7 +21,7 @@ Auja's basis is the [Auja JavaScript repository](https://github.com/Label305/Auj
 Auja-Laravel is available on [Packagist](https://packagist.org/packages/label305/auja-laravel).
 
  - Run `composer require label305/auja:v3.0.0-alpha1 label305/auja-laravel:dev-dev`;
- - Add `'Auja' => 'Label305\AujaLaravel\Facade\AujaFacade'` and `'AujaRouter' => 'Label305\AujaLaravel\Facade\AujaRouterFacade'` to your list of aliases in `app\config\app.php`;
+ - Add `'Auja' => 'Label305\AujaLaravel\Facade\AujaFacade'` and `'AujaRoute' => 'Label305\AujaLaravel\Facade\AujaRouteFacade'` to your list of aliases in `app\config\app.php`;
  - Copy [`assets/index.php`](https://raw.githubusercontent.com/Label305/Auja-Laravel/dev/assets/index.php) to your `views` folder;
  - Copy [`assets/AujaController.php`](https://raw.githubusercontent.com/Label305/Auja-Laravel/dev/assets/AujaController.php) to your `controllers` folder;
  - Copy the folders [`assets/assets`](https://github.com/Label305/Auja-Laravel/tree/dev/assets/assets), [`assets/bower_components`](https://github.com/Label305/Auja-Laravel/tree/dev/assets/bower_components) and [`assets/build`](https://github.com/Label305/Auja-Laravel/tree/dev/assets/build) to your `public` folder;
