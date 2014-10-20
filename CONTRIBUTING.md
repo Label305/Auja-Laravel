@@ -15,7 +15,7 @@ When describing an issue, be precise:
 
 ## Please do!
 
-We're happy to view and accept pull requests. However, it is important to follow these guidelines if you want to contribute.
+We're happy to review and accept pull requests. However, it is important to follow these guidelines if you want to contribute.
 
 ## General steps
 
