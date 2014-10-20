@@ -27,7 +27,7 @@ abstract class AujaServiceProvider extends ServiceProvider {
         $this->app->bind('AujaRouter', 'Label305\AujaLaravel\Routing\AujaRouter');
 
         $this->app->singleton('Label305\AujaLaravel\Auja', function () {
-            return new Auja($this->app, $this->getModels());
+            return new Auja($this->app, $this->getModelNames());
         });
 
     }
