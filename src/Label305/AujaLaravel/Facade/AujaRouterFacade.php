@@ -25,7 +25,7 @@ namespace Label305\AujaLaravel\Facade;
 
 use Illuminate\Support\Facades\Facade;
 
-class AujaRouteFacade extends Facade {
+class AujaRouterFacade extends Facade {
 
     protected static function getFacadeAccessor() {
         return 'aujarouter';
