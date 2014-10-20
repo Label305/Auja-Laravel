@@ -21,14 +21,14 @@
  * limitations under the License.
  */
 
-namespace Label305\AujaLaravel\Routing;
+namespace Label305\AujaLaravel\Facade;
 
 use Illuminate\Support\Facades\Facade;
 
-class AujaRoute extends Facade {
+class AujaRouteFacade extends Facade {
 
     protected static function getFacadeAccessor() {
-        return 'AujaRouter';
+        return 'aujarouter';
     }
 
-} 
+}

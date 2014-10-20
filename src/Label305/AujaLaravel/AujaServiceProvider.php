@@ -1,5 +1,6 @@
 <?php namespace Label305\AujaLaravel;
 
+use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 use Label305\AujaLaravel\Routing\AujaRouter;
 
@@ -19,6 +20,10 @@ abstract class AujaServiceProvider extends ServiceProvider {
      */
     public function register() {
         $this->app->bind('auja', 'Label305\AujaLaravel\Auja');
+        $this->app->singleton('Label305\AujaLaravel\Auja', function ($app) {
+            return new Auja($app, $this->getModelNames());
+        });
+
         $this->app->bind('Label305\AujaLaravel\Database\DatabaseHelper', 'Label305\AujaLaravel\Database\MySQLDatabaseHelper');
         $this->app->bind('Label305\AujaLaravel\Logging\Logger', 'Label305\AujaLaravel\Logging\LaravelLogger');
 
@@ -26,11 +31,9 @@ abstract class AujaServiceProvider extends ServiceProvider {
 
         $this->app->bind('AujaRouter', 'Label305\AujaLaravel\Routing\AujaRouter');
 
-        $this->app->singleton('Label305\AujaLaravel\Auja', function () {
-            return new Auja($this->app, $this->getModelNames());
+        $this->app->singleton('aujarouter', function(Auja $auja, Router $router){
+            return new AujaRouter($auja, $router);
         });
-
-
     }
 
     /**
