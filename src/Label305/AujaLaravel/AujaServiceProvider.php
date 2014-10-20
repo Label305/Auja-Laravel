@@ -30,6 +30,7 @@ abstract class AujaServiceProvider extends ServiceProvider {
             return new Auja($this->app, $this->getModelNames());
         });
 
+
     }
 
     /**
@@ -38,7 +39,7 @@ abstract class AujaServiceProvider extends ServiceProvider {
      * @return array
      */
     public function provides() {
-        return array();
+        return ['auja'];
     }
 
     /**

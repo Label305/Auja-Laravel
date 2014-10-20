@@ -285,5 +285,4 @@ class Auja {
         /* @var $pageFactory PageFactory */
         return $pageFactory->create($modelName, $modelId);
     }
-
 }
