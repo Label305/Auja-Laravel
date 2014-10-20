@@ -1,6 +1,5 @@
 <?php namespace Label305\AujaLaravel;
 
-use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 use Label305\AujaLaravel\Routing\AujaRouter;
 
@@ -31,18 +30,9 @@ abstract class AujaServiceProvider extends ServiceProvider {
 
         $this->app->bind('AujaRouter', 'Label305\AujaLaravel\Routing\AujaRouter');
 
-        $this->app->singleton('aujarouter', function(Auja $auja, Router $router){
-            return new AujaRouter($auja, $router);
+        $this->app->singleton('aujarouter', function($app){
+            return new AujaRouter($app['auja'], $app['Illuminate\Routing\Router']);
         });
-    }
-
-    /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides() {
-        return ['auja'];
     }
 
     /**
