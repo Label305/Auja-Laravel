@@ -10,3 +10,5 @@ output/**
 
 coverage/**
 coverage.xml
+
+composer.lock

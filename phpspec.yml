@@ -10,3 +10,5 @@ code_coverage:
   output:
     clover: coverage.xml
     html: coverage
+extensions:
+  - PhpSpec\Extension\CodeCoverageExtension
