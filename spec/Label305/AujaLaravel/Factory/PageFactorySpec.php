@@ -25,12 +25,13 @@ namespace spec\Label305\AujaLaravel\Factory;
 
 use Doctrine\DBAL\Types\Type;
 use Illuminate\Support\Facades\Lang;
-use Illuminate\Support\Facades\URL;
+use Label305\Auja\Page\FormItem\TextFormItem;
 use Label305\Auja\Page\Page;
 use Label305\Auja\Page\PageHeader;
 use Label305\AujaLaravel\Config\AujaConfigurator;
 use Label305\AujaLaravel\Config\Column;
 use Label305\AujaLaravel\Config\Model;
+use Label305\AujaLaravel\Factory\FormItemFactory;
 use Label305\AujaLaravel\Routing\AujaRouter;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -40,11 +41,13 @@ class PageFactorySpec extends ObjectBehavior {
 
     private $visibleFields = ['field1', 'field2'];
 
-    function let(AujaConfigurator $aujaConfigurator, AujaRouter $aujaRouter, Model $model, Column $column1, Column $column2) {
-        $this->beConstructedWith($aujaConfigurator, $aujaRouter);
+    function let(AujaConfigurator $aujaConfigurator, AujaRouter $aujaRouter, FormItemFactory $formItemFactory, TextFormItem $formItem, Model $model, Column $column1, Column $column2) {
+        $this->beConstructedWith($aujaConfigurator, $aujaRouter, $formItemFactory);
 
         $aujaConfigurator->getModel('MyModel')->willReturn($model);
         $aujaConfigurator->getVisibleFields($model)->willReturn($this->visibleFields);
+
+        $formItemFactory->getFormItem(Type::STRING, false)->willReturn($formItem);
 
         $model->getColumn('field1')->willReturn($column1);
         $column1->getName()->willReturn('field1');
