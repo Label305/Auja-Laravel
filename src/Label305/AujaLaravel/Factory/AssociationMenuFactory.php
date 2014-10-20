@@ -23,15 +23,12 @@
 
 namespace Label305\AujaLaravel\Factory;
 
-
-use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\URL;
 use Label305\Auja\Menu\LinkMenuItem;
 use Label305\Auja\Menu\Menu;
 use Label305\Auja\Menu\ResourceMenuItem;
 use Label305\Auja\Menu\SpacerMenuItem;
-use Label305\AujaLaravel\I18N\Translator;
 use Label305\AujaLaravel\Routing\AujaRouter;
 
 class AssociationMenuFactory {
