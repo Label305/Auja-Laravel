@@ -2,16 +2,18 @@ language: php
 
 php: [5.4, 5.5, hhvm]
 
+before_install:
+  # Remove code coverage in hhvm
+  - if [[ $TRAVIS_PHP_VERSION == 'hhvm' ]]; then sed -i "s/ - PhpSpec\\\Extension\\\CodeCoverageExtension//" phpspec.yml ; fi
+  - if [[ $TRAVIS_PHP_VERSION == 'hhvm' ]]; then composer remove henrikbjorn/phpspec-code-coverage satooshi/php-coveralls --dev --no-update ; fi
+
 install:
-  - if [[ $TRAVIS_PHP_VERSION != 'hhvm' ]]; then printf "\nextensions:\n  - PhpSpec\\\\Extension\CodeCoverageExtension" >> phpspec.yml ; fi
-  - if [[ $TRAVIS_PHP_VERSION != 'hhvm' ]]; then composer require henrikbjorn/phpspec-code-coverage:~0.2 satooshi/php-coveralls:~0.6 ; fi
-  - if [[ $TRAVIS_PHP_VERSION == 'hhvm' ]]; then composer update ; fi
+  - composer update --dev
 
 script:
   - bin/phpspec run --format=pretty --no-code-generation
   - if [[ $TRAVIS_PHP_VERSION != 'hhvm' ]]; then bin/behat ; fi
   - if [[ $TRAVIS_PHP_VERSION != 'hhvm' ]]; then bin/coveralls -v ; fi
-
 
 notifications:
   - email:
