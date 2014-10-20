@@ -22,11 +22,26 @@ Auja-Laravel is available on [Packagist](https://packagist.org/packages/label305
 
  - Run `composer require label305/auja:v3.0.0-alpha1 label305/auja-laravel:dev-dev`;
  - Add `'Auja' => 'Label305\AujaLaravel\AujaFacade'` to your list of aliases in `app\config\app.php`;
+ - Copy `assets/index.php` to your `views` folder;
+ - Copy `assets/AujaController.php` to your `controllers` folder;
+ - Copy the folders `assets/assets`, `assets/bower_components` and `build` to your `public` folder;
+ - Add the following to `routes.php`:
  
+```php
+Route::get('/', 'AujaController@index');
+Route::get('main', 'AujaController@main');
+``` 
+
 ## Getting Started
 
  - Setup Resources (Tip: [Way Generators](https://github.com/JeffreyWay/Laravel-4-Generators));
- - For each of your resources, add `AujaRoute::resource('{model name}', '{controller name}')` to `routes.php`; // TODO Link naar uitleg
+ - For each of your resources, add `AujaRoute::resource('{model name}', '{controller name}')` to `routes.php`:
+
+```php
+AujaRoute::resource('Club', 'ClubsController');
+AujaRoute::resource('Team', 'TeamsController');
+```
+
  - Create a new ServiceProvider class, which extends `'Label305\AujaLaravel\AujaServiceProvider'`, add it to your providers in `app\config\app.php` and implement the `getModelNames()` function:
  
 ```php
@@ -46,34 +61,64 @@ class AujaPresenterServiceProvider extends AujaServiceProvider {
 ```
 
  - In each of your resource controllers, implement at least the following functions:
-   - `index()`
-   - `menu($id = 0)`
-    // TODO: Create list example?
-    
- - Copy `assets/index.php` to your `views` folder;
- - Copy `assets/AujaController.php` to your `controllers` folder;
- - Copy the folders `assets/assets`, `assets/bower_components` and `build` to your `public` folder;
- - Add the following to `routes.php`:
- 
+   - `index()`, `menu($id = 0)`, `create()`, `store()`, `show($id)`, `edit($id)`, `update($id)`, `delete($id)`. 
+
 ```php
-Route::get('/', 'AujaController@index');
-Route::get('main', 'AujaController@main');
-``` 
+class ClubsController extends \BaseController {
+
+	const NAME = 'Club';
+
+	public function index() {
+		return Auja::buildResourceItems(self::NAME, Club::simplePaginate(10));
+	}
+
+	public function menu($id = 0) {
+		return Auja::buildIndexMenu(self::NAME, $id);
+	}
+
+	public function create() {
+		return Auja::buildPage(self::NAME);
+	}
+
+	public function store() {
+		Club::create(Input::all());
+	}
+	
+	public function show() {
+	  
+	}
+
+	public function edit($id) {
+		return Auja::buildPage(self::NAME, $id);
+	}
+
+	public function update($id) {
+		$club = Club::find($id);
+		$club->fill(Input::all());
+		$club->save();
+	}
+
+	public function delete($id) {
+		$club = Club::find($id);
+		$club->delete($id);
+	}
+}
+```
 
 That's it, you're done!
-## Usage
 
 ## License
+
 Copyright 2014 Label305 B.V.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
+Licensed under the Apache License, Version 2.0 (the "License");  
+you may not use this file except in compliance with the License.  
 You may obtain a copy of the License at
 
 [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
+Unless required by applicable law or agreed to in writing, software  
+distributed under the License is distributed on an "AS IS" BASIS,  
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  
+See the License for the specific language governing permissions and  
 limitations under the License.
