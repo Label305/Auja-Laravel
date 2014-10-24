@@ -24,12 +24,12 @@
 use Behat\Behat\Context\BehatContext;
 use Behat\Gherkin\Node\TableNode;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Log;
 use Label305\AujaLaravel\Config\AujaConfigurator;
 
 use Label305\AujaLaravel\Config\ModelConfig;
 use Label305\AujaLaravel\Config\Relation;
 use Label305\AujaLaravel\Database\DatabaseHelper;
-use Label305\AujaLaravel\Logging\Logger;
 use \Mockery as m;
 
 class FeatureContext extends BehatContext {
@@ -55,11 +55,6 @@ class FeatureContext extends BehatContext {
     private $databaseHelper;
 
     /**
-     * @var Logger
-     */
-    private $logger;
-
-    /**
      * @var AujaConfigurator
      */
     private $aujaConfigurator;
@@ -68,9 +63,10 @@ class FeatureContext extends BehatContext {
         $this->application = m::mock('Illuminate\Foundation\Application');
         $this->databaseHelper = m::mock('Label305\AujaLaravel\Database\DatabaseHelper');
 
-        $this->logger = $this->mockLogger();
+        $this->aujaConfigurator = new AujaConfigurator($this->application, $this->databaseHelper);
 
-        $this->aujaConfigurator = new AujaConfigurator($this->application, $this->databaseHelper, $this->logger);
+        Log::shouldReceive('debug');
+        Log::shouldReceive('info');
     }
 
     /**
@@ -175,14 +171,6 @@ class FeatureContext extends BehatContext {
      */
     public function thereIsAPivotTable($tableName) {
         $this->databaseHelper->shouldReceive('hasTable', $tableName)->andReturn(true);
-    }
-
-    private function mockLogger() {
-        $result = m::mock('Label305\AujaLaravel\Logging\Logger');
-        $result->shouldReceive('debug');
-        $result->shouldReceive('info');
-        $result->shouldReceive('warn');
-        return $result;
     }
 
     private function assertRelationshipsExist(TableNode $table, $type) {

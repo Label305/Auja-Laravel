@@ -3,9 +3,9 @@
 namespace spec\Label305\AujaLaravel\Config;
 
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Log;
 use Label305\AujaLaravel\Config\Model;
 use Label305\AujaLaravel\Config\ModelConfig;
-use Label305\AujaLaravel\Logging\Logger;
 use Label305\AujaLaravel\Database\DatabaseHelper;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -22,11 +22,13 @@ class AujaConfiguratorSpec extends ObjectBehavior {
      */
     private $databaseHelper;
 
-    function let(Application $application, DatabaseHelper $databaseHelper, Logger $logger) {
+    function let(Application $application, DatabaseHelper $databaseHelper) {
         $this->application = $application;
         $this->databaseHelper = $databaseHelper;
 
-        $this->beConstructedWith($application, $databaseHelper, $logger);
+        $this->beConstructedWith($application, $databaseHelper);
+
+        Log::shouldReceive('debug');
     }
 
     function it_is_initializable() {

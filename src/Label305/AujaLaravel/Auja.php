@@ -25,6 +25,7 @@ namespace Label305\AujaLaravel;
 
 use Illuminate\Foundation\Application;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Log;
 use Label305\Auja\Main\Main;
 use Label305\Auja\Menu\Menu;
 use Label305\Auja\Page\Form;
@@ -39,7 +40,6 @@ use Label305\AujaLaravel\Factory\NoAssociationsIndexMenuFactory;
 use Label305\AujaLaravel\Factory\PageFactory;
 use Label305\AujaLaravel\Factory\ResourceItemsFactory;
 use Label305\AujaLaravel\Factory\SingleAssociationIndexMenuFactory;
-use Label305\AujaLaravel\Logging\Logger;
 
 /**
  * The main class to interact with.
@@ -60,11 +60,6 @@ class Auja {
     private $app;
 
     /**
-     * @var Logger The Logger to use.
-     */
-    private $logger;
-
-    /**
      * @var AujaConfigurator
      */
     private $aujaConfigurator;
@@ -81,9 +76,8 @@ class Auja {
         }
 
         $this->app = $app;
-        $this->logger = $this->app->make('Label305\AujaLaravel\Logging\Logger');
 
-        $this->logger->debug('Initializing Auja with models:', $modelNames);
+        Log::debug('Initializing Auja with models:', $modelNames);
 
         $this->aujaConfigurator = $app['Label305\AujaLaravel\Config\AujaConfigurator'];
 
