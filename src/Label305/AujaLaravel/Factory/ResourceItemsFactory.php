@@ -26,6 +26,7 @@ namespace Label305\AujaLaravel\Factory;
 
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\URL;
 use Label305\Auja\Menu\LinkMenuItem;
 use Label305\Auja\Menu\Resource;
 use Label305\AujaLaravel\Config\AujaConfigurator;
@@ -50,7 +51,7 @@ class ResourceItemsFactory {
     }
 
     /**
-     * Builds a ResourceItemsMenuItems instance for given items.
+     * Builds a Resource instance for given items.
      * This is typically used when a ResourceMenuItem triggers a call for items.
      *
      * This method also supports pagination, either manually or automatically.
@@ -107,9 +108,9 @@ class ResourceItemsFactory {
         $icon = $this->aujaConfigurator->getIcon($model);
         for ($i = 0; $i < count($items); $i++) {
             if (count($associationRelations) == 0) {
-                $target = route($this->aujaRouter->getEditName($modelName), $items[$i]->id);
+                $target = URL::route($this->aujaRouter->getEditName($modelName), $items[$i]->id);
             } else {
-                $target = route($this->aujaRouter->getShowMenuName($modelName), $items[$i]->id);
+                $target = URL::route($this->aujaRouter->getShowMenuName($modelName), $items[$i]->id);
             }
 
             $menuItem = new LinkMenuItem();
