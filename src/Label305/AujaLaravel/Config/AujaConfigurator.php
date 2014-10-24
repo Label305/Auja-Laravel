@@ -238,7 +238,7 @@ class AujaConfigurator {
         $tableName = $this->getTableName($model);
 
         if (!$this->databaseRepository->hasTable($tableName)) {
-            throw new \InvalidArgumentException(sprintf('Table for %s does not exist!', $model->getName()));
+            throw new \InvalidArgumentException(sprintf('Table %s for %s does not exist!', $tableName, $model->getName()));
         }
 
         $columns = $this->databaseRepository->getColumnListing($tableName);
