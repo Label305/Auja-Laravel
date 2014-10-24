@@ -306,7 +306,7 @@ class AujaConfigurator {
         $otherModelName = ucfirst(camel_case(substr($columnName, 0, strpos($columnName, self::ID_SUFFIX)))); // TODO: prettify
 
         if (!in_array($otherModelName, array_keys($this->models))) {
-            Log::warn(sprintf('Found foreign id %s in model %s, but no model with name %s was registered', $columnName, $model->getName(), $otherModelName));
+            Log::warning(sprintf('Found foreign id %s in model %s, but no model with name %s was registered', $columnName, $model->getName(), $otherModelName));
             return;
         }
 
