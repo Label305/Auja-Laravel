@@ -198,6 +198,11 @@ class AujaRouter {
      * @param String $controller The name of the Controller.
      */
     public function resource($modelName, $controller) {
+        if(php_sapi_name() == 'cli') {
+            /* Don't run when we're running artisan commands. */
+            return;
+        }
+
         /* Default routes */
         $this->registerIndex($modelName, $controller);
         $this->registerMenu($modelName, $controller);

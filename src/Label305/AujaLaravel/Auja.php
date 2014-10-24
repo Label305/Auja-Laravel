@@ -71,6 +71,11 @@ class Auja {
      * @param String[]    $modelNames The names of the models to use for Auja.
      */
     function __construct(Application $app, array $modelNames) {
+        if(php_sapi_name() == 'cli') {
+            /* Don't run when we're running artisan commands. */
+            return;
+        }
+
         if (empty($modelNames)) {
             throw new \InvalidArgumentException('Provide models!');
         }
