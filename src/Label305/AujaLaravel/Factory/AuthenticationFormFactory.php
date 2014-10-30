@@ -23,12 +23,12 @@
 
 namespace Label305\AujaLaravel\Factory;
 
-
 use Illuminate\Support\Facades\Lang;
 use Label305\Auja\Page\Form;
 use Label305\Auja\Page\FormItem\PasswordFormItem;
 use Label305\Auja\Page\FormItem\SubmitFormItem;
 use Label305\Auja\Page\FormItem\TextFormItem;
+use Label305\Auja\Page\FormItem\FormHeader;
 
 class AuthenticationFormFactory {
 
@@ -38,11 +38,13 @@ class AuthenticationFormFactory {
         $result->setAction($target);
         $result->setMethod('POST');
 
-        // TODO: add Header
+        $header = new FormHeader();
+        $header->setText($title);
+        $result->addFormItem($header);
 
         $usernameTextFormItem = new TextFormItem();
-        $usernameTextFormItem->setName('username');
-        $usernameTextFormItem->setLabel(Lang::trans('Username'));
+        $usernameTextFormItem->setName('email');
+        $usernameTextFormItem->setLabel(Lang::trans('Email address'));
         $result->addFormItem($usernameTextFormItem);
 
         $passwordFormItem = new PasswordFormItem();
@@ -56,10 +58,4 @@ class AuthenticationFormFactory {
 
         return $result;
     }
-
-    protected function createHeader($title) {
-        // TODO: add Header
-    }
-
-
-} 
+}

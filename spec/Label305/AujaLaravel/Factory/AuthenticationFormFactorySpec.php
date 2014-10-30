@@ -4,6 +4,7 @@ namespace spec\Label305\AujaLaravel\Factory;
 
 use Illuminate\Support\Facades\Lang;
 use Label305\Auja\Page\Form;
+use Label305\Auja\Page\FormItem\FormHeader;
 use Label305\Auja\Page\FormItem\PasswordFormItem;
 use Label305\Auja\Page\FormItem\SubmitFormItem;
 use Label305\Auja\Page\FormItem\TextFormItem;
@@ -12,19 +13,20 @@ use Prophecy\Argument;
 
 class AuthenticationFormFactorySpec extends ObjectBehavior {
 
+    function let() {
+        Lang::shouldReceive('trans')->with('Login')->andReturn('Login');
+        Lang::shouldReceive('trans')->with('Email address')->andReturn('Email address');
+    }
+
     function it_is_initializable() {
         $this->shouldHaveType('Label305\AujaLaravel\Factory\AuthenticationFormFactory');
     }
 
     function it_can_create_a_form() {
-        Lang::shouldReceive('trans')->with('Login')->andReturn('Login');
-
         $this->create('Title', 'Target')->shouldHaveType('Label305\Auja\Page\Form');
     }
 
     function its_created_form_has_a_proper_action() {
-        Lang::shouldReceive('trans')->with('Login')->andReturn('Login');
-
         $form = $this->create('Title', 'Target')->getWrappedObject();
         /* @var $form Form */
 
@@ -38,24 +40,30 @@ class AuthenticationFormFactorySpec extends ObjectBehavior {
     }
 
     function its_created_form_has_a_proper_header() {
-        Lang::shouldReceive('trans')->with('Login')->andReturn('Login');
-
         $form = $this->create('Title', 'Target')->getWrappedObject();
         /* @var $form Form */
 
-//        throw new Exception('Not implemented'); // TODO
+        $hasHeader = false;
+        $formItems = $form->getFormItems();
+        foreach ($formItems as $formItem) {
+            if ($formItem instanceof FormHeader && $formItem->getText() == 'Title') {
+                $hasHeader = true;
+            }
+        }
+
+        if (!$hasHeader) {
+            throw new \Exception('Created Form has no Header');
+        }
     }
 
-    function its_created_form_has_a_username_textformitem() {
-        Lang::shouldReceive('trans')->with('Login')->andReturn('Login');
-
+    function its_created_form_has_an_email_textformitem() {
         $form = $this->create('Title', 'Target')->getWrappedObject();
         /* @var $form Form */
 
         $hasUsernameTextFormItem = false;
         $formItems = $form->getFormItems();
         foreach ($formItems as $formItem) {
-            if ($formItem instanceof TextFormItem && $formItem->getName() == 'username') {
+            if ($formItem instanceof TextFormItem && $formItem->getName() == 'email') {
                 $hasUsernameTextFormItem = true;
             }
         }
@@ -66,8 +74,6 @@ class AuthenticationFormFactorySpec extends ObjectBehavior {
     }
 
     function its_created_form_has_a_passwordformitem() {
-        Lang::shouldReceive('trans')->with('Login')->andReturn('Login');
-
         $form = $this->create('Title', 'Target')->getWrappedObject();
         /* @var $form Form */
 
@@ -85,8 +91,6 @@ class AuthenticationFormFactorySpec extends ObjectBehavior {
     }
 
     function its_created_form_has_a_submitformitem() {
-        Lang::shouldReceive('trans')->with('Login')->andReturn('Login');
-
         $form = $this->create('Title', 'Target')->getWrappedObject();
         /* @var $form Form */
 

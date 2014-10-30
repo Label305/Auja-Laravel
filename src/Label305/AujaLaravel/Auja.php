@@ -128,10 +128,10 @@ class Auja {
      *
      * @return Main the Main instance which can be configured further.
      */
-    public function buildMain($title, Form $authenticationForm = null) {
+    public function buildMain($title, $username = null, $logoutTarget = null, Form $authenticationForm = null) {
         $mainFactory = $this->app->make('Label305\AujaLaravel\Factory\MainFactory');
         /* @var $mainFactory MainFactory */
-        return $mainFactory->create($title, $authenticationForm);
+        return $mainFactory->create($title, $username, $logoutTarget, $authenticationForm);
     }
 
     /**
