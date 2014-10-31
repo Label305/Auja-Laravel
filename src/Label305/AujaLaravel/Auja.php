@@ -25,6 +25,7 @@ namespace Label305\AujaLaravel;
 
 use Illuminate\Foundation\Application;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
 use Label305\Auja\Main\Main;
 use Label305\Auja\Menu\Menu;
@@ -40,6 +41,8 @@ use Label305\AujaLaravel\Factory\NoAssociationsIndexMenuFactory;
 use Label305\AujaLaravel\Factory\PageFactory;
 use Label305\AujaLaravel\Factory\ResourceItemsFactory;
 use Label305\AujaLaravel\Factory\SingleAssociationIndexMenuFactory;
+use Illuminate\Database\Eloquent\Model as Eloquent;
+
 
 /**
  * The main class to interact with.
@@ -53,6 +56,8 @@ use Label305\AujaLaravel\Factory\SingleAssociationIndexMenuFactory;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  */
 class Auja {
+
+    // TODO Documentation
 
     /**
      * @var Application The Application instance.
@@ -71,7 +76,7 @@ class Auja {
      * @param String[]    $modelNames The names of the models to use for Auja.
      */
     function __construct(Application $app, array $modelNames) {
-        if(php_sapi_name() == 'cli') {
+        if (php_sapi_name() == 'cli') {
             /* Don't run when we're running artisan commands. */
             return;
         }
@@ -113,7 +118,7 @@ class Auja {
      *
      * @return Form
      */
-    public function buildAuthenticationForm($title, $target) {
+    public function authenticationForm($title, $target) {
         $formFactory = $this->app->make('Label305\AujaLaravel\Factory\AuthenticationFormFactory');
         /* @var $formFactory AuthenticationFormFactory */
         return $formFactory->create($title, $target);
@@ -127,7 +132,7 @@ class Auja {
      *
      * @return Main the Main instance which can be configured further.
      */
-    public function buildMain($title, $username = null, $logoutTarget = null, Form $authenticationForm = null) {
+    public function main($title, $username = null, $logoutTarget = null, Form $authenticationForm = null) {
         $mainFactory = $this->app->make('Label305\AujaLaravel\Factory\MainFactory');
         /* @var $mainFactory MainFactory */
         return $mainFactory->create($title, $username, $logoutTarget, $authenticationForm);
@@ -136,15 +141,17 @@ class Auja {
     /**
      * Intelligently builds an index menu for given model, and optionally model id.
      *
-     * @param String $modelName the name of the model to build the menu for.
-     * @param int    $modelId   (optional) the id of an instance of the model.
+     * @param Controller|Eloquent|String $model   An object which represents the model to build the menu for.
+     * @param int                        $modelId (optional) The id of an instance of the model.
      *
      * @return Menu the built menu instance, which can be configured further.
      */
-    public function buildIndexMenu($modelName, $modelId = 0) {
+    public function menuFor($model, $modelId = 0) {
         if (is_null($this->aujaConfigurator)) {
             throw new \LogicException('Auja not initialized. Call Auja::init first.');
         }
+
+        $modelName = $this->resolveModelName($model);
 
         if ($modelId == 0) {
             $menu = $this->buildNoAssociationsIndexMenu($modelName);
@@ -182,20 +189,26 @@ class Auja {
     }
 
     /**
-     * Builds a ResourceItemsMenuItems instance for given items.
+     * Builds a Resource instance for given model.
      * This is typically used when a ResourceMenuItem triggers a call for items.
      *
      * This method also supports pagination, either manually or automatically.
      * To automatically use pagination, simply provide a Paginator as items.
      *
-     * @param String          $modelName   the name of the model the items represent.
-     * @param array|Paginator $items       an array of instances of the model to be shown, or a Paginator containing the instances.
-     * @param String          $nextPageUrl (optional) The url to the next page, if any.
-     * @param int             $offset      (optional) The offset to start the order from.
+     * @param Controller|Eloquent|String $model       An object which represents the model to build items for.
+     * @param array|Paginator            $items       An array of instances of the model to be shown, or a Paginator containing the instances.
+     * @param String                     $nextPageUrl (optional) The url to the next page, if any.
+     * @param int                        $offset      (optional) The offset to start the order from.
      *
      * @return Resource The built LinkMenuItems.
      */
-    public function buildResourceItems($modelName, $items, $nextPageUrl = null, $offset = -1) {
+    public function itemsFor($model, $items = null, $nextPageUrl = null, $offset = -1) {
+        $modelName = $this->resolveModelName($model);
+
+        if ($items == null) {
+            $items = call_user_func(array($modelName, 'simplePaginate'), 10);
+        }
+
         $factory = $this->app->make('Label305\AujaLaravel\Factory\ResourceItemsFactory');
         /* @var $factory ResourceItemsFactory */
         return $factory->create($modelName, $items, $nextPageUrl, $offset);
@@ -272,15 +285,45 @@ class Auja {
      *
      * @return Menu the Menu, which can be configured further.
      */
-    public function buildAssociationMenu($modelName, $modelId, $associationName) {
+    public function associationMenuFor($modelName, $modelId, $associationName) {
         $menuFactory = $this->app->make('Label305\AujaLaravel\Factory\AssociationMenuFactory');
         /* @var $menuFactory AssociationMenuFactory */
         return $menuFactory->create($modelName, $modelId, $associationName);
     }
 
-    public function buildPage($modelName, $item = null) {
+    /**
+     * Creates a Page for given model.
+     *
+     * @param Controller|Eloquent|String $model An object which represents the model to build items for.
+     * @param int                        $itemId (optional) The id of an instance of the model.
+     *
+     * @return \Label305\Auja\Page\Page The created Page
+     */
+    public function pageFor($model, $itemId = 0) {
+        $modelName = $this->resolveModelName($model);
+        $item = $itemId = 0 ? null : call_user_func(array($modelName, 'find'), $itemId);
+
         $pageFactory = $this->app->make('Label305\AujaLaravel\Factory\PageFactory');
         /* @var $pageFactory PageFactory */
         return $pageFactory->create($modelName, $item);
+    }
+
+    /**
+     * Resolves the model name.
+     *
+     * @param Controller|Eloquent|String $model An object which represents the model.
+     *
+     * @return String the model name.
+     */
+    private function resolveModelName($model) {
+        if ($model instanceof Controller) {
+            $exploded = explode('\\', get_class($model));
+            $controllerName = array_pop($exploded);
+            return str_singular(str_replace('Controller', '', $controllerName));
+        } else if ($model instanceof Eloquent) {
+            return get_class($model);
+        } else {
+            return $model;
+        }
     }
 }
