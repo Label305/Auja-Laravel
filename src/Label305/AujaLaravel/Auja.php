@@ -85,7 +85,6 @@ class Auja {
         Log::debug('Initializing Auja with models:', $modelNames);
 
         $this->aujaConfigurator = $app['Label305\AujaLaravel\Config\AujaConfigurator'];
-
         $this->aujaConfigurator->configure($modelNames);
     }
 
@@ -279,9 +278,9 @@ class Auja {
         return $menuFactory->create($modelName, $modelId, $associationName);
     }
 
-    public function buildPage($modelName, $modelId = 0) {
+    public function buildPage($modelName, $item = null) {
         $pageFactory = $this->app->make('Label305\AujaLaravel\Factory\PageFactory');
         /* @var $pageFactory PageFactory */
-        return $pageFactory->create($modelName, $modelId);
+        return $pageFactory->create($modelName, $item);
     }
 }

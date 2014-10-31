@@ -104,7 +104,7 @@ class ConfigResolver {
     }
 
     /**
-     * Resolves the fields to display in a Page.
+     * Resolves the fields to display in a Form.
      *
      * @return String[] The names of the fields to display.
      */

@@ -57,18 +57,20 @@ class PageFactory {
         $this->formItemFactory = $formItemFactory;
     }
 
-    public function create($modelName, $modelId = 0) {
+    public function create($modelName, $item = null) {
         $page = new Page();
 
         $header = new PageHeader();
         $header->setText('Create ' . $modelName);
 
-        if ($modelId != 0) {
-            $header->setText('Edit ' . $modelName);
+        if ($item != null && isset($item->id)) {
+            $model = $this->aujaConfigurator->getModel($modelName);
+            $displayField = $this->aujaConfigurator->getDisplayField($model);
+            $header->setText('Edit ' . (isset($item->$displayField) ? $item->$displayField : $modelName));
             $deleteButton = new Button();
             $deleteButton->setText(Lang::trans('Delete'));
             $deleteButton->setConfirmationMessage(Lang::trans('Are you sure?'));
-            $deleteButton->setTarget(URL::route($this->aujaRouter->getDeleteName($modelName), $modelId));
+            $deleteButton->setTarget(URL::route($this->aujaRouter->getDeleteName($modelName), $item->id));
             $deleteButton->setMethod('delete');
             $header->addButton($deleteButton);
         }
@@ -76,18 +78,22 @@ class PageFactory {
         $page->addPageComponent($header);
 
         $form = new Form();
-        $action = $modelId == 0 ? URL::route($this->aujaRouter->getStoreName($modelName)) : URL::route($this->aujaRouter->getUpdateName($modelName), $modelId);
+        $action = $item == null || !isset($item->id) ? URL::route($this->aujaRouter->getStoreName($modelName)) : URL::route($this->aujaRouter->getUpdateName($modelName), $item->id);
         $form->setAction($action);
-        $form->setMethod($modelId == 0 ? 'POST' : 'PUT');
+        $form->setMethod($item == null ? 'POST' : 'PUT');
 
         $model = $this->aujaConfigurator->getModel($modelName);
         $visibleFields = $this->aujaConfigurator->getVisibleFields($model);
         foreach ($visibleFields as $columnName) {
             $column = $model->getColumn($columnName);
-            $item = $this->formItemFactory->getFormItem($column->getType(), false); // TODO: Password?
-            $item->setName($column->getName());
-            $item->setLabel(Lang::trans($column->getName())); // TODO: 'Human readable name'
-            $form->addFormItem($item);
+            $formItem = $this->formItemFactory->getFormItem($column->getType(), false); // TODO: Password?
+            $formItem->setName($column->getName());
+            $formItem->setLabel(Lang::trans($column->getName())); // TODO: 'Human readable name'
+            $form->addFormItem($formItem);
+
+            if($item != null && isset($item->$columnName)) {
+                $formItem->setValue($item->$columnName);
+            }
         }
 
         $submit = new SubmitFormItem();
@@ -98,5 +104,4 @@ class PageFactory {
 
         return $page;
     }
-
-} 
+}
