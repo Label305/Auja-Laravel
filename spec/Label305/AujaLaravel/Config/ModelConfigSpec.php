@@ -31,7 +31,7 @@ class ModelConfigSpec extends ObjectBehavior {
     }
 
     function it_has_an_icon() {
-        $this->setIcon(Icons::alert);
-        $this->getIcon()->shouldBe(Icons::alert);
+        $this->setIcon(Icons::ion_alert);
+        $this->getIcon()->shouldBe(Icons::ion_alert);
     }
 }

@@ -53,11 +53,11 @@ class SingleAssociationIndexMenuFactory {
      *  - An Add LinkMenuItem to add an entry of the associated model;
      *  - A ResourceMenuItem to hold entries of the associated model.
      *
-     * @param String   $modelName the name of the model.
-     * @param int      $modelId   the id of the model entry.
-     * @param Relation $relation  the Relation this model has with the associated model.
+     * @param String   $modelName The name of the model.
+     * @param int      $modelId   The id of the model entry.
+     * @param Relation $relation  The Relation this model has with the associated model.
      *
-     * @return Menu the Menu, which can be configured further.
+     * @return Menu The Menu, which can be configured further.
      */
     public function create($modelName, $modelId, Relation $relation) {
         $otherModelName = $relation->getRight()->getName();
@@ -75,7 +75,7 @@ class SingleAssociationIndexMenuFactory {
 
         $addMenuItem = new LinkMenuItem();
         $addMenuItem->setText(sprintf('%s %s', Lang::trans('Add'), Lang::trans($otherModelName)));
-        $addMenuItem->setIcon(Icons::plus);
+        $addMenuItem->setIcon(Icons::ion_plus);
         $addMenuItem->setTarget(URL::route($this->aujaRouter->getCreateAssociationName($modelName, $otherModelName), $modelId));
         $menu->addMenuItem($addMenuItem);
 
