@@ -86,14 +86,8 @@ class PageFactory {
         $visibleFields = $this->aujaConfigurator->getVisibleFields($model);
         foreach ($visibleFields as $columnName) {
             $column = $model->getColumn($columnName);
-            $formItem = $this->formItemFactory->getFormItem($column->getType(), false); // TODO: Password?
-            $formItem->setName($column->getName());
-            $formItem->setLabel(Lang::trans($column->getName())); // TODO: 'Human readable name'
+            $formItem = $this->formItemFactory->getFormItem($column, $item);
             $form->addFormItem($formItem);
-
-            if($item != null && isset($item->$columnName)) {
-                $formItem->setValue($item->$columnName);
-            }
         }
 
         $submit = new SubmitFormItem();

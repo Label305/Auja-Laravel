@@ -24,6 +24,7 @@
 namespace Label305\AujaLaravel\Factory;
 
 use Doctrine\DBAL\Types\Type;
+use Illuminate\Support\Facades\Lang;
 use Label305\Auja\Page\FormItem\CheckboxFormItem;
 use Label305\Auja\Page\FormItem\DateFormItem;
 use Label305\Auja\Page\FormItem\DateTimeFormItem;
@@ -34,6 +35,7 @@ use Label305\Auja\Page\FormItem\PasswordFormItem;
 use Label305\Auja\Page\FormItem\TextAreaFormItem;
 use Label305\Auja\Page\FormItem\TextFormItem;
 use Label305\Auja\Page\FormItem\TimeFormItem;
+use Label305\AujaLaravel\Config\Column;
 
 /**
  * A factory class for creating PageComponents out of types.
@@ -43,18 +45,14 @@ use Label305\Auja\Page\FormItem\TimeFormItem;
 class FormItemFactory {
 
     /**
-     * @param $type   String the type of the column to create a PageFormItem for. See Doctrine\DBAL\Types\Type for the supported types.
-     * @param $hidden bool whether the column is hidden.
+     * @param Column $column
+     * @param $item
      *
-     * @return FormItem the created PageFormItem.
+     * @return CheckboxFormItem|DateFormItem|DateTimeFormItem|IntegerFormItem|NumberFormItem|TextAreaFormItem|null
      */
-    public function getFormItem($type, $hidden) {
-        if ($hidden) {
-            return new PasswordFormItem();
-        }
-
+    public function getFormItem($column, $item) {
         $result = null;
-        switch ($type) {
+        switch ($column->getType()) {
             case Type::TEXT:
             case Type::TARRAY:
             case Type::SIMPLE_ARRAY:
@@ -90,6 +88,14 @@ class FormItemFactory {
             default:
                 $result = new TextFormItem();
                 break;
+        }
+
+        $columnName = $column->getName();
+        $result->setName($columnName);
+        $result->setLabel(Lang::trans($columnName)); // TODO: 'Human readable name'
+
+        if($item != null && isset($item->$columnName)) {
+            $result->setValue($item->$columnName);
         }
 
         return $result;
