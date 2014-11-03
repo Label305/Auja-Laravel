@@ -60,13 +60,14 @@ class ResourceItemsFactory {
      *
      * @param String          $modelName   the name of the model the items represent.
      * @param array|Paginator $items       an array of instances of the model to be shown, or a Paginator containing the instances.
+     * @param String          $targetUrl   (optional) The target url for the items. Must contain '%d' in the place of the item id.
      * @param String          $nextPageUrl (optional) The url to the next page, if any.
      * @param int             $offset      (optional) The offset to start the order from.
      * @param ModelConfig     $config      (optional) The `ModelConfig` to use.
      *
      * @return Resource The built LinkMenuItems.
      */
-    public function create($modelName, $items, $nextPageUrl = null, $offset = -1, ModelConfig $config = null) { // TODO: create separate methods for pagination and no pagination?
+    public function create($modelName, $items, $targetUrl = null, $nextPageUrl = null, $offset = -1, ModelConfig $config = null) { // TODO: create separate methods for pagination and no pagination?
         /* Extract items from Paginator if necessary */
         $paginator = null;
         if ($items instanceof Paginator) {
@@ -109,7 +110,9 @@ class ResourceItemsFactory {
         $displayField = $this->aujaConfigurator->getDisplayField($model, $config);
         $icon = $this->aujaConfigurator->getIcon($model, $config);
         for ($i = 0; $i < count($items); $i++) {
-            if (count($associationRelations) == 0) {
+            if ($targetUrl != null) {
+                $target = sprintf($targetUrl, $items[$i]->id);
+            } else if (count($associationRelations) == 0) {
                 $target = URL::route($this->aujaRouter->getEditName($modelName), $items[$i]->id);
             } else {
                 $target = URL::route($this->aujaRouter->getShowMenuName($modelName), $items[$i]->id);

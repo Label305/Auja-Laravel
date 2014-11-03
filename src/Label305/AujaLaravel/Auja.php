@@ -218,13 +218,14 @@ class Auja {
      *
      * @param Controller|Eloquent|String $model       An object which represents the model to build items for.
      * @param array|Paginator            $items       An array of instances of the model to be shown, or a Paginator containing the instances.
+     * @param String                     $targetUrl   (optional) The target url for the items. Must contain '%d' in the place of the item id.
      * @param String                     $nextPageUrl (optional) The url to the next page, if any.
      * @param int                        $offset      (optional) The offset to start the order from.
      * @param ModelConfig                $config      (optional) The `ModelConfig` to use.
      *
      * @return Resource The built LinkMenuItems.
      */
-    public function itemsFor($model, $items = null, $nextPageUrl = null, $offset = -1, ModelConfig $config = null) {
+    public function itemsFor($model, $items = null, $targetUrl = null, $nextPageUrl = null, $offset = -1, ModelConfig $config = null) {
         $modelName = $this->resolveModelName($model);
 
         if ($items == null) {
@@ -233,7 +234,7 @@ class Auja {
 
         $factory = $this->app->make('Label305\AujaLaravel\Factory\ResourceItemsFactory');
         /* @var $factory ResourceItemsFactory */
-        return $factory->create($modelName, $items, $nextPageUrl, $offset, $config);
+        return $factory->create($modelName, $items, $targetUrl, $nextPageUrl, $offset, $config);
     }
 
     /**
