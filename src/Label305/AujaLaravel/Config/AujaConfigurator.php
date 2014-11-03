@@ -52,12 +52,12 @@ class AujaConfigurator {
     private $models = [];
 
     /**
-     * @var Relation[][] a key-value pair of model names and an array of their relations.
+     * @var Relation[][] A key-value pair of model names and an array of their relations.
      */
     private $relations = [];
 
     /**
-     * @var array a key-value pair of model names and their generated configs.
+     * @var ModelConfig[] A key-value pair of model names and their generated configs.
      */
     private $configs = [];
 
@@ -123,7 +123,7 @@ class AujaConfigurator {
     }
 
     /**
-     * @return array a key-value pair of model names and an array of their relations.
+     * @return Relation[] A key-value pair of model names and an array of their relations.
      */
     public function getRelations() {
         if (empty($this->models)) {
@@ -134,11 +134,11 @@ class AujaConfigurator {
     }
 
     /**
-     * Returns an array of Relations for given Model.
+     * Returns an array of `Relations` for given `Model`.
      *
-     * @param Model $model the Model.
+     * @param Model $model The `Model`.
      *
-     * @return Relation[] the Relations.
+     * @return Relation[] The `Relations`.
      */
     public function getRelationsForModel(Model $model) {
         if (empty($this->models)) {
@@ -149,14 +149,15 @@ class AujaConfigurator {
     }
 
     /**
-     * Finds the name of the table for given Model, using the Config class for the Model.
+     * Finds the name of the table for given Model, using the `ModelConfig` class for the `Model`.
      * Uses the overridden value if present, or falls back to the generated value.
      *
-     * @param $model Model the Model to find the table name for.
+     * @param Model       $model  The `Model` to find the table name for.
+     * @param ModelConfig $config The `ModelConfig` to use for retrieving the table name.
      *
      * @return String The name of table for given Model.
      */
-    public function getTableName(Model $model) {
+    public function getTableName(Model $model, ModelConfig $config = null) {
         if (empty($this->models)) {
             throw new \LogicException('AujaConfigurator not configured yet! Call configure first.');
         }
@@ -165,20 +166,27 @@ class AujaConfigurator {
             throw new \LogicException(sprintf('AujaConfigurator not configured for model %s', $model->getName()));
         }
 
-        $modelConfig = $this->configs[$model->getName()];
-        /* @var $modelConfig ModelConfig */
-        return $modelConfig->getTableName();
+        $result = null;
+        if ($config != null && $config->getTableName() != null) {
+            $result = $config->getTableName();
+        } else {
+            $modelConfig = $this->configs[$model->getName()];
+            $result = $modelConfig->getTableName();
+        }
+
+        return $result;
     }
 
     /**
-     * Finds which display field to use for given Model, using the Config class for the Model.
+     * Finds which display field to use for given Model, using the `ModelConfig` class for the `Model`.
      * Uses the overridden value if present, or falls back to the generated value.
      *
-     * @param $model Model the Model to find the display field for.
+     * @param Model       $model  The `Model` to find the display field for.
+     * @param ModelConfig $config The `ModelConfig` to use for retrieving the display field.
      *
-     * @return String The name of the field to use for displaying the Model.
+     * @return String The name of the field to use for displaying the `Model`.
      */
-    public function getDisplayField(Model $model) {
+    public function getDisplayField(Model $model, ModelConfig $config = null) {
         if (empty($this->models)) {
             throw new \LogicException('AujaConfigurator not configured yet! Call configure first.');
         }
@@ -187,20 +195,27 @@ class AujaConfigurator {
             throw new \LogicException(sprintf('AujaConfigurator not configured for model %s', $model->getName()));
         }
 
-        $modelConfig = $this->configs[$model->getName()];
-        /* @var $modelConfig ModelConfig */
-        return $modelConfig->getDisplayField();
+        $result = null;
+        if ($config != null && $config->getDisplayField() != null) {
+            $result = $config->getDisplayField();
+        } else {
+
+            $modelConfig = $this->configs[$model->getName()];
+            $result = $modelConfig->getDisplayField();
+        }
+        return $result;
     }
 
     /**
-     * Finds the icon to use for given Model, using the Config class for the Model.
+     * Finds the icon to use for given `Model`, using the `ModelConfig` class for the `Model`.
      * Uses the overridden value if present, or falls back to the generated value.
      *
-     * @param Model $model The Model to find the icon for.
+     * @param Model       $model  The `Model` to find the icon for.
+     * @param ModelConfig $config The `ModelConfig` to use for retrieving the icon.
      *
      * @return String The name of the icon.
      */
-    public function getIcon(Model $model) {
+    public function getIcon(Model $model, ModelConfig $config = null) {
         if (empty($this->models)) {
             throw new \LogicException('AujaConfigurator not configured yet! Call configure first.');
         }
@@ -209,29 +224,48 @@ class AujaConfigurator {
             throw new \LogicException(sprintf('AujaConfigurator not configured for model %s', $model->getName()));
         }
 
-        $modelConfig = $this->configs[$model->getName()];
-        /* @var $modelConfig ModelConfig */
-        return $modelConfig->getIcon();
-    }
-
-    public function getVisibleFields(Model $model) {
-        if (empty($this->models)) {
-            throw new \LogicException('AujaConfigurator not configured yet! Call configure first.');
+        $result = null;
+        if ($config != null && $config->getIcon() != null) {
+            $result = $config->getIcon();
+        } else {
+            $modelConfig = $this->configs[$model->getName()];
+            $result = $modelConfig->getIcon();
         }
-
-        if (!isset($this->configs[$model->getName()])) {
-            throw new \LogicException(sprintf('AujaConfigurator not configured for model %s', $model->getName()));
-        }
-
-        $modelConfig = $this->configs[$model->getName()];
-        /* @var $modelConfig ModelConfig */
-        return $modelConfig->getVisibleFields();
+        return $result;
     }
 
     /**
-     * Finds and configures the Columns for given Model.
+     * Finds the visible fields to show for given `Model`, using the `ModelConfig` class for the `Model`.
+     * Users the overridden value if present, or falls back to the generated value.
      *
-     * @param Model $model the Model to find the Columns for.
+     * @param Model       $model  The `Model` to find the visible fields for.
+     * @param modelConfig $config The `ModelConfig` to use for retrieving the visible fields.
+     *
+     * @return \String[] An array of names of the visible fields.
+     */
+    public function getVisibleFields(Model $model, ModelConfig $config = null) {
+        if (empty($this->models)) {
+            throw new \LogicException('AujaConfigurator not configured yet! Call configure first.');
+        }
+
+        if (!isset($this->configs[$model->getName()])) {
+            throw new \LogicException(sprintf('AujaConfigurator not configured for model %s', $model->getName()));
+        }
+
+        $result = null;
+        if ($config != null && $config->getVisibleFields() != null) {
+            $result = $config->getVisibleFields();
+        } else {
+            $modelConfig = $this->configs[$model->getName()];
+            $result = $modelConfig->getVisibleFields();
+        }
+        return $result;
+    }
+
+    /**
+     * Finds and configures the `Columns` for given `Model`.
+     *
+     * @param Model $model the Model to find the `Columns` for.
      */
     private function findColumns(Model $model) {
         Log::debug('Finding columns for model ' . $model->getName());
@@ -352,5 +386,4 @@ class AujaConfigurator {
         $this->relations[$model1->getName()][] = new Relation($model1, $model2, Relation::HAS_AND_BELONGS_TO);
         $this->relations[$model2->getName()][] = new Relation($model2, $model1, Relation::HAS_AND_BELONGS_TO);
     }
-
 }
