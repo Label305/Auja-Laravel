@@ -119,4 +119,11 @@ class ModelConfig {
     public function setVisibleFields($visibleFields) {
         $this->visibleFields = $visibleFields;
     }
+
+    /**
+     * @return bool `true` if the model should be included in main.
+     */
+    public function includeInMain() {
+        return true;
+    }
 }

@@ -346,7 +346,7 @@ class Auja {
      * @param String $modelName The name of the model.
      * @param int    $itemId    The id of the instance of the model to find.
      *
-     * @return \Eloquent The model instance, or null if none.
+     * @return Eloquent The model instance, or null if none.
      */
     private function findItem($modelName, $itemId) {
         return $itemId = 0 ? null : call_user_func(array($modelName, 'find'), $itemId);

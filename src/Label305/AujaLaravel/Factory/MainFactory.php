@@ -66,11 +66,13 @@ class MainFactory {
         $main->setUsername($username);
 
         foreach ($this->aujaConfigurator->getModels() as $model) {
-            $item = new Item();
-            $item->setTitle($model->getName());
-            $item->setIcon($this->aujaConfigurator->getIcon($model, $config));
-            $item->setTarget(Url::route($this->aujaRouter->getMenuName($model->getName())));
-            $main->addItem($item);
+            if ($this->aujaConfigurator->shouldIncludeInMain($model, $config)) {
+                $item = new Item();
+                $item->setTitle($model->getName());
+                $item->setIcon($this->aujaConfigurator->getIcon($model, $config));
+                $item->setTarget(Url::route($this->aujaRouter->getMenuName($model->getName())));
+                $main->addItem($item);
+            }
         }
 
         $main->setAuthenticationForm($authenticationForm);

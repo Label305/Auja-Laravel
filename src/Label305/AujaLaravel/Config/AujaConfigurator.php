@@ -236,7 +236,7 @@ class AujaConfigurator {
 
     /**
      * Finds the visible fields to show for given `Model`, using the `ModelConfig` class for the `Model`.
-     * Users the overridden value if present, or falls back to the generated value.
+     * Uses the overridden value if present, or falls back to the generated value.
      *
      * @param Model       $model  The `Model` to find the visible fields for.
      * @param modelConfig $config The `ModelConfig` to use for retrieving the visible fields.
@@ -258,6 +258,34 @@ class AujaConfigurator {
         } else {
             $modelConfig = $this->configs[$model->getName()];
             $result = $modelConfig->getVisibleFields();
+        }
+        return $result;
+    }
+
+    /**
+     * Returns whether given model should be included in the main view, using the `ModelConfig` class for the `Model`.
+     * Uses the overridden value if present, or falls back to the generated value.
+     *
+     * @param Model       $model  The `Model` to check.
+     * @param ModelConfig $config The `ModelConfig` to use for checking.
+     *
+     * @return bool `true` if the model should be included in main.
+     */
+    public function shouldIncludeInMain(Model $model, ModelConfig $config = null) {
+        if (empty($this->models)) {
+            throw new \LogicException('AujaConfigurator not configured yet! Call configure first.');
+        }
+
+        if (!isset($this->configs[$model->getName()])) {
+            throw new \LogicException(sprintf('AujaConfigurator not configured for model %s', $model->getName()));
+        }
+
+        $result = false;
+        if ($config != null) {
+            $result = $config->includeInMain();
+        } else {
+            $modelConfig = $this->configs[$model->getName()];
+            $result = $modelConfig->includeInMain();
         }
         return $result;
     }
