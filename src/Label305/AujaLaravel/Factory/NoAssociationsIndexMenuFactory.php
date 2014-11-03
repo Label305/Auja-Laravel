@@ -26,6 +26,7 @@ namespace Label305\AujaLaravel\Factory;
 
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\URL;
+use Label305\Auja\Icons;
 use Label305\Auja\Menu\LinkMenuItem;
 use Label305\Auja\Menu\Menu;
 use Label305\Auja\Menu\ResourceMenuItem;
@@ -62,6 +63,7 @@ class NoAssociationsIndexMenuFactory {
 
         $addMenuItem = new LinkMenuItem();
         $addMenuItem->setText(Lang::trans('Add'));
+        $addMenuItem->setIcon(Icons::ion_plus);
         $addMenuItem->setTarget(URL::route($this->aujaRouter->getCreateName($modelName)));
         $menu->addMenuItem($addMenuItem);
 
