@@ -29,6 +29,7 @@ use Label305\Auja\Menu\LinkMenuItem;
 use Label305\Auja\Menu\Menu;
 use Label305\Auja\Menu\ResourceMenuItem;
 use Label305\Auja\Menu\SpacerMenuItem;
+use Label305\AujaLaravel\Config\AujaConfigurator;
 use Label305\AujaLaravel\Config\Model;
 use Label305\AujaLaravel\Config\Relation;
 use Label305\AujaLaravel\Routing\AujaRouter;
@@ -37,12 +38,15 @@ use Prophecy\Argument;
 
 class NoAssociationsIndexMenuFactorySpec extends ObjectBehavior {
 
-    function let(AujaRouter $aujaRouter) {
-        $this->beConstructedWith($aujaRouter);
+    function let(AujaConfigurator $aujaConfigurator, AujaRouter $aujaRouter, Model $model) {
+        $this->beConstructedWith($aujaConfigurator, $aujaRouter);
 
-        URL::shouldReceive('route');
+        URL::shouldReceive('route')->andReturn('%s');
         Lang::shouldReceive('trans')->with('Add')->andReturn('Add');
         Lang::shouldReceive('trans')->with('Model')->andReturn('Model');
+
+        $aujaConfigurator->getModel('Model')->willReturn($model);
+        $aujaConfigurator->isSearchable($model, null)->willReturn(true);
     }
 
     function it_is_initializable() {
