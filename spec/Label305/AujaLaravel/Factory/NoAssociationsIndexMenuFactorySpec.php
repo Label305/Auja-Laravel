@@ -37,21 +37,8 @@ use Prophecy\Argument;
 
 class NoAssociationsIndexMenuFactorySpec extends ObjectBehavior {
 
-    /**
-     * @var Relation[]
-     */
-    private $relations;
-
-    function let(AujaRouter $aujaRouter, Relation $relation, Model $left, Model $right) {
+    function let(AujaRouter $aujaRouter) {
         $this->beConstructedWith($aujaRouter);
-
-        $this->relations = [$relation];
-        $relation->getLeft()->willReturn($left);
-        $relation->getRight()->willReturn($right);
-        $relation->getType()->willReturn('hasMany');
-
-        $left->getName()->willReturn('Model');
-        $right->getName()->willReturn('OtherModel');
 
         URL::shouldReceive('route');
         Lang::shouldReceive('trans')->with('Add')->andReturn('Add');
@@ -66,7 +53,7 @@ class NoAssociationsIndexMenuFactorySpec extends ObjectBehavior {
         $this->create('Model')->shouldHaveType('Label305\Auja\Menu\Menu');
     }
 
-    function its_created_menu_has_an_add_linkmenuitem_as_a_first_item() {
+    function its_created_menu_has_an_add_LinkMenuItem_as_a_first_item() {
         $menu = $this->create('Model')->getWrappedObject();
         /* @var Menu $menu */
 
@@ -82,8 +69,8 @@ class NoAssociationsIndexMenuFactorySpec extends ObjectBehavior {
         }
     }
 
-    function its_created_menu_has_a_spacermenuitem_as_a_second_item() {
-        $menu = $this->create('Model', 1, $this->relations)->getWrappedObject();
+    function its_created_menu_has_a_SpacerMenuItem_as_a_second_item() {
+        $menu = $this->create('Model')->getWrappedObject();
         /* @var Menu $menu */
 
         if (!($menu->getMenuItems()[1] instanceof SpacerMenuItem)) {
@@ -98,8 +85,8 @@ class NoAssociationsIndexMenuFactorySpec extends ObjectBehavior {
         }
     }
 
-    function its_created_menu_has_a_resourcemenuitem_as_a_third_item() {
-        $menu = $this->create('Model', 1, $this->relations)->getWrappedObject();
+    function its_created_menu_has_a_ResourceMenuItem_as_a_third_item() {
+        $menu = $this->create('Model')->getWrappedObject();
         /* @var Menu $menu */
 
         if (!($menu->getMenuItems()[2] instanceof ResourceMenuItem)) {

@@ -46,7 +46,7 @@ class PageFactorySpec extends ObjectBehavior {
         $this->beConstructedWith($aujaConfigurator, $aujaRouter, $formItemFactory);
 
         $aujaConfigurator->getModel('MyModel')->willReturn($model);
-        $aujaConfigurator->getVisibleFields($model)->willReturn($this->visibleFields);
+        $aujaConfigurator->getVisibleFields($model, null)->willReturn($this->visibleFields);
 
         $formItemFactory->getFormItem($column1, null)->willReturn($formItem);
         $formItemFactory->getFormItem($column2, null)->willReturn($formItem);
