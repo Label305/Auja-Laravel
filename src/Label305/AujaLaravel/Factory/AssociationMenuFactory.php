@@ -29,6 +29,7 @@ use Label305\Auja\Menu\LinkMenuItem;
 use Label305\Auja\Menu\Menu;
 use Label305\Auja\Menu\ResourceMenuItem;
 use Label305\Auja\Menu\SpacerMenuItem;
+use Label305\AujaLaravel\Config\ModelConfig;
 use Label305\AujaLaravel\Routing\AujaRouter;
 
 class AssociationMenuFactory {
@@ -50,13 +51,14 @@ class AssociationMenuFactory {
      *  - A SpacerMenuItem with the name of the associated model;
      *  - A ResourceMenuItem to hold entries of the associated model.
      *
-     * @param String $modelName       the name of the model (i.e. Club).
-     * @param int    $modelId         the id of the model entry.
-     * @param String $associationName the name of the associated model (i.e. Team).
+     * @param String      $modelName       The name of the model (i.e. Club).
+     * @param int         $modelId         The id of the model entry.
+     * @param String      $associationName The name of the associated model (i.e. Team).
+     * @param ModelConfig $config          (optional) The `ModelConfig` to use.
      *
      * @return Menu the Menu, which can be configured further.
      */
-    public function create($modelName, $modelId, $associationName) {
+    public function create($modelName, $modelId, $associationName, ModelConfig $config = null) {
         $menu = new Menu();
 
         $addMenuItem = new LinkMenuItem();

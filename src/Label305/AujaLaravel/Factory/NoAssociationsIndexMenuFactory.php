@@ -30,6 +30,7 @@ use Label305\Auja\Menu\LinkMenuItem;
 use Label305\Auja\Menu\Menu;
 use Label305\Auja\Menu\ResourceMenuItem;
 use Label305\Auja\Menu\SpacerMenuItem;
+use Label305\AujaLaravel\Config\ModelConfig;
 use Label305\AujaLaravel\Routing\AujaRouter;
 
 class NoAssociationsIndexMenuFactory {
@@ -51,11 +52,12 @@ class NoAssociationsIndexMenuFactory {
      *  - A SpacerMenuItem with the model's name;
      *  - A ResourceMenuItem to hold entries of the model.
      *
-     * @param String $modelName the name of the model.
+     * @param String      $modelName The name of the model.
+     * @param ModelConfig $config    (optional) The `ModelConfig` to use.
      *
      * @return Menu the Menu, which can be configured further.
      */
-    public function create($modelName) {
+    public function create($modelName, ModelConfig $config = null) {
         $menu = new Menu();
 
         $addMenuItem = new LinkMenuItem();

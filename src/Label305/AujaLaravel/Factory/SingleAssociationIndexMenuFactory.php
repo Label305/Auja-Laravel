@@ -30,6 +30,7 @@ use Label305\Auja\Menu\LinkMenuItem;
 use Label305\Auja\Menu\Menu;
 use Label305\Auja\Menu\ResourceMenuItem;
 use Label305\Auja\Menu\SpacerMenuItem;
+use Label305\AujaLaravel\Config\ModelConfig;
 use Label305\AujaLaravel\Config\Relation;
 use Label305\AujaLaravel\Routing\AujaRouter;
 
@@ -53,13 +54,14 @@ class SingleAssociationIndexMenuFactory {
      *  - An Add LinkMenuItem to add an entry of the associated model;
      *  - A ResourceMenuItem to hold entries of the associated model.
      *
-     * @param String   $modelName The name of the model.
-     * @param int      $modelId   The id of the model entry.
-     * @param Relation $relation  The Relation this model has with the associated model.
+     * @param String      $modelName The name of the model.
+     * @param int         $modelId   The id of the model entry.
+     * @param Relation    $relation  The Relation this model has with the associated model.
+     * @param ModelConfig $config    (optional) The `ModelConfig` to use.
      *
      * @return Menu The Menu, which can be configured further.
      */
-    public function create($modelName, $modelId, Relation $relation) {
+    public function create($modelName, $modelId, Relation $relation, ModelConfig $config = null) {
         $otherModelName = $relation->getRight()->getName();
 
         $menu = new Menu();

@@ -29,6 +29,7 @@ use Illuminate\Support\Facades\URL;
 use Label305\Auja\Menu\LinkMenuItem;
 use Label305\Auja\Menu\Menu;
 use Label305\Auja\Menu\SpacerMenuItem;
+use Label305\AujaLaravel\Config\ModelConfig;
 use Label305\AujaLaravel\Config\Relation;
 use Label305\AujaLaravel\Routing\AujaRouter;
 
@@ -57,7 +58,7 @@ class MultipleAssociationsIndexMenuFactory {
      *
      * @return Menu the Menu, which can be configured further.
      */
-    public function create($modelName, $modelId, array $relations) {
+    public function create($modelName, $modelId, array $relations, ModelConfig $config = null) {
         $menu = new Menu();
 
         $addMenuItem = new LinkMenuItem();

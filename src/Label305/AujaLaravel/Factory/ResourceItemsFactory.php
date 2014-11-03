@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\URL;
 use Label305\Auja\Menu\LinkMenuItem;
 use Label305\Auja\Menu\Resource;
 use Label305\AujaLaravel\Config\AujaConfigurator;
+use Label305\AujaLaravel\Config\ModelConfig;
 use Label305\AujaLaravel\Config\Relation;
 use Label305\AujaLaravel\Routing\AujaRouter;
 
@@ -61,10 +62,11 @@ class ResourceItemsFactory {
      * @param array|Paginator $items       an array of instances of the model to be shown, or a Paginator containing the instances.
      * @param String          $nextPageUrl (optional) The url to the next page, if any.
      * @param int             $offset      (optional) The offset to start the order from.
+     * @param ModelConfig     $config      (optional) The `ModelConfig` to use.
      *
      * @return Resource The built LinkMenuItems.
      */
-    public function create($modelName, $items, $nextPageUrl = null, $offset = -1) { // TODO: create separate methods for pagination and no pagination?
+    public function create($modelName, $items, $nextPageUrl = null, $offset = -1, ModelConfig $config = null) { // TODO: create separate methods for pagination and no pagination?
         /* Extract items from Paginator if necessary */
         $paginator = null;
         if ($items instanceof Paginator) {
@@ -104,8 +106,8 @@ class ResourceItemsFactory {
 
         /* Build the actual items to return */
         $resourceItems = new Resource();
-        $displayField = $this->aujaConfigurator->getDisplayField($model);
-        $icon = $this->aujaConfigurator->getIcon($model);
+        $displayField = $this->aujaConfigurator->getDisplayField($model, $config);
+        $icon = $this->aujaConfigurator->getIcon($model, $config);
         for ($i = 0; $i < count($items); $i++) {
             if (count($associationRelations) == 0) {
                 $target = URL::route($this->aujaRouter->getEditName($modelName), $items[$i]->id);

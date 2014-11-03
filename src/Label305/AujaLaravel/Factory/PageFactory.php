@@ -32,6 +32,7 @@ use Label305\Auja\Page\Page;
 use Label305\Auja\Page\PageHeader;
 use Label305\Auja\Shared\Button;
 use Label305\AujaLaravel\Config\AujaConfigurator;
+use Label305\AujaLaravel\Config\ModelConfig;
 use Label305\AujaLaravel\Routing\AujaRouter;
 
 class PageFactory {
@@ -57,7 +58,7 @@ class PageFactory {
         $this->formItemFactory = $formItemFactory;
     }
 
-    public function create($modelName, $item = null) {
+    public function create($modelName, $item = null, ModelConfig $config = null) {
         $page = new Page();
 
         $header = new PageHeader();
@@ -65,7 +66,7 @@ class PageFactory {
 
         if ($item != null && isset($item->id)) {
             $model = $this->aujaConfigurator->getModel($modelName);
-            $displayField = $this->aujaConfigurator->getDisplayField($model);
+            $displayField = $this->aujaConfigurator->getDisplayField($model, $config);
             $header->setText('Edit ' . (isset($item->$displayField) ? $item->$displayField : $modelName));
             $deleteButton = new Button();
             $deleteButton->setText(Lang::trans('Delete'));
@@ -83,7 +84,7 @@ class PageFactory {
         $form->setMethod($item == null ? 'POST' : 'PUT');
 
         $model = $this->aujaConfigurator->getModel($modelName);
-        $visibleFields = $this->aujaConfigurator->getVisibleFields($model);
+        $visibleFields = $this->aujaConfigurator->getVisibleFields($model, $config);
         foreach ($visibleFields as $columnName) {
             $column = $model->getColumn($columnName);
             $formItem = $this->formItemFactory->getFormItem($column, $item);

@@ -31,6 +31,7 @@ use Label305\Auja\Main\Main;
 use Label305\Auja\Page\Form;
 use Label305\Auja\Shared\Button;
 use Label305\AujaLaravel\Config\AujaConfigurator;
+use Label305\AujaLaravel\Config\ModelConfig;
 use Label305\AujaLaravel\Routing\AujaRouter;
 
 class MainFactory {
@@ -50,7 +51,7 @@ class MainFactory {
         $this->aujaRouter = $aujaRouter;
     }
 
-    public function create($title, $username = null, $logoutTarget = null, Form $authenticationForm = null) {
+    public function create($title, $username = null, $logoutTarget = null, Form $authenticationForm = null, ModelConfig $config = null) {
         $main = new Main();
 
         $main->setTitle($title);
@@ -67,7 +68,7 @@ class MainFactory {
         foreach ($this->aujaConfigurator->getModels() as $model) {
             $item = new Item();
             $item->setTitle($model->getName());
-            $item->setIcon($this->aujaConfigurator->getIcon($model));
+            $item->setIcon($this->aujaConfigurator->getIcon($model, $config));
             $item->setTarget(Url::route($this->aujaRouter->getMenuName($model->getName())));
             $main->addItem($item);
         }
