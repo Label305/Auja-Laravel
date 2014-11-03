@@ -52,13 +52,13 @@ class MainFactorySpec extends ObjectBehavior {
     function it_can_create_a_main() {
         URL::shouldReceive('route');
 
-        $this->create('Title')->shouldHaveType('Label305\Auja\Main\Main');
+        $this->create('Title', true)->shouldHaveType('Label305\Auja\Main\Main');
     }
 
     function its_created_main_has_a_proper_title(Form $form) {
         URL::shouldReceive('route');
 
-        $main = $this->create('Title', 'Username', 'target', $form)->getWrappedObject();
+        $main = $this->create('Title', true, 'Username', 'target', $form)->getWrappedObject();
         /* @var $main Main */
 
         if ($main->getTitle() != 'Title') {
@@ -69,7 +69,7 @@ class MainFactorySpec extends ObjectBehavior {
     function its_created_main_has_a_proper_username(Form $form) {
         URL::shouldReceive('route');
 
-        $main = $this->create('Title', 'Username', 'target', $form)->getWrappedObject();
+        $main = $this->create('Title', true, 'Username', 'target', $form)->getWrappedObject();
         /* @var $main Main */
 
         if ($main->getUsername() != 'Username') {
@@ -80,7 +80,7 @@ class MainFactorySpec extends ObjectBehavior {
     function its_created_main_has_a_proper_logoutbutton(Form $form) {
         URL::shouldReceive('route');
 
-        $main = $this->create('Title', 'Username', 'target', $form)->getWrappedObject();
+        $main = $this->create('Title', true, 'Username', 'target', $form)->getWrappedObject();
         /* @var $main Main */
 
         if ($main->getButtons()[0]->getTarget() != 'target') {
@@ -88,30 +88,30 @@ class MainFactorySpec extends ObjectBehavior {
         }
     }
 
-    function its_created_main_has_proper_models(Form $form){
+    function its_created_main_has_proper_models(Form $form) {
         URL::shouldReceive('route');
 
-        $main = $this->create('Title', 'Username', 'target', $form)->getWrappedObject();
+        $main = $this->create('Title', true, 'Username', 'target', $form)->getWrappedObject();
         /* @var $main Main */
 
-        if(count($main->getItems()) != 1){
+        if (count($main->getItems()) != 1) {
             throw new \Exception('Created Main has wrong number of items');
         }
 
-        if($main->getItems()[0]->getTitle() != 'Model'){
+        if ($main->getItems()[0]->getTitle() != 'Model') {
             throw new \Exception('Created Main has wrong title for item');
         }
     }
 
-    function its_created_main_has_a_proper_authentication_form(){
+    function its_created_main_has_a_proper_authentication_form() {
         URL::shouldReceive('route');
 
         $form = new Form();
 
-        $main = $this->create('Title', 'Username', 'target', $form)->getWrappedObject();
+        $main = $this->create('Title', true, 'Username', 'target', $form)->getWrappedObject();
         /* @var $main Main */
 
-        if($main->getAuthenticationForm() != $form){
+        if ($main->getAuthenticationForm() != $form) {
             throw new \Exception('Created Main has wrong authentication form');
         }
     }

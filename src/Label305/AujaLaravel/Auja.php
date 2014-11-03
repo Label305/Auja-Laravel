@@ -135,6 +135,7 @@ class Auja {
      * Creates the initial Auja view based on the models as initialized in init().
      *
      * @param String      $title              The title to show.
+     * @param boolean     $authenticated      Whether the user is authenticated.
      * @param String      $username           (optional) The user name to show.
      * @param String      $logoutTarget       (optional) The target url for logging out.
      * @param Form        $authenticationForm (optional) The `Form` to use for authentication, or `null` if none.
@@ -142,10 +143,10 @@ class Auja {
      *
      * @return Main the Main instance which can be configured further.
      */
-    public function main($title, $username = null, $logoutTarget = null, Form $authenticationForm = null, ModelConfig $config = null) {
+    public function main($title, $authenticated, $username = null, $logoutTarget = null, Form $authenticationForm = null, ModelConfig $config = null) {
         $mainFactory = $this->app->make('Label305\AujaLaravel\Factory\MainFactory');
         /* @var $mainFactory MainFactory */
-        return $mainFactory->create($title, $username, $logoutTarget, $authenticationForm, $config);
+        return $mainFactory->create($title, $authenticated, $username, $logoutTarget, $authenticationForm, $config);
     }
 
     /**

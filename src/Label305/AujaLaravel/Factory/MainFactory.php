@@ -51,19 +51,19 @@ class MainFactory {
         $this->aujaRouter = $aujaRouter;
     }
 
-    public function create($title, $username = null, $logoutTarget = null, Form $authenticationForm = null, ModelConfig $config = null) {
+    public function create($title, $authenticated, $username = null, $logoutTarget = null, Form $authenticationForm = null, ModelConfig $config = null) {
         $main = new Main();
 
         $main->setTitle($title);
+        $main->setUsername($username);
+        $main->setAuthenticated($authenticated);
 
-        if($logoutTarget != null) {
+        if ($logoutTarget != null) {
             $button = new Button();
             $button->setText('Logout');
             $button->setTarget($logoutTarget);
             $main->addButton($button);
         }
-
-        $main->setUsername($username);
 
         foreach ($this->aujaConfigurator->getModels() as $model) {
             if ($this->aujaConfigurator->shouldIncludeInMain($model, $config)) {
