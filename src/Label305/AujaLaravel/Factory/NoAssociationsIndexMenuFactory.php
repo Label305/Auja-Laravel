@@ -29,19 +29,27 @@ use Illuminate\Support\Facades\URL;
 use Label305\Auja\Icons;
 use Label305\Auja\Menu\LinkMenuItem;
 use Label305\Auja\Menu\Menu;
+use Label305\Auja\Menu\Property\Searchable;
 use Label305\Auja\Menu\ResourceMenuItem;
 use Label305\Auja\Menu\SpacerMenuItem;
+use Label305\AujaLaravel\Config\AujaConfigurator;
 use Label305\AujaLaravel\Config\ModelConfig;
 use Label305\AujaLaravel\Routing\AujaRouter;
 
 class NoAssociationsIndexMenuFactory {
 
     /**
+     * @var AujaConfigurator
+     */
+    private $aujaConfigurator;
+
+    /**
      * @var AujaRouter
      */
     private $aujaRouter;
 
-    public function __construct(AujaRouter $aujaRouter) {
+    public function __construct(AujaConfigurator $aujaConfigurator, AujaRouter $aujaRouter) {
+        $this->aujaConfigurator = $aujaConfigurator;
         $this->aujaRouter = $aujaRouter;
     }
 
@@ -73,6 +81,14 @@ class NoAssociationsIndexMenuFactory {
 
         $resourceMenuItem = new ResourceMenuItem();
         $resourceMenuItem->setTarget(URL::route($this->aujaRouter->getIndexName($modelName)));
+
+        $model = $this->aujaConfigurator->getModel($modelName);
+        if($this->aujaConfigurator->isSearchable($model, $config)){
+            $target = urldecode(URL::route($this->aujaRouter->getIndexName($modelName), ['q' => '%s'])); /* urldecode because the '%' gets escaped. */
+            $property = new Searchable($target);
+            $resourceMenuItem->addProperty($property);
+        }
+
         $menu->addMenuItem($resourceMenuItem);
 
         return $menu;

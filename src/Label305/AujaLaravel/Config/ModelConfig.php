@@ -126,4 +126,11 @@ class ModelConfig {
     public function includeInMain() {
         return true;
     }
+
+    /**
+     * @return bool `true` if the user should be able to search items.
+     */
+    public function isSearchable() {
+        return true;
+    }
 }

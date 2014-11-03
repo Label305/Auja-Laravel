@@ -291,6 +291,34 @@ class AujaConfigurator {
     }
 
     /**
+     * Returns whether given model is searchable, using the `ModelConfig` class for the `Model`.
+     * Uses the overridden value if present, or falls back to the generated value.
+     *
+     * @param Model       $model  The `Model` to check.
+     * @param ModelConfig $config The `ModelConfig` to use for checking.
+     *
+     * @return bool `true` if the model is searchable.
+     */
+    public function isSearchable(Model $model, ModelConfig $config = null) {
+        if (empty($this->models)) {
+            throw new \LogicException('AujaConfigurator not configured yet! Call configure first.');
+        }
+
+        if (!isset($this->configs[$model->getName()])) {
+            throw new \LogicException(sprintf('AujaConfigurator not configured for model %s', $model->getName()));
+        }
+
+        $result = false;
+        if ($config != null) {
+            $result = $config->isSearchable();
+        } else {
+            $modelConfig = $this->configs[$model->getName()];
+            $result = $modelConfig->isSearchable();
+        }
+        return $result;
+    }
+
+    /**
      * Finds and configures the `Columns` for given `Model`.
      *
      * @param Model $model the Model to find the `Columns` for.
