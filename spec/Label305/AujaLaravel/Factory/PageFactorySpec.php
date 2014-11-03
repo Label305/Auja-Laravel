@@ -25,6 +25,7 @@ namespace spec\Label305\AujaLaravel\Factory;
 
 use Doctrine\DBAL\Types\Type;
 use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\URL;
 use Label305\Auja\Page\FormItem\TextFormItem;
 use Label305\Auja\Page\Page;
 use Label305\Auja\Page\PageHeader;
@@ -47,7 +48,8 @@ class PageFactorySpec extends ObjectBehavior {
         $aujaConfigurator->getModel('MyModel')->willReturn($model);
         $aujaConfigurator->getVisibleFields($model)->willReturn($this->visibleFields);
 
-        $formItemFactory->getFormItem(Type::STRING, false)->willReturn($formItem);
+        $formItemFactory->getFormItem($column1, null)->willReturn($formItem);
+        $formItemFactory->getFormItem($column2, null)->willReturn($formItem);
 
         $model->getColumn('field1')->willReturn($column1);
         $column1->getName()->willReturn('field1');
@@ -62,6 +64,8 @@ class PageFactorySpec extends ObjectBehavior {
         Lang::shouldReceive('trans')->with('Submit')->andReturn('Submit');
         Lang::shouldReceive('trans')->with('Delete')->andReturn('Delete');
         Lang::shouldReceive('trans')->with('Are you sure?')->andReturn('Are you sure?');
+
+        URL::shouldReceive('route');
     }
 
     function it_is_initializable() {
@@ -77,28 +81,13 @@ class PageFactorySpec extends ObjectBehavior {
         /* @var $page Page */
 
         $headerComponent = $page->getPageComponents()[0];
-        if(!($headerComponent instanceof PageHeader)){
+        if (!($headerComponent instanceof PageHeader)) {
             throw new Exception('First item is not an instance of PageHeader');
         }
 
         /* @var $headerComponent PageHeader */
-        if(strpos($headerComponent->getText(), 'Create') !== 0){
+        if (strpos($headerComponent->getText(), 'Create') !== 0) {
             throw new Exception('Header text does not start with \'Create\'');
-        }
-    }
-
-    function it_can_create_an_edit_page() {
-        $page = $this->create('MyModel', 1)->getWrappedObject();
-        /* @var $page Page */
-
-        $headerComponent = $page->getPageComponents()[0];
-        if(!($headerComponent instanceof PageHeader)){
-            throw new Exception('First item is not an instance of PageHeader');
-        }
-
-        /* @var $headerComponent PageHeader */
-        if(strpos($headerComponent->getText(), 'Edit') !== 0){
-            throw new Exception('Header text does not start with \'Edit\'');
         }
     }
 
