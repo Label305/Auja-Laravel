@@ -41,12 +41,12 @@ class NoAssociationsIndexMenuFactorySpec extends ObjectBehavior {
     function let(AujaConfigurator $aujaConfigurator, AujaRouter $aujaRouter, Model $model) {
         $this->beConstructedWith($aujaConfigurator, $aujaRouter);
 
-        URL::shouldReceive('route')->andReturn('%s');
+        URL::shouldReceive('route');
         Lang::shouldReceive('trans')->with('Add')->andReturn('Add');
         Lang::shouldReceive('trans')->with('Model')->andReturn('Model');
 
         $aujaConfigurator->getModel('Model')->willReturn($model);
-        $aujaConfigurator->isSearchable($model, null)->willReturn(true);
+        $aujaConfigurator->isSearchable($model, null)->willReturn(false);
     }
 
     function it_is_initializable() {
