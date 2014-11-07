@@ -178,6 +178,63 @@ class AujaConfigurator {
     }
 
     /**
+     * Finds which display name to use for given Model, using the `ModelConfig` class for the `Model`.
+     * Uses the overridden value if present, or falls back to the generated value.
+     *
+     * @param Model       $model  The `Model` to find the display name for.
+     * @param ModelConfig $config The `ModelConfig` to use for retrieving the display name.
+     *
+     * @return String The name to display for the `Model`.
+     */
+    public function getDisplayName(Model $model, ModelConfig $config = null) {
+        if (empty($this->models)) {
+            throw new \LogicException('AujaConfigurator not configured yet! Call configure first.');
+        }
+
+        if (!isset($this->configs[$model->getName()])) {
+            throw new \LogicException(sprintf('AujaConfigurator not configured for model %s', $model->getName()));
+        }
+
+        $result = null;
+        if ($config != null && $config->getDisplayName() != null) {
+            $result = $config->getDisplayName();
+        } else {
+            $modelConfig = $this->configs[$model->getName()];
+            $result = $modelConfig->getDisplayName();
+        }
+        return $result;
+    }
+
+    /**
+     * Finds which display name to use for given Model, using the `ModelConfig` class for the `Model`.
+     * Uses the overridden value if present, or falls back to the generated value.
+     *
+     * @param Model       $model      The model to find the display name for.
+     * @param String      $columnName The name of the column to find the display name for.
+     * @param ModelConfig $config     The `ModelConfig` to use for retrieving the display name.
+     *
+     * @return String The name to display for the `Model`.
+     */
+    public function getColumnDisplayName(Model $model, $columnName, ModelConfig $config = null) {
+        if (empty($this->models)) {
+            throw new \LogicException('AujaConfigurator not configured yet! Call configure first.');
+        }
+
+        if (!isset($this->configs[$model->getName()])) {
+            throw new \LogicException(sprintf('AujaConfigurator not configured for model %s', $model->getName()));
+        }
+
+        $result = null;
+        if ($config != null && $config->getColumnDisplayName($columnName) != $columnName) {
+            $result = $config->getColumnDisplayName($columnName);
+        } else {
+            $modelConfig = $this->configs[$model->getName()];
+            $result = $modelConfig->getColumnDisplayName($columnName);
+        }
+        return $result;
+    }
+
+    /**
      * Finds which display field to use for given Model, using the `ModelConfig` class for the `Model`.
      * Uses the overridden value if present, or falls back to the generated value.
      *
@@ -199,7 +256,6 @@ class AujaConfigurator {
         if ($config != null && $config->getDisplayField() != null) {
             $result = $config->getDisplayField();
         } else {
-
             $modelConfig = $this->configs[$model->getName()];
             $result = $modelConfig->getDisplayField();
         }

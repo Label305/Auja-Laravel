@@ -41,6 +41,16 @@ namespace Label305\AujaLaravel\Config;
 class ModelConfig {
 
     /**
+     * @var String The name of the model to display.
+     */
+    private $displayName;
+
+    /**
+     * @var String[] A key value pair of column names and their display names.
+     */
+    private $columnDisplayNames;
+
+    /**
      * @var String The name of the table for this model.
      */
     private $tableName;
@@ -60,8 +70,44 @@ class ModelConfig {
      */
     private $visibleFields;
 
-    public function __construct($modelName){
+    public function __construct($modelName) {
         $this->tableName = str_plural(snake_case($modelName));
+        $this->displayName = $modelName;
+    }
+
+    /**
+     * @return String The name that is displayed.
+     */
+    public function getDisplayName() {
+        return $this->displayName;
+    }
+
+    /**
+     * @param String $displayName The name to display.
+     */
+    public function setDisplayName($displayName) {
+        $this->displayName = $displayName;
+    }
+
+    /**
+     * Returns the name to display for given column name.
+     *
+     * @param String $columnName The name of the column.
+     *
+     * @return String The name that is displayed for given column name.
+     */
+    public function getColumnDisplayName($columnName) {
+        return isset($this->columnDisplayNames[$columnName]) ? $this->columnDisplayNames[$columnName] : $columnName;
+    }
+
+    /**
+     * Sets the name to display for given column name.
+     *
+     * @param String $columnName  The name of the column.
+     * @param String $displayName The name to display for the column.
+     */
+    public function setColumnDisplayName($columnName, $displayName) {
+        $this->columnDisplayNames[$columnName] = $displayName;
     }
 
     /**

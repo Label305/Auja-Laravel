@@ -32,10 +32,14 @@ use Label305\Auja\Page\FormItem\FormItem;
 use Label305\Auja\Page\FormItem\IntegerFormItem;
 use Label305\Auja\Page\FormItem\NumberFormItem;
 use Label305\Auja\Page\FormItem\PasswordFormItem;
+use Label305\Auja\Page\FormItem\SelectFormItem;
+use Label305\Auja\Page\FormItem\SelectOption;
 use Label305\Auja\Page\FormItem\TextAreaFormItem;
 use Label305\Auja\Page\FormItem\TextFormItem;
 use Label305\Auja\Page\FormItem\TimeFormItem;
+use Label305\AujaLaravel\Config\AujaConfigurator;
 use Label305\AujaLaravel\Config\Column;
+use Label305\AujaLaravel\Config\Model;
 
 /**
  * A factory class for creating PageComponents out of types.
@@ -45,12 +49,84 @@ use Label305\AujaLaravel\Config\Column;
 class FormItemFactory {
 
     /**
-     * @param Column $column
-     * @param $item
-     *
-     * @return CheckboxFormItem|DateFormItem|DateTimeFormItem|IntegerFormItem|NumberFormItem|TextAreaFormItem|null
+     * @var AujaConfigurator
      */
-    public function getFormItem($column, $item) {
+    private $aujaConfigurator;
+
+    public function __construct(AujaConfigurator $aujaConfigurator) {
+        $this->aujaConfigurator = $aujaConfigurator;
+    }
+
+    /**
+     * @param Model     $model  The `Model` which contains given `Column`.
+     * @param Column    $column The `Column` to create a `FormItem` for.
+     * @param \Eloquent $item   The instance to retrieve information from for filling the `FormItem`.
+     *
+     * @return FormItem The created `FormItem`.
+     */
+    public function getFormItem(Model $model, Column $column, $item) {
+        $result = null;
+
+        if (ends_with($column->getName(), '_id')) {
+            $result = $this->createSelectAssociationFormItem($model, $column, $item);
+        } else {
+            $result = $this->createFromType($model, $column, $item);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Returns a `SelectFormItem` which is filled with instances of the model given `Column` represents.
+     *
+     * @param Model     $model  The `Model` which contains given `Column`.
+     * @param Column    $column The `Column` which represents a related model.
+     * @param \Eloquent $item   The instance to retrieve information from for filling the `SelectFormItem`.
+     *
+     * @return SelectFormItem The created `SelectFormItem`.
+     */
+    private function createSelectAssociationFormItem(Model $model, Column $column, $item) {
+        $result = new SelectFormItem();
+
+        $relations = $this->aujaConfigurator->getRelationsForModel($model);
+        $relatedModel = null;
+        foreach ($relations as $relation) {
+            $rightModel = $relation->getRight();
+            if (starts_with($column->getName(), camel_case($rightModel->getName()))) {
+                $relatedModel = $rightModel;
+            }
+        }
+
+        if ($relatedModel != null) {
+            $displayName = $this->aujaConfigurator->getDisplayName($relatedModel);
+            $result->setName($displayName);
+
+            $result->setValue($item->id);
+
+            $items = call_user_func(array($relatedModel->getName(), 'all'));
+            $displayField = $this->aujaConfigurator->getDisplayField($relatedModel);
+            foreach ($items as $item) {
+                $label = isset($item->$displayField) ? $item->$displayField : '';
+                $value = $item->id;
+
+                $option = new SelectOption($label, $value);
+                $result->addOption($option);
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Returns a `FormItem` based on the type of the `Column`.
+     *
+     * @param Model     $model  The `Model` which contains given `Column`.
+     * @param Column    $column The `Column` to create a `FormItem` for.
+     * @param \Eloquent $item   The instance to retrieve information from for filling the `FormItem`.
+     *
+     * @return FormItem The created `FormItem`.
+     */
+    private function createFromType(Model $model, Column $column, $item) {
         $result = null;
         switch ($column->getType()) {
             case Type::TEXT:
@@ -92,9 +168,9 @@ class FormItemFactory {
 
         $columnName = $column->getName();
         $result->setName($columnName);
-        $result->setLabel(Lang::trans($columnName)); // TODO: 'Human readable name'
+        $result->setLabel(Lang::trans($this->aujaConfigurator->getColumnDisplayName($model, $columnName)));
 
-        if($item != null && isset($item->$columnName)) {
+        if ($item != null && isset($item->$columnName)) {
             $result->setValue($item->$columnName);
         }
 

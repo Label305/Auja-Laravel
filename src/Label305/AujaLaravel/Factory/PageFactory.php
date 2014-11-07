@@ -68,6 +68,7 @@ class PageFactory {
             $model = $this->aujaConfigurator->getModel($modelName);
             $displayField = $this->aujaConfigurator->getDisplayField($model, $config);
             $header->setText('Edit ' . (isset($item->$displayField) ? $item->$displayField : $modelName));
+
             $deleteButton = new Button();
             $deleteButton->setText(Lang::trans('Delete'));
             $deleteButton->setConfirmationMessage(Lang::trans('Are you sure?'));
@@ -87,7 +88,7 @@ class PageFactory {
         $visibleFields = $this->aujaConfigurator->getVisibleFields($model, $config);
         foreach ($visibleFields as $columnName) {
             $column = $model->getColumn($columnName);
-            $formItem = $this->formItemFactory->getFormItem($column, $item);
+            $formItem = $this->formItemFactory->getFormItem($model, $column, $item);
             $form->addFormItem($formItem);
         }
 
