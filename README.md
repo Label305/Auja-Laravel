@@ -92,11 +92,9 @@ Because Auja uses both a library for the PHP backand and a library for [the Java
     <html>
         <head>
             {{ HTML::style('css/vendor/auja.css') }}
-	        {{ HTML::style('css/vendor/trumbowyg.css') }}
-	        {{ HTML::style('css/vendor/ionicons.css') }}
-	        {{ HTML::style('css/vendor/animate.css) }}
-	        {{ HTML::style('css/ndp.ui.css') }}
-
+            {{ HTML::style('css/vendor/trumbowyg.css') }}
+            {{ HTML::style('css/vendor/ionicons.css') }}
+            {{ HTML::style('css/vendor/animate.css) }}
             {{ HTML::script('js/vendor/auja.js') }}
         </head>
         {{ -- data-src points to the Route that generates the Auja json manifest -- }}
