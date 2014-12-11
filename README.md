@@ -121,12 +121,10 @@ Because Auja uses both a library for the PHP backand and a library for [the Java
     ```php
     namespace YourApp\Http\Controllers\Admin;
 
-    use Illuminate\Support\Facades\Input;
-    use Illuminate\Support\Facades\View;
+    use Illuminate\Routing\Controller;
     use Label305\Auja\Shared\Message;
-    use Label305\AujaLaravel\Facade\AujaFacade as Auja;
     
-    class AujaSupportController extends \BaseController {
+    class AujaSupportController extends Controller {
     
         public function index()
         {
@@ -135,26 +133,31 @@ Because Auja uses both a library for the PHP backand and a library for [the Java
     
         public function manifest()
         {
-            $username = \Auth::user() == null ? null : \Auth::user()->name;
-    
+            $username = Auth::user() == null ? null : Auth::user()->name;
             $authenticationForm = Auja::authenticationForm('Welcome Administrator!', 'admin/login');
-            $main = Auja::main('Your Awesome App', \Auth::check(), $username, 'admin/logout', $authenticationForm);
-            return $main;
+            
+            return Auja::main(
+                'Your Awesome App',
+                Auth::check(),
+                $username,
+                'admin/logout',
+                $authenticationForm
+            );
         }
     
         public function login()
         {
-            \Auth::attempt(['email' => Input::get('email'), 'password' => Input::get('password')]);
+            Auth::attempt(['email' => Input::get('email'), 'password' => Input::get('password')]);
     
             $message = new Message();
-            $message->setAuthenticated(\Auth::check());
+            $message->setAuthenticated(Auth::check());
             return $message;
         }
     
         public function logout()
         {
-            \Auth::logout();
-            return \Redirect::to('admin');
+            Auth::logout();
+            return Redirect::to('admin');
         }
     }
     ```
@@ -163,9 +166,9 @@ Because Auja uses both a library for the PHP backand and a library for [the Java
     ```php
     namespace YourApp\Http\Controllers\Admin;
     
-    use Label305\AujaLaravel\Facade\AujaFacade as Auja;
+    use Illuminate\Routing\Controller;
 
-    class ClubsController extends \BaseController {
+    class ClubsController extends Controller {
     
         public function index() {
             return Auja::itemsFor($this);
@@ -188,7 +191,7 @@ Because Auja uses both a library for the PHP backand and a library for [the Java
 7.  Now setup the routes for the administration panel.
 
     ```php
-    Route::group(['prefix' => 'admin'], function(){
+    Route::group(['prefix' => 'admin'], function() {
     
         Route::get('/', 'YourApp\Http\Controllers\Admin\AujaSupportController@index');
         Route::get('/manifest', 'YourApp\Http\Controllers\Admin\AujaSupportController@manifest');
