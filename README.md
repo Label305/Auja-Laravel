@@ -6,9 +6,9 @@
 [![Total Downloads](https://poser.pugx.org/label305/auja-laravel/downloads.svg)](https://packagist.org/packages/label305/auja-laravel)
 [![Latest Unstable Version](https://poser.pugx.org/label305/auja-laravel/v/unstable.svg)](https://packagist.org/packages/label305/auja-laravel)
 
-[Auja](http://label305.github.io/Auja/) is an easy-to-use and easy-to-implement back-end interface. It provides an easy and intuitive way for you to view and manipulate your data, so you can focus on more important matters. Auja is designed to be both user-friendly _and_ developer-friendly by providing you with tools to setup your back-end in no more than five minutes.
+Auja is an easy-to-use, easy-to-implement admin interface. It provides an easy and intuitive way for you to view and manipulate your data, so you can focus on more important matters. Auja is designed to be both user-friendly _and_ developer-friendly by providing you with tools to setup your admin interface in a couple of minutes.
 
-Auja's basis is the [Auja JavaScript repository](https://github.com/Label305/Auja), which provides the graphical user interface. To determine its content, it relies on specific JSON messages. [Auja-PHP](https://github.com/Label305/Auja-PHP) in turn, provides an Object Oriented approach to provide these JSON messages in PHP. In this repository you will find a Laravel implementation which you can use to setup Auja in a matter of minutes.
+The [Auja javascript frontend](https://github.com/Label305/Auja) provides the graphical user interface. To determine its content, it relies on a JSON web-service you implement. [Auja-PHP](https://github.com/Label305/Auja-PHP) in turn, provides an Object Oriented approach to provide these JSON messages in PHP. In this repository you will find a Laravel implementation which you can use to setup Auja for your Laravel project.
 
 ## Related repositories
   
