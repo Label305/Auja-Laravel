@@ -34,6 +34,22 @@ Because Auja uses both a library for the PHP backand and a library for [the Java
         .publish(
             'auja/auja.min.js',
             'public/js/vendor/auja.js'
+        )
+        .publish(
+            'auja/auja.css',
+            'public/css/vendor/auja.css'
+        )
+        .publish(
+            'trumbowyg/dist/ui/trumbowyg.min.css',
+            'public/css/vendor/trumbowyg.css'
+        )
+        .publish(
+            'Ionicons/css/ionicons.min.css',
+            'public/css/vendor/ionicons.css'
+        )
+        .publish(
+            'animate.css/animate.min.css',
+            'public/css/vendor/animate.css'
         );
     });
     ```
