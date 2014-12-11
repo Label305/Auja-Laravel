@@ -17,7 +17,7 @@ Related repositories
   - [**Auja**](https://github.com/Label305/Auja) - The frontend JavaScript GUI
   - [**Auja PHP Development Kit**](https://github.com/Label305/Auja-PHP) - A web service development kit for communicating with the Auja javascript frontend
 
-Installation
+Installation and Setup
 -------
 
 Because Auja uses both a library for the PHP backand and a library for [the JavaScript frontend](https://github.com/Label305/Auja) there a few more steps required to install Auja that you may be used to with other libraries. 
@@ -61,7 +61,7 @@ Because Auja uses both a library for the PHP backand and a library for [the Java
     
     use Label305\AujaLaravel\AujaServiceProvider;
     
-    class AujaServiceProvider extends AujaServiceProvider {
+    class AdminServiceProvider extends AujaServiceProvider {
 
         function getModelNames()
         {
@@ -161,7 +161,7 @@ Because Auja uses both a library for the PHP backand and a library for [the Java
         }
     }
     ```
-10.  Create a `app/controllers/Admin/ClubsController.php` or `app/Http/Controllers/Admin/ClubsController.php`, to manage the `Clubs` in your admin interface. You can do this for all your models.
+10.  Create a `app/controllers/Admin/ClubsController.php` or `app/Http/Controllers/Admin/ClubsController.php`, to manage the `Clubs` in your admin interface. You can do this for all your models. Here is an example:
 
     ```php
     <?php namespace YourApp\Http\Controllers\Admin;
@@ -170,25 +170,57 @@ Because Auja uses both a library for the PHP backand and a library for [the Java
 
     class ClubsController extends Controller {
     
-        public function index() {
-            return Auja::itemsFor($this);
+        public function index()
+        {
+            if (Input::has('q')) {
+                $items = Club::where('title', 'LIKE', sprintf('%%%s%%', Input::get('q')))->simplePaginate(10);
+            } else {
+                $items = Club::simplePaginate(10);
+            }
+    
+            $linkTarget = urldecode(URL::route(AujaRoute::getEditName('Club'), '%d'));
+            return Auja::itemsFor($this, $items, $linkTarget);
+        }
+        
+        public function store()
+        {
+            Club::create(Input::all());
+            return new Message();
         }
     
-        public function menu($id = 0) {
+        public function update($id)
+        {
+            $page = Club::find($id);
+            $page->fill(Input::all());
+            $page->save();
+    
+            return new Message();
+        }
+    
+        public function delete($id)
+        {
+            $page = Club::find($id);
+            $page->delete($id);
+        }
+    
+        public function menu($id = 0) 
+        {
             return Auja::menuFor($this, $id);
         }
     
-        public function create() {
+        public function create() 
+        {
             return Auja::pageFor($this);
         }
     
-        public function edit($id) {
+        public function edit($id) 
+        {
             return Auja::pageFor($this, $id);
         }
     }
     ```
 
-7.  Now setup the routes for the administration panel.
+11.  Now setup the routes for the administration panel.
 
     ```php
     Route::group(['prefix' => 'admin'], function() {
@@ -206,7 +238,7 @@ Because Auja uses both a library for the PHP backand and a library for [the Java
     });
     ```
     
-8.  _Tip:_ add the following lines to your `.gitignore`:
+12.  _Tip:_ add the following lines to your `.gitignore`:
     
     ```
     node_modules
@@ -276,82 +308,8 @@ Setup Laravel to work with Bower and Gulp
     }
     ```
 
-## Start Using Auja
-
- - Setup Resources (Tip: [Way Generators](https://github.com/JeffreyWay/Laravel-4-Generators));
- - For each of your resources, add `AujaRoute::resource('{model name}', '{controller name}')` to `routes.php`:
-
-```php
-AujaRoute::resource('Club', 'ClubsController');
-AujaRoute::resource('Team', 'TeamsController');
-```
-
- - Create a new ServiceProvider class, which extends `'Label305\AujaLaravel\AujaServiceProvider'`, add it to your providers in `app\config\app.php` and implement the `getModelNames()` function:
- 
-```php
-use Label305\AujaLaravel\AujaServiceProvider;
-
-class AujaPresenterServiceProvider extends AujaServiceProvider {
-
-    /**
-     * Returns a String array of model names, e.g. ['Club', 'Team'].
-     *
-     * @return String[] The model names.
-     */
-    function getModelNames() {
-        return ['Club', 'Team'];
-    }
-}
-```
-
- - In each of your resource controllers, implement at least the following functions:
-   - `index()`, `menu($id = 0)`, `create()`, `store()`, `show($id)`, `edit($id)`, `update($id)`, `delete($id)`. 
-
-```php
-class ClubsController extends \BaseController {
-
-	const NAME = 'Club';
-
-	public function index() {
-		return Auja::buildResourceItems(self::NAME, Club::simplePaginate(10));
-	}
-
-	public function menu($id = 0) {
-		return Auja::buildIndexMenu(self::NAME, $id);
-	}
-
-	public function create() {
-		return Auja::buildPage(self::NAME);
-	}
-
-	public function store() {
-		Club::create(Input::all());
-	}
-	
-	public function show() {
-	  
-	}
-
-	public function edit($id) {
-		return Auja::buildPage(self::NAME, $id);
-	}
-
-	public function update($id) {
-		$club = Club::find($id);
-		$club->fill(Input::all());
-		$club->save();
-	}
-
-	public function delete($id) {
-		$club = Club::find($id);
-		$club->delete($id);
-	}
-}
-```
-
-That's it, you're done!
-
-## License
+License
+---------
 
 Copyright 2014 Label305 B.V.
 
