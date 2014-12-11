@@ -57,7 +57,7 @@ Because Auja uses both a library for the PHP backand and a library for [the Java
 6.  Create your `app/providers/AdminServiceProvider.php` or `app/Services/AdminServiceProvider.php`. The class should extend `Label305\AujaLaravel\AujaServiceProvider`.
 
     ```php
-    namespace YourApp\Providers;
+    <?php namespace YourApp\Providers;
     
     use Label305\AujaLaravel\AujaServiceProvider;
     
@@ -119,7 +119,7 @@ Because Auja uses both a library for the PHP backand and a library for [the Java
 9.  Create a `app/controllers/Admin/AujaSupportController.php` or `app/Http/Controllers/Admin/AujaSupportController.php`. This file contains information on what kind of information the admin area should contain and how administrators authenticate.
 
     ```php
-    namespace YourApp\Http\Controllers\Admin;
+    <?php namespace YourApp\Http\Controllers\Admin;
 
     use Illuminate\Routing\Controller;
     use Label305\Auja\Shared\Message;
@@ -164,7 +164,7 @@ Because Auja uses both a library for the PHP backand and a library for [the Java
 10.  Create a `app/controllers/Admin/ClubsController.php` or `app/Http/Controllers/Admin/ClubsController.php`, to manage the `Clubs` in your admin interface. You can do this for all your models.
 
     ```php
-    namespace YourApp\Http\Controllers\Admin;
+    <?php namespace YourApp\Http\Controllers\Admin;
     
     use Illuminate\Routing\Controller;
 
