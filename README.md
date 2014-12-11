@@ -53,15 +53,42 @@ Because Auja uses both a library for the PHP backand and a library for [the Java
     ```shell
     $ composer require label305/auja-laravel:dev-dev
     ```
+    
+6.  Create your `app/providers/AdminServiceProvider.php` or `app/Services/AdminServiceProvider.php`. The class should extend `Label305\AujaLaravel\AujaServiceProvider`.
 
-5.  Add the `AujaServiceProvider`, `AujaFacade` and `AujaRouteFacade` to your `app.php` config file.
+    ```php
+    namespace YourApp\Providers;
+    
+    use Label305\AujaLaravel\AujaServiceProvider;
+    
+    class AujaServiceProvider extends AujaServiceProvider {
+
+        function getModelNames()
+        {
+            return [
+                'Club',
+                'Team'
+            ];
+        }
+    
+        public function register()
+        {
+            parent::register();
+            
+            // For an optional Label305\AujaLaravel\Config\ModelConfig class
+            // $this->app->bind('ClubConfig', 'YourApp\Admin\Configurations\ClubConfig');
+        }
+    }
+    ```
+
+7.  Add the `AdminServiceProvider`, `AujaFacade` and `AujaRouteFacade` to your `app.php` config file.
 
     ```php
     return [
         ...
         'providers' => [
             ...
-            'Label305\AujaLaravel\AujaServiceProvider',
+            'YourApp\Providers\AdminServiceProvider',
         ],
         'aliases' => [
             ...
@@ -72,7 +99,7 @@ Because Auja uses both a library for the PHP backand and a library for [the Java
     ];
     ```
     
-6.  Create a new view in `views/admin/index.blade.php`.
+8.  Create a new view in `views/admin/index.blade.php`.
 
     ```html
     <!DOCTYPE html>
@@ -88,21 +115,101 @@ Because Auja uses both a library for the PHP backand and a library for [the Java
         <body data-src="admin/manifest"></body>
     </html>
     ```
+    
+9.  Create a `app/controllers/Admin/AujaSupportController.php` or `app/Http/Controllers/Admin/AujaSupportController.php`. This file contains information on what kind of information the admin area should contain and how administrators authenticate.
+
+    ```php
+    namespace YourApp\Http\Controllers\Admin;
+
+    use Illuminate\Support\Facades\Input;
+    use Illuminate\Support\Facades\View;
+    use Label305\Auja\Shared\Message;
+    use Label305\AujaLaravel\Facade\AujaFacade as Auja;
+    
+    class AujaSupportController extends \BaseController {
+    
+        public function index()
+        {
+            return View::make('admin/index');
+        }
+    
+        public function manifest()
+        {
+            $username = \Auth::user() == null ? null : \Auth::user()->name;
+    
+            $authenticationForm = Auja::authenticationForm('Welcome Administrator!', 'admin/login');
+            $main = Auja::main('Your Awesome App', \Auth::check(), $username, 'admin/logout', $authenticationForm);
+            return $main;
+        }
+    
+        public function login()
+        {
+            \Auth::attempt(['email' => Input::get('email'), 'password' => Input::get('password')]);
+    
+            $message = new Message();
+            $message->setAuthenticated(\Auth::check());
+            return $message;
+        }
+    
+        public function logout()
+        {
+            \Auth::logout();
+            return \Redirect::to('admin');
+        }
+    }
+    ```
+10.  Create a `app/controllers/Admin/ClubsController.php` or `app/Http/Controllers/Admin/ClubsController.php`, to manage the `Clubs` in your admin interface. You can do this for all your models.
+
+    ```php
+    namespace YourApp\Http\Controllers\Admin;
+    
+    use Label305\AujaLaravel\Facade\AujaFacade as Auja;
+
+    class ClubsController extends \BaseController {
+    
+        public function index() {
+            return Auja::itemsFor($this);
+        }
+    
+        public function menu($id = 0) {
+            return Auja::menuFor($this, $id);
+        }
+    
+        public function create() {
+            return Auja::pageFor($this);
+        }
+    
+        public function edit($id) {
+            return Auja::pageFor($this, $id);
+        }
+    }
+    ```
 
 7.  Now setup the routes for the administration panel.
 
     ```php
-    Route::get('admin', 'AujaController@index');
-    Route::get('admin/main', 'AujaController@main');
+    Route::group(['prefix' => 'admin'], function(){
+    
+        Route::get('/', 'YourApp\Http\Controllers\Admin\AujaSupportController@index');
+        Route::get('/manifest', 'YourApp\Http\Controllers\Admin\AujaSupportController@manifest');
+        Route::post('/login', 'YourApp\Http\Controllers\Admin\AujaSupportController@login');
+    
+        Route::group(['before'=> 'auth'], function(){
+            Route::get('logout', 'YourApp\Http\Controllers\Admin\AujaSupportController@logout');
+    
+            AujaRoute::resource('Club', 'YourApp\Http\Controllers\Admin\ClubsController');
+            AujaRoute::resource('Team', 'YourApp\Http\Controllers\Admin\TeamsController');
+        });
+    });
     ```
     
-8.	_Tip:_ add the following lines to your `.gitignore`:
-
-	```
-	node_modules
-	/public/css/vendor
-	/public/js/vendor
-	```
+8.  _Tip:_ add the following lines to your `.gitignore`:
+    
+    ```
+    node_modules
+    /public/css/vendor
+    /public/js/vendor
+    ```
 
 
 Setup Laravel to work with Bower and Gulp
