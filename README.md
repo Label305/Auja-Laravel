@@ -19,7 +19,7 @@ Auja's basis is the [Auja JavaScript repository](https://github.com/Label305/Auj
 Quick Start
 -------
 
-1.  [Setup Laravel to work with Bower and Gulp](#Setup-Laravel-to-work-with-Bower-and-Gulp), if you haven't already. _This is done by default in Laravel 5, but you still need to install [bower](http://bower.io/) and [gulp](http://gulpjs.com/) globaly with [npm](http://nodejs.org/)._
+1.  [Setup Laravel to work with Bower and Gulp](#setup-laravel-to-work-with-bower-and-gulp), if you haven't already. _This is done by default in Laravel 5, but you still need to install [bower](http://bower.io/) and [gulp](http://gulpjs.com/) globaly with [npm](http://nodejs.org/)._
 
 2.  Modify the `gulpfile.js` so all Auja's assets and scripts are placed in the correct folders when running `gulp`.
 
