@@ -91,6 +91,14 @@ Because Auja uses both a library for the PHP backand and a library for [the Java
     Route::get('admin', 'AujaController@index');
     Route::get('admin/main', 'AujaController@main');
     ```
+    
+7.	_Tip:_ add the following lines to your `.gitignore`:
+
+	```
+	node_modules
+	/public/css/vendor
+	/public/js/vendor
+	```
 
 
 Setup Laravel to work with Bower and Gulp
