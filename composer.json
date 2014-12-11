@@ -1,10 +1,10 @@
 {
     "name": "label305/auja-laravel",
-	"type": "library",
-    "description": "A Laravel implementation for the Auja backend",
-	"keywords": ["Auja", "interface", "laravel"],
-	"homepage": "https://github.com/Label305/Auja-Laravel",
-	"license": "Apache-2.0",
+    "type": "library",
+    "description": "Library to setup Auja for a Laravel 4 or 5 application. Auja is an easy-to-use, easy-to-implement admin interface for managing your data.",
+    "keywords": ["Auja", "interface", "laravel"],
+    "homepage": "https://github.com/Label305/Auja-Laravel",
+    "license": "Apache-2.0",
     "authors": [
         {
             "name": "Niek Haarman",
