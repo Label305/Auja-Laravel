@@ -229,7 +229,7 @@ Because Auja uses both a library for the PHP backand and a library for [the Java
         Route::get('/manifest', 'YourApp\Http\Controllers\Admin\AujaSupportController@manifest');
         Route::post('/login', 'YourApp\Http\Controllers\Admin\AujaSupportController@login');
     
-        Route::group(['before'=> 'auth'], function(){
+        Route::group(['before'=> 'auth'], function() {
             Route::get('logout', 'YourApp\Http\Controllers\Admin\AujaSupportController@logout');
     
             AujaRoute::resource('Club', 'YourApp\Http\Controllers\Admin\ClubsController');
