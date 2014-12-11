@@ -16,23 +16,113 @@ Auja's basis is the [Auja JavaScript repository](https://github.com/Label305/Auj
   - [**Auja-PHP**](https://github.com/Label305/Auja-PHP) - Auja's protocol implemented in an Object Oriented manner, in PHP.
   - [**Auja-Laravel-Example**](https://github.com/Label305/Auja-Laravel-Example) - An example Laravel project using Auja.
 
-## Setup
+Quick Start
+-------
 
-Auja-Laravel is available on [Packagist](https://packagist.org/packages/label305/auja-laravel).
+1.  [Setup Laravel to work with Bower and Gulp](#Setup-Laravel-to-work-with-Bower-and-Gulp), if you haven't already. _This is done by default in Laravel 5, but you still need to install [bower](http://bower.io/) and [gulp](http://gulpjs.com/) globaly with [npm](http://nodejs.org/)._
 
- - Run `composer require label305/auja:v3.0.0-alpha1 label305/auja-laravel:dev-dev`;
- - Add `'Auja' => 'Label305\AujaLaravel\Facade\AujaFacade'` and `'AujaRoute' => 'Label305\AujaLaravel\Facade\AujaRouteFacade'` to your list of aliases in `app\config\app.php`;
- - Copy [`assets/index.php`](https://raw.githubusercontent.com/Label305/Auja-Laravel/dev/assets/index.php) to your `views` folder;
- - Copy [`assets/AujaController.php`](https://raw.githubusercontent.com/Label305/Auja-Laravel/dev/assets/AujaController.php) to your `controllers` folder;
- - Copy the folders [`assets/assets`](https://github.com/Label305/Auja-Laravel/tree/dev/assets/assets), [`assets/bower_components`](https://github.com/Label305/Auja-Laravel/tree/dev/assets/bower_components) and [`assets/build`](https://github.com/Label305/Auja-Laravel/tree/dev/assets/build) to your `public` folder;
- - Add the following to `routes.php`:
- 
-```php
-Route::get('/', 'AujaController@index');
-Route::get('main', 'AujaController@main');
-``` 
+2.  Modify the `gulpfile.js` so all Auja's assets and scripts are placed in the correct folders when running `gulp`.
 
-## Getting Started
+3.  Install the Auja javascript files through bower. When installing through bower the `gulp` command is automaticly called by bower.
+
+    ```shell
+    $ bower install auja
+    ```
+
+4.  Install the Auja Laravel library through composer. The library depends on [Auja-PHP](https://github.com/Label305/Auja-PHP) which is a API wrapper for communicating with the javascript frontend.
+
+    ```shell
+    $ composer require label305/auja-laravel:dev-dev
+    ```
+
+5.  Add the `AujaServiceProvider`, `AujaFacade` and `AujaRouteFacade` to your `app.php` config file.
+
+    ```php
+    return [
+        ...
+        'providers' => [
+            ...
+            'Label305\AujaLaravel\AujaServiceProvider',
+        ],
+        'aliases' => [
+            ...
+            'Auja' => 'Label305\AujaLaravel\Facade\AujaFacade',
+            'AujaRoute' => 'Label305\AujaLaravel\Facade\AujaRouteFacade',
+        ],
+        ....
+    ];
+    ```
+
+6.  Now setup the routes for the administration panel.
+
+    ```php
+    Route::get('admin', 'AujaController@index');
+    Route::get('admin/main', 'AujaController@main');
+    ```
+
+
+Setup Laravel to work with Bower and Gulp
+--------
+
+1.  Make sure [node.js and npm](http://nodejs.org/) are installed.
+
+2.  Intall [bower](http://bower.io/) and [gulp](http://gulpjs.com/).
+
+    ```shell
+    $ npm install -g bower gulp
+    ```
+
+3.  Make sure you have setup the `.bowerrc` file for Laravel and gulp. _By the way these are the Laravel 5 defaults but will work on other versions as well._
+
+    ```json
+    {
+        "directory": "vendor/bower_components",
+        "scripts": {
+            "postinstall": "gulp publish"
+        }
+    }
+    ```
+
+4.  Install the javascript dependencies that are included in Laravel 5 by default. If you work with another version add the `package.json` file to your projects root.
+
+    ```json
+    {
+        "devDependencies": {
+            "gulp": "^3.8.8",
+            "laravel-elixir": "*"
+        }
+    }
+    ```
+
+    And run:
+
+    ```shell
+    $ npm install
+    ```
+
+5.  Setup the `gulpfile.js` in your projects root.
+
+    ```js
+    var elixir = require('laravel-elixir');
+
+    elixir(function(mix) {
+        // mix.sass('app.scss'); // included in Laravel 5 but not manditory
+    });
+    ```
+
+6.  Now your all setup. Laravel 5 also includes a `bower.json` file but placing this file is not manditory for other versions.
+
+    ```json
+    {
+        "name": "Laravel Application",
+        "dependencies": {
+            "bootstrap-sass-official": "~3.3.1",
+            "font-awesome": "~4.2.0"
+        }
+    }
+    ```
+
+## Start Using Auja
 
  - Setup Resources (Tip: [Way Generators](https://github.com/JeffreyWay/Laravel-4-Generators));
  - For each of your resources, add `AujaRoute::resource('{model name}', '{controller name}')` to `routes.php`:
