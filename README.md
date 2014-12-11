@@ -182,12 +182,27 @@ Because Auja uses both a library for the PHP backand and a library for [the Java
             return Auja::itemsFor($this, $items, $linkTarget);
         }
         
+        public function menu($id = 0) 
+        {
+            return Auja::menuFor($this, $id);
+        }
+        
+        public function create() 
+        {
+            return Auja::pageFor($this);
+        }
+        
         public function store()
         {
             Club::create(Input::all());
             return new Message();
         }
-    
+
+        public function edit($id) 
+        {
+            return Auja::pageFor($this, $id);
+        }
+
         public function update($id)
         {
             $page = Club::find($id);
@@ -201,21 +216,8 @@ Because Auja uses both a library for the PHP backand and a library for [the Java
         {
             $page = Club::find($id);
             $page->delete($id);
-        }
-    
-        public function menu($id = 0) 
-        {
-            return Auja::menuFor($this, $id);
-        }
-    
-        public function create() 
-        {
-            return Auja::pageFor($this);
-        }
-    
-        public function edit($id) 
-        {
-            return Auja::pageFor($this, $id);
+            
+            return new Message();
         }
     }
     ```
