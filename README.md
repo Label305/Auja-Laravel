@@ -24,6 +24,19 @@ Because Auja uses both a library for the PHP backand and a library for [the Java
 1.  [Setup Laravel to work with Bower and Gulp](#setup-laravel-to-work-with-bower-and-gulp), if you haven't already. _This is done by default in Laravel 5, but you still need to install [bower](http://bower.io/) and [gulp](http://gulpjs.com/) globaly with [npm](http://nodejs.org/)._
 
 2.  Modify the `gulpfile.js` so all Auja's assets and scripts are placed in the correct folders when running `gulp`.
+  
+    ```js
+    var elixir = require('laravel-elixir');
+
+    elixir(function(mix) {
+        mix
+        // .sass('app.scss') // included in Laravel 5 but not manditory
+        .publish(
+            'auja/auja.min.js',
+            'public/js/vendor/auja.js'
+        );
+    });
+    ```
 
 3.  Install the Auja javascript files through bower. When installing through bower the `gulp` command is automaticly called by bower.
 
