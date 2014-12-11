@@ -16,8 +16,10 @@ Auja's basis is the [Auja JavaScript repository](https://github.com/Label305/Auj
   - [**Auja-PHP**](https://github.com/Label305/Auja-PHP) - Auja's protocol implemented in an Object Oriented manner, in PHP.
   - [**Auja-Laravel-Example**](https://github.com/Label305/Auja-Laravel-Example) - An example Laravel project using Auja.
 
-Quick Start
+Installation
 -------
+
+Because Auja uses both a library for the PHP backand and a library for [the JavaScript frontend](https://github.com/Label305/Auja) there a few more steps required to install Auja that you may be used to with other libraries. 
 
 1.  [Setup Laravel to work with Bower and Gulp](#setup-laravel-to-work-with-bower-and-gulp), if you haven't already. _This is done by default in Laravel 5, but you still need to install [bower](http://bower.io/) and [gulp](http://gulpjs.com/) globaly with [npm](http://nodejs.org/)._
 
