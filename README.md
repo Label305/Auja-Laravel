@@ -84,15 +84,34 @@ Because Auja uses both a library for the PHP backand and a library for [the Java
         ....
     ];
     ```
+    
+6.  Create a new view in `views/admin/index.blade.php`.
 
-6.  Now setup the routes for the administration panel.
+    ```html
+    <!DOCTYPE html>
+    <html>
+        <head>
+            {{ HTML::style('css/vendor/auja.css') }}
+	        {{ HTML::style('css/vendor/trumbowyg.css') }}
+	        {{ HTML::style('css/vendor/ionicons.css') }}
+	        {{ HTML::style('css/vendor/animate.css) }}
+	        {{ HTML::style('css/ndp.ui.css') }}
+
+            {{ HTML::script('js/vendor/auja.js') }}
+        </head>
+        {{ -- data-src points to the Route that generates the Auja json manifest -- }}
+        <body data-src="admin/manifest"></body>
+    </html>
+    ```
+
+7.  Now setup the routes for the administration panel.
 
     ```php
     Route::get('admin', 'AujaController@index');
     Route::get('admin/main', 'AujaController@main');
     ```
     
-7.	_Tip:_ add the following lines to your `.gitignore`:
+8.	_Tip:_ add the following lines to your `.gitignore`:
 
 	```
 	node_modules
