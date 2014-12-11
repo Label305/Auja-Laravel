@@ -8,7 +8,13 @@
 
 Auja is an easy-to-use, easy-to-implement admin interface. It provides an easy and intuitive way for you to view and manipulate your data, so you can focus on more important matters. Auja is designed to be both user-friendly _and_ developer-friendly by providing you with tools to setup your admin interface in a couple of minutes.
 
-The [Auja javascript frontend](https://github.com/Label305/Auja) provides the graphical user interface. To determine its content, it relies on a JSON web-service you implement. [Auja-PHP](https://github.com/Label305/Auja-PHP) in turn, provides an Object Oriented approach to provide these JSON messages in PHP. In this repository you will find a Laravel implementation which you can use to setup Auja for your Laravel project.
+The [Auja javascript frontend](https://github.com/Label305/Auja) provides the graphical user interface. To determine its content, it relies on a JSON web-service you implement. [Auja-PHP](https://github.com/Label305/Auja-PHP) in turn, provides an Object Oriented approach to provide these JSON messages from a PHP application. In this repository you will find a Laravel implementation which you can use to setup Auja for your Laravel project.
+
+Related repositories
+-----------
+  
+  - [**Auja**](https://github.com/Label305/Auja) - The frontend JavaScript GUI
+  - [**Auja PHP Development Kit**](https://github.com/Label305/Auja-PHP) - A web service development kit for communicating with the Auja javascript frontend
 
 Installation
 -------
