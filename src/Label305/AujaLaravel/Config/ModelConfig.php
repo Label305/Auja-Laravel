@@ -87,6 +87,7 @@ class ModelConfig {
      */
     public function setDisplayName($displayName) {
         $this->displayName = $displayName;
+        return $this;
     }
 
     /**
@@ -108,6 +109,7 @@ class ModelConfig {
      */
     public function setColumnDisplayName($columnName, $displayName) {
         $this->columnDisplayNames[$columnName] = $displayName;
+        return $this;
     }
 
     /**
@@ -122,6 +124,7 @@ class ModelConfig {
      */
     public function setTableName($tableName) {
         $this->tableName = $tableName;
+        return $this;
     }
 
     /**
@@ -136,6 +139,7 @@ class ModelConfig {
      */
     public function setDisplayField($displayField) {
         $this->displayField = $displayField;
+        return $this;
     }
 
     /**
@@ -150,6 +154,7 @@ class ModelConfig {
      */
     public function setIcon($icon) {
         $this->icon = $icon;
+        return $this;
     }
 
     /**
@@ -164,6 +169,7 @@ class ModelConfig {
      */
     public function setVisibleFields($visibleFields) {
         $this->visibleFields = $visibleFields;
+        return $this;
     }
 
     /**
