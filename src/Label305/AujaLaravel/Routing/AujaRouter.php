@@ -26,6 +26,7 @@ namespace Label305\AujaLaravel\Routing;
 use Illuminate\Routing\Router;
 use Label305\AujaLaravel\Auja;
 use Label305\AujaLaravel\Config\Relation;
+use Label305\AujaLaravel\Exceptions\ExpectedSupportControllerException;
 
 /**
  * A class for quick Auja Routing.
@@ -198,9 +199,15 @@ class AujaRouter {
      * @param String $controller The name of the Controller.
      */
     public function resource($modelName, $controller) {
-        if(php_sapi_name() == 'cli') {
+        if (php_sapi_name() == 'cli') {
             /* Don't run when we're running artisan commands. */
             return;
+        }
+
+        if (!is_a($controller, 'Label305\AujaLaravel\Controllers\Interfaces\AujaControllerInterface')) {
+            throw new ExpectedAujaControllerException(
+                $controller . ' does not implement Label305\AujaLaravel\Controllers\Interfaces\AujaControllerInterface'
+            );
         }
 
         /* Default routes */
@@ -229,12 +236,30 @@ class AujaRouter {
         }
     }
 
+    public function support($controller) {
+        if (php_sapi_name() == 'cli') {
+            /* Don't run when we're running artisan commands. */
+            return;
+        }
+
+        if (!is_a($controller, 'Label305\AujaLaravel\Controllers\Interfaces\SupportControllerInterface')) {
+            throw new ExpectedSupportControllerException(
+                $controller . ' does not implement Label305\AujaLaravel\Controllers\Interfaces\SupportControllerInterface'
+            );
+        }
+
+        $this->registerSupportIndex($controller);
+        $this->registerSupportMain($controller);
+        $this->registerSupportLogin($controller);
+        $this->registerSupportLogout($controller);
+    }
+
     private function registerIndex($modelName, $controller) {
         $url = sprintf('%s', $this->toUrlName($modelName));
         $routeName = $this->getIndexName($modelName);
         $action = $controller . '@index';
 
-        $this->router->get($url, array('as' => $routeName, 'uses' => $action));
+        $this->router->get($url, ['as' => $routeName, 'uses' => $action]);
     }
 
     private function registerMenu($modelName, $controller) {
@@ -242,7 +267,7 @@ class AujaRouter {
         $routeName = $this->getMenuName($modelName);
         $action = $controller . '@menu';
 
-        $this->router->get($url, array('as' => $routeName, 'uses' => $action));
+        $this->router->get($url, ['as' => $routeName, 'uses' => $action]);
     }
 
     private function registerShowMenu($modelName, $controller) {
@@ -250,7 +275,7 @@ class AujaRouter {
         $routeName = $this->getShowMenuName($modelName);
         $action = $controller . '@menu';
 
-        $this->router->get($url, array('as' => $routeName, 'uses' => $action));
+        $this->router->get($url, ['as' => $routeName, 'uses' => $action]);
     }
 
     private function registerCreate($modelName, $controller) {
@@ -258,7 +283,7 @@ class AujaRouter {
         $routeName = $this->getCreateName($modelName);
         $action = $controller . '@create';
 
-        $this->router->get($url, array('as' => $routeName, 'uses' => $action));
+        $this->router->get($url, ['as' => $routeName, 'uses' => $action]);
     }
 
     private function registerStore($modelName, $controller) {
@@ -266,7 +291,7 @@ class AujaRouter {
         $routeName = $this->getStoreName($modelName);
         $action = $controller . '@store';
 
-        $this->router->post($url, array('as' => $routeName, 'uses' => $action));
+        $this->router->post($url, ['as' => $routeName, 'uses' => $action]);
     }
 
     private function registerShow($modelName, $controller) {
@@ -274,7 +299,7 @@ class AujaRouter {
         $routeName = $this->getShowName($modelName);
         $action = $controller . '@show';
 
-        $this->router->get($url, array('as' => $routeName, 'uses' => $action));
+        $this->router->get($url, ['as' => $routeName, 'uses' => $action]);
     }
 
     private function registerEdit($modelName, $controller) {
@@ -282,7 +307,7 @@ class AujaRouter {
         $routeName = $this->getEditName($modelName);
         $action = $controller . '@edit';
 
-        $this->router->get($url, array('as' => $routeName, 'uses' => $action));
+        $this->router->get($url, ['as' => $routeName, 'uses' => $action]);
     }
 
     private function registerUpdate($modelName, $controller) {
@@ -290,7 +315,7 @@ class AujaRouter {
         $routeName = $this->getUpdateName($modelName);
         $action = $controller . '@update';
 
-        $this->router->put($url, array('as' => $routeName, 'uses' => $action));
+        $this->router->put($url, ['as' => $routeName, 'uses' => $action]);
     }
 
     private function registerDelete($modelName, $controller) {
@@ -298,7 +323,7 @@ class AujaRouter {
         $routeName = $this->getDeleteName($modelName);
         $action = $controller . '@delete';
 
-        $this->router->delete($url, array('as' => $routeName, 'uses' => $action));
+        $this->router->delete($url, ['as' => $routeName, 'uses' => $action]);
     }
 
     private function registerAssociation($modelName, $otherModelName, $controller) {
@@ -306,7 +331,7 @@ class AujaRouter {
         $routeName = $this->getAssociationName($modelName, $otherModelName);
         $action = $controller . '@' . str_plural(camel_case($otherModelName));
 
-        $this->router->get($url, array('as' => $routeName, 'uses' => $action));
+        $this->router->get($url, ['as' => $routeName, 'uses' => $action]);
     }
 
     private function registerBelongsToAssociationMenu($modelName, $otherModelName, $controller) {
@@ -314,7 +339,7 @@ class AujaRouter {
         $routeName = $this->getAssociationMenuName($modelName, $otherModelName);
         $action = $controller . '@' . camel_case($otherModelName) . 'Menu';
 
-        $this->router->get($url, array('as' => $routeName, 'uses' => $action));
+        $this->router->get($url, ['as' => $routeName, 'uses' => $action]);
     }
 
 
@@ -323,7 +348,7 @@ class AujaRouter {
         $routeName = $this->getAssociationMenuName($modelName, $otherModelName);
         $action = $controller . '@' . str_plural(camel_case($otherModelName)) . 'Menu';
 
-        $this->router->get($url, array('as' => $routeName, 'uses' => $action));
+        $this->router->get($url, ['as' => $routeName, 'uses' => $action]);
     }
 
     private function registerCreateAssociation($modelName, $otherModelName, $controller) {
@@ -331,7 +356,27 @@ class AujaRouter {
         $routeName = $this->getCreateAssociationName($modelName, $otherModelName);
         $action = $controller . '@' . 'create' . ucfirst(camel_case($otherModelName));
 
-        $this->router->get($url, array('as' => $routeName, 'uses' => $action));
+        $this->router->get($url, ['as' => $routeName, 'uses' => $action]);
+    }
+
+    private function registerSupportIndex($controller) {
+        $action = $controller . '@index';
+        $this->router->get('/', ['as' => 'auja.support.index', 'uses' => $action]);
+    }
+
+    private function registerSupportMain($controller) {
+        $action = $controller . '@main';
+        $this->router->get('main', ['as' => 'auja.support.main', 'uses' => $action]);
+    }
+
+    private function registerSupportLogin($controller) {
+        $action = $controller . '@login';
+        $this->router->post('login', ['as' => 'auja.support.login', 'uses' => $action]);
+    }
+
+    private function registerSupportLogout($controller) {
+        $action = $controller . '@logout';
+        $this->router->get('logout', ['as' => 'auja.support.logout', 'uses' => $action]);
     }
 
     private function toUrlName($modelName) {

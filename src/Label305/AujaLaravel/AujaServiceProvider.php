@@ -1,8 +1,8 @@
 <?php namespace Label305\AujaLaravel;
 
 use Illuminate\Support\ServiceProvider;
+use Label305\AujaLaravel\Exceptions\NoDatabaseHelperException;
 use Label305\AujaLaravel\Routing\AujaRouter;
-use Label305\AujaLaravel\Exception\NoDatabaseHelperException;
 
 class AujaServiceProvider extends ServiceProvider {
 
@@ -14,6 +14,17 @@ class AujaServiceProvider extends ServiceProvider {
     protected $defer = false;
 
     /**
+     * Boot the package
+     */
+    public function boot() {
+
+        $this->package('label305/auja-laravel');
+
+        // Include the routes file located in src/routes.php of this package
+        include __DIR__.'/../../routes.php';
+    }
+
+    /**
      * Register the service provider.
      *
      * @return void
@@ -21,7 +32,7 @@ class AujaServiceProvider extends ServiceProvider {
     public function register() {
 
         $app = $this->app;
-        $config = $app['config']['auja'] ?: $app['config']['auja::config'];
+        $config = $this->getConfig();
 
         $app->bind('auja', 'Label305\AujaLaravel\Auja');
         $app->singleton('Label305\AujaLaravel\Auja', function ($app) {
@@ -54,8 +65,18 @@ class AujaServiceProvider extends ServiceProvider {
      */
     function getModelNames() {
 
-        $config = $this->app['config']['auja'] ?: $this->app['config']['auja::config'];
+        $config = $this->getConfig();
         return $config['models'];
+    }
+
+    /**
+     * Get config values
+     * Allows for both /app/config/auja.php as well as /app/config/packages/auja-laravel/config.php
+     *
+     * @return array
+     */
+    public function getConfig() {
+        return $this->app['config']['auja'] ?: $this->app['config']['auja-laravel::config'];
     }
 
 }

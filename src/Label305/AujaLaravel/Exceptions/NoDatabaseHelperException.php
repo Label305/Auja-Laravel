@@ -21,7 +21,7 @@
  * limitations under the License.
  */
 
-namespace Label305\AujaLaravel\Exception;
+namespace Label305\AujaLaravel\Exceptions;
 
 use Exception;
 

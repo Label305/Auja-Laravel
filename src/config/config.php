@@ -19,12 +19,16 @@ return [
 	|--------------------------------------------------------------------------
 	|
 	| The interface has a color property. You could use this color to
-	| make enviroments easy to differenciate for administrators. Use a CSS
+	| make environments easy to differentiate for administrators. Use a CSS
 	| color like: 'red' or '#232323' or 'rgba(0,0,255,0)'.
 	|
 	*/
 
-	'color' => '#1EBAB8',
+	'color' => [
+        'main' => '#1EBAB8',
+        'secondary' => '#666666',
+        'alert' => '#1EBAB8',
+    ],
 
 	/*
 	|--------------------------------------------------------------------------
@@ -57,16 +61,15 @@ return [
 	| Available Models
 	|--------------------------------------------------------------------------
 	|
-	| Specify the models that you whish to be available in the admin
-	| interface. Each model can have a sperate config class.
+	| Specify the models that you wish to be available in the admin
+	| interface. Each model can have a separate config class.
+	|
+	| For example: 'YourApp\Models\User'
 	|
 	*/
 
 	'models' => [
-		'YourApp\Models\User',
-		'YourApp\Models\Pages',
-		'YourApp\Models\Image',
-		'YourApp\Models\MenuItem',
+
 	],
 
 	/*
@@ -75,14 +78,15 @@ return [
 	|--------------------------------------------------------------------------
 	|
 	| Auja will autopopulate the interface for all models, however you can
-	| cusomize a lot. To do so create ModelConfiguration classes that define
+	| customize a lot. To do so create ModelConfiguration classes that define
 	| how each model should be presented by the interface.
+	|
+	| For example 'YourApp\Admin\Config\UsersConfig'
 	|
 	*/
 
 	'configurations' => [
-		'YourApp\Admin\Config\UsersConfig',
-		'YourApp\Admin\Config\PagesConfig'
+
 	],
 
 	/*
@@ -96,4 +100,4 @@ return [
 	*/
 
 	'cache' => true,
-);
+];
