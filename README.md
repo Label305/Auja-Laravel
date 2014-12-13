@@ -13,19 +13,19 @@ The [Auja javascript frontend](https://github.com/Label305/Auja) provides the gr
 
 Related repositories
 -----------
-  
+
   - [**Auja**](https://github.com/Label305/Auja) - The frontend JavaScript GUI
   - [**Auja PHP Development Kit**](https://github.com/Label305/Auja-PHP) - A web service development kit for communicating with the Auja javascript frontend
 
 Installation and Setup
 -------
 
-Because Auja uses both a library for the PHP backand and a library for [the JavaScript frontend](https://github.com/Label305/Auja) there a few more steps required to install Auja that you may be used to with other libraries. 
+Because Auja uses both a library for the PHP backand and a library for [the JavaScript frontend](https://github.com/Label305/Auja) there a few more steps required to install Auja that you may be used to with other libraries.
 
 1.  [Setup Laravel to work with Bower and Gulp](#setup-laravel-to-work-with-bower-and-gulp), if you haven't already. _This is done by default in Laravel 5, but you still need to install [bower](http://bower.io/) and [gulp](http://gulpjs.com/) globaly with [npm](http://nodejs.org/)._
 
 2.  Modify the `gulpfile.js` so all Auja's assets and scripts are placed in the correct folders when running `gulp`.
-  
+
     ```js
     var elixir = require('laravel-elixir');
 
@@ -53,32 +53,12 @@ Because Auja uses both a library for the PHP backand and a library for [the Java
     ```shell
     $ composer require label305/auja-laravel:dev-dev
     ```
-    
-6.  Create your `app/providers/AdminServiceProvider.php` or `app/Services/AdminServiceProvider.php`. The class should extend `Label305\AujaLaravel\AujaServiceProvider`.
 
-    ```php
-    <?php namespace YourApp\Providers;
-    
-    use Label305\AujaLaravel\AujaServiceProvider;
-    
-    class AdminServiceProvider extends AujaServiceProvider {
+6.  Publish the Auja config file and main view
 
-        function getModelNames()
-        {
-            return [
-                'Club',
-                'Team'
-            ];
-        }
-    
-        public function register()
-        {
-            parent::register();
-            
-            // For an optional Label305\AujaLaravel\Config\ModelConfig class
-            // $this->app->bind('ClubConfig', 'YourApp\Admin\Configurations\ClubConfig');
-        }
-    }
+    ```shell
+    $ php artisan config:publish label305/auja-laravel
+    $ php artisan view:publish label305/auja-laravel
     ```
 
 7.  Add the `AdminServiceProvider`, `AujaFacade` and `AujaRouteFacade` to your `app.php` config file.
@@ -98,78 +78,16 @@ Because Auja uses both a library for the PHP backand and a library for [the Java
         ....
     ];
     ```
-    
-8.  Create a new view in `views/admin/index.blade.php`.
 
-    ```html
-    <!DOCTYPE html>
-    <html>
-        <head>
-            {{ HTML::style('css/vendor/auja.css') }}
-            {{ HTML::style('css/vendor/trumbowyg.css') }}
-            {{ HTML::style('css/vendor/ionicons.css') }}
-            {{ HTML::style('css/vendor/animate.css) }}
-            {{ HTML::script('js/vendor/auja.js') }}
-        </head>
-        {{ -- data-src points to the Route that generates the Auja json manifest -- }}
-        <body data-src="admin/manifest"></body>
-    </html>
-    ```
-    
-9.  Create a `app/controllers/Admin/AujaSupportController.php` or `app/Http/Controllers/Admin/AujaSupportController.php`. This file contains information on what kind of information the admin area should contain and how administrators authenticate.
-
-    ```php
-    <?php namespace YourApp\Http\Controllers\Admin;
-
-    use Illuminate\Routing\Controller;
-    use Label305\Auja\Shared\Message;
-    
-    class AujaSupportController extends Controller {
-    
-        public function index()
-        {
-            return View::make('admin/index');
-        }
-    
-        public function manifest()
-        {
-            $username = Auth::user() == null ? null : Auth::user()->name;
-            $authenticationForm = Auja::authenticationForm('Welcome Administrator!', 'admin/login');
-            
-            return Auja::main(
-                'Your Awesome App',
-                Auth::check(),
-                $username,
-                'admin/logout',
-                $authenticationForm
-            );
-        }
-    
-        public function login()
-        {
-            Auth::attempt(['email' => Input::get('email'), 'password' => Input::get('password')]);
-    
-            $message = new Message();
-            $message->setAuthenticated(Auth::check());
-            return $message;
-        }
-    
-        public function logout()
-        {
-            Auth::logout();
-            return Redirect::to('admin');
-        }
-    }
-    ```
 10.  Create a `app/controllers/Admin/ClubsController.php` or `app/Http/Controllers/Admin/ClubsController.php`, to manage the `Clubs` in your admin interface. You can do this for all your models. Here is an example:
 
     ```php
     <?php namespace YourApp\Http\Controllers\Admin;
-    
+
     use Illuminate\Routing\Controller;
 
     class ClubsController extends Controller {
-    
+
         public function index()
         {
             if (Input::has('q')) {
@@ -177,28 +95,28 @@ Because Auja uses both a library for the PHP backand and a library for [the Java
             } else {
                 $items = Club::simplePaginate(10);
             }
-    
+
             $linkTarget = urldecode(URL::route(AujaRoute::getEditName('Club'), '%d'));
             return Auja::itemsFor($this, $items, $linkTarget);
         }
-        
-        public function menu($id = 0) 
+
+        public function menu($id = 0)
         {
             return Auja::menuFor($this, $id);
         }
-        
-        public function create() 
+
+        public function create()
         {
             return Auja::pageFor($this);
         }
-        
+
         public function store()
         {
             Club::create(Input::all());
             return new Message();
         }
 
-        public function edit($id) 
+        public function edit($id)
         {
             return Auja::pageFor($this, $id);
         }
@@ -208,15 +126,15 @@ Because Auja uses both a library for the PHP backand and a library for [the Java
             $page = Club::find($id);
             $page->fill(Input::all());
             $page->save();
-    
+
             return new Message();
         }
-    
+
         public function delete($id)
         {
             $page = Club::find($id);
             $page->delete($id);
-            
+
             return new Message();
         }
     }
@@ -225,23 +143,15 @@ Because Auja uses both a library for the PHP backand and a library for [the Java
 11.  Now setup the routes for the administration panel.
 
     ```php
-    Route::group(['prefix' => 'admin'], function() {
-    
-        Route::get('/', 'YourApp\Http\Controllers\Admin\AujaSupportController@index');
-        Route::get('/manifest', 'YourApp\Http\Controllers\Admin\AujaSupportController@manifest');
-        Route::post('/login', 'YourApp\Http\Controllers\Admin\AujaSupportController@login');
-    
-        Route::group(['before'=> 'auth'], function() {
-            Route::get('logout', 'YourApp\Http\Controllers\Admin\AujaSupportController@logout');
-    
-            AujaRoute::resource('Club', 'YourApp\Http\Controllers\Admin\ClubsController');
-            AujaRoute::resource('Team', 'YourApp\Http\Controllers\Admin\TeamsController');
-        });
+    AujaRoute::group(['before'=> 'auth'], function() {
+
+        AujaRoute::resource('Club', 'YourApp\Http\Controllers\Admin\ClubsController');
+        AujaRoute::resource('Team', 'YourApp\Http\Controllers\Admin\TeamsController');
     });
     ```
-    
+
 12.  _Tip:_ add the following lines to your `.gitignore`:
-    
+
     ```
     node_modules
     /public/css/vendor
@@ -310,19 +220,74 @@ Setup Laravel to work with Bower and Gulp
     }
     ```
 
+Advanced
+--------
+
+If you want your own AujaSupportController to handle authentication you can implement your own. Create a `YourSupportController.php`. This file contains information on what kind of information the admin area should contain and how administrators authenticate.
+
+```php
+<?php namespace YourApp\Http\Controllers\Admin;
+
+use Illuminate\Routing\Controller;
+use Label305\Auja\Shared\Message;
+
+class YourSupportController extends Controller implements AujaSupportControllerInterface {
+
+    public function index()
+    {
+        return View::make('auja-laravel::admin/index');
+    }
+
+    public function manifest()
+    {
+        $username = Auth::user() == null ? null : Auth::user()->name;
+        $authenticationForm = Auja::authenticationForm('Welcome Administrator!', 'admin/login');
+
+        $main = Auja::main(
+            'Your Awesome App',
+            Auth::check(),
+            $username,
+            'admin/logout',
+            $authenticationForm
+        );
+
+        $main->setColor(Main::COLOR_MAIN, '#00FF00');
+        $main->setColor(Main::COLOR_ALERT, '#00FF00');
+        $main->setColor(Main::COLOR_SECONDARY, '#666666');
+
+        return Response::json($main);
+    }
+
+    public function login()
+    {
+        Auth::attempt(['email' => Input::get('email'), 'password' => Input::get('password')]);
+
+        $message = new Message();
+        $message->setAuthenticated(Auth::check());
+        return Response::json($message);
+    }
+
+    public function logout()
+    {
+        Auth::logout();
+        return Redirect::to('admin');
+    }
+}
+```
+
 License
 ---------
 
 Copyright 2014 Label305 B.V.
 
-Licensed under the Apache License, Version 2.0 (the "License");  
-you may not use this file except in compliance with the License.  
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
 [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
-Unless required by applicable law or agreed to in writing, software  
-distributed under the License is distributed on an "AS IS" BASIS,  
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  
-See the License for the specific language governing permissions and  
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
 limitations under the License.
