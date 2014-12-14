@@ -9,6 +9,7 @@
 namespace Label305\AujaLaravel\Controllers;
 
 use Auja;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Label305\AujaLaravel\Controllers\Interfaces\AujaControllerInterface;
@@ -22,7 +23,9 @@ abstract class AujaControler extends Controller implements AujaControllerInterfa
      */
     public function index()
     {
-        return Auja::itemsFor($this);
+        return new JsonResponse(
+            Auja::itemsFor($this)
+        );
     }
 
     /**
@@ -36,7 +39,9 @@ abstract class AujaControler extends Controller implements AujaControllerInterfa
      */
     public function menu($id = 0)
     {
-        return Auja::menuFor($this, $id);
+        return new JsonResponse(
+            Auja::menuFor($this, $id)
+        );
     }
 
     /**
@@ -46,7 +51,9 @@ abstract class AujaControler extends Controller implements AujaControllerInterfa
      */
     public function create()
     {
-        return Auja::pageFor($this);
+        return new JsonResponse(
+            Auja::pageFor($this)
+        );
     }
 
     /**
@@ -65,7 +72,9 @@ abstract class AujaControler extends Controller implements AujaControllerInterfa
      */
     public function edit($id)
     {
-        return Auja::pageFor($this, $id);
+        return new JsonResponse(
+            Auja::pageFor($this, $id)
+        );
     }
 
     /**

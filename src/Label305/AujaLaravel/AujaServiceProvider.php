@@ -3,31 +3,19 @@
 use Illuminate\Support\ServiceProvider;
 use Label305\AujaLaravel\Config\AujaConfigurator;
 use Label305\AujaLaravel\Database\MySQLDatabaseHelper;
-use Label305\AujaLaravel\Exceptions\MandatoryConfigKeyMisconfiguredException;
 use Label305\AujaLaravel\Exceptions\NoDatabaseHelperException;
 use Label305\AujaLaravel\Routing\AujaRouter;
 
+/**
+ * The Laravel service provider
+ * Include this class in your laravel app/config/app.php file to load it at bootstrap.
+ *
+ * @author  Thijs Scheepers - <thijs@label305.com>
+ *
+ * @package Label305\AujaLaravel
+ * @license http://www.apache.org/licenses/LICENSE-2.0
+ */
 class AujaServiceProvider extends ServiceProvider {
-
-    /**
-     * Indicates if loading of the provider is deferred.
-     *
-     * @var bool
-     */
-    protected $defer = false;
-
-    /**
-     * Boot the package
-     */
-    public function boot() {
-
-        $this->package('label305/auja-laravel');
-
-        $app = $this->app;
-
-        // Include the routes file located in src/routes.php of this package
-        include __DIR__.'/../../routes.php';
-    }
 
     /**
      * Register the service provider.
@@ -48,10 +36,12 @@ class AujaServiceProvider extends ServiceProvider {
      */
     protected function registerManager()
     {
-        $this->app->singleton('auja', function ($app) {
+        $this->app->singleton('Label305\AujaLaravel\Auja', function ($app) {
             $config = $app['config']['auja-laravel'] ?: $app['config']['auja-laravel::config'];
             return new Auja($app, $app['auja.configurator'], $config['models']);
         });
+
+        $this->app->bind('auja', 'Label305\AujaLaravel\Auja');
     }
 
     /**
@@ -59,7 +49,7 @@ class AujaServiceProvider extends ServiceProvider {
      */
     protected function registerConfigurator()
     {
-        $this->app->bind('auja.database', function($app) {
+        $this->app->singleton('Label305\AujaLaravel\Database\DatabaseHelper', function($app) {
 
             $config = $app['config']['auja-laravel'] ?: $app['config']['auja-laravel::config'];
 
@@ -73,9 +63,13 @@ class AujaServiceProvider extends ServiceProvider {
             }
         });
 
-        $this->app->singleton('auja.configurator', function($app) {
+        $this->app->bind('auja.database', 'Label305\AujaLaravel\Database\DatabaseHelper');
+
+        $this->app->singleton('Label305\AujaLaravel\Config\AujaConfigurator', function($app) {
             return new AujaConfigurator($app, $app['auja.database']);
         });
+
+        $this->app->bind('auja.configurator', 'Label305\AujaLaravel\Config\AujaConfigurator');
     }
 
     /**
@@ -95,5 +89,19 @@ class AujaServiceProvider extends ServiceProvider {
     {
         return ['auja', 'auja.router', 'auja.database', 'auja.configurator'];
     }
+
+    /**
+     * Boot the package
+     */
+    public function boot() {
+
+        $this->package('label305/auja-laravel');
+
+        $app = $this->app;
+
+        // Include the routes file located in src/routes.php of this package
+        include __DIR__.'/../../routes.php';
+    }
+
 
 }

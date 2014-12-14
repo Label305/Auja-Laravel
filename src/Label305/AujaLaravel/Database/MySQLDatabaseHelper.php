@@ -38,7 +38,7 @@ use Illuminate\Support\Facades\DB;
  */
 class MySQLDatabaseHelper implements DatabaseHelper {
 
-    const KEY_TABLE_INFO = 'Label305\AujaLaravel\Database\MySQLDatabaseHelper\table_info';
+    const KEY_TABLE_INFO = 'auja-laravel.table_info';
 
     /**
      * @var Table[]

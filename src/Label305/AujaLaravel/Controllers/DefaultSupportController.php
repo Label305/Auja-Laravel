@@ -3,6 +3,7 @@
 namespace Label305\AujaLaravel\Controllers;
 
 use Illuminate\Foundation\Application;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use Label305\Auja\Main\Main;
 use Label305\Auja\Shared\Message;
@@ -31,7 +32,7 @@ class DefaultSupportController extends Controller implements SupportControllerIn
      */
     public function index() {
 
-        return $this->app['view']->make('auja-laravel::admin/index');
+        return $this->app['view']->make('auja-laravel::admin.index');
     }
 
     /**
@@ -42,11 +43,11 @@ class DefaultSupportController extends Controller implements SupportControllerIn
      */
     public function main() {
 
-        $config = $this->app['config']['auja']['title'] ?: $this->app['config']['auja-laravel::config'];
+        $config = $this->app['config']['auja'] ?: $this->app['config']['auja-laravel::config'];
 
         $authenticationForm = $this->app['auja']->authenticationForm(
             $config['title'],
-            $this->app['auth']->route('auja.support.login', [], false)
+            $this->app['url']->route('auja.support.login', [], false)
         );
 
         $username = ($this->app['auth']->user() == null) ? null : $this->app['auth']->user()->name;
@@ -55,7 +56,7 @@ class DefaultSupportController extends Controller implements SupportControllerIn
             $config['title'],
             $this->app['auth']->check(),
         	$username,
-            $this->app['auth']->route('auja.support.logout', [], false),
+            $this->app['url']->route('auja.support.logout', [], false),
         	$authenticationForm
         );
 
@@ -63,7 +64,7 @@ class DefaultSupportController extends Controller implements SupportControllerIn
         $main->setColor(Main::COLOR_ALERT, $config['color']['alert']);
         $main->setColor(Main::COLOR_SECONDARY, $config['color']['secondary']);
 
-        return $this->app['response']->json($main);
+        return new JsonResponse($main);
     }
 
     /**
@@ -79,7 +80,7 @@ class DefaultSupportController extends Controller implements SupportControllerIn
         $message = new Message();
         $message->setAuthenticated($this->app['auth']->check());
 
-        return $this->app['response']->json($message);
+        return new JsonResponse($message);
     }
 
     /**
