@@ -1,6 +1,7 @@
 <?php namespace Label305\AujaLaravel;
 
 use Illuminate\Support\ServiceProvider;
+use Label305\AujaLaravel\Exceptions\MandatoryConfigKeyMisconfiguredException;
 use Label305\AujaLaravel\Exceptions\NoDatabaseHelperException;
 use Label305\AujaLaravel\Routing\AujaRouter;
 
@@ -31,8 +32,8 @@ class AujaServiceProvider extends ServiceProvider {
      */
     public function register() {
 
+
         $app = $this->app;
-        $config = $this->getConfig();
 
         $app->bind('auja', 'Label305\AujaLaravel\Auja');
         $app->singleton('Label305\AujaLaravel\Auja', function ($app) {
@@ -41,14 +42,22 @@ class AujaServiceProvider extends ServiceProvider {
 
         $app->bind('Label305\AujaLaravel\Logging\Logger', 'Label305\AujaLaravel\Logging\LaravelLogger');
 
-        switch ($config['database']) {
-            case 'mysql':
-                $app->bind('Label305\AujaLaravel\Database\DatabaseHelper', 'Label305\AujaLaravel\Database\MySQLDatabaseHelper');
-                break;
-            default:
-                throw new NoDatabaseHelperException('No Auja DatabaseHelper for ' . $config['database']);
-                break;
-        }
+
+                $app->bind('Label305\AujaLaravel\Database\DatabaseHelper', function() use ($app) {
+
+                    $config = $app['config']['auja-laravel'] ?: $app['config']['auja-laravel::config'];
+
+                    dd($config);
+
+                    switch ($config['database']) {
+                        case 'mysql':
+                            return new \Label305\AujaLaravel\Database\MySQLDatabaseHelper();
+                            break;
+                        default:
+                            throw new NoDatabaseHelperException('No Auja database helper for ' . $config['database']);
+                            break;
+                    }
+                });
 
         $app->singleton('Label305\AujaLaravel\Config\AujaConfigurator');
 
@@ -58,14 +67,22 @@ class AujaServiceProvider extends ServiceProvider {
         });
     }
 
+    public function provides() {
+        return ['auja', 'aujarouter'];
+    }
+
     /**
      * Returns a String array of model names, e.g. ['Club', 'Team'].
      *
      * @return String[] The model names.
      */
-    function getModelNames() {
+    public function getModelNames() {
 
         $config = $this->getConfig();
+        if (!array_key_exists('models', $config)) {
+            return [];
+        }
+
         return $config['models'];
     }
 
@@ -76,7 +93,31 @@ class AujaServiceProvider extends ServiceProvider {
      * @return array
      */
     public function getConfig() {
-        return $this->app['config']['auja'] ?: $this->app['config']['auja-laravel::config'];
+        $config = $this->app['config']['auja-laravel'] ?: $this->app['config']['auja-laravel::config'];
+        return $config;
+    }
+
+    private function checkForMisconfiguredConfigFile() {
+        if (php_sapi_name() == 'cli') {
+            return;
+        }
+
+        $config = $this->getConfig();
+
+        foreach ($this->mandatoryConfigKeys() as $key) {
+            if (!array_key_exists($key, $config)) {
+                throw new MandatoryConfigKeyMisconfiguredException('Could not found config value for ' . $key);
+            }
+        }
+    }
+
+    private function mandatoryConfigKeys() {
+        return [
+            'database',
+            'models',
+            'route',
+            'configurations'
+        ];
     }
 
 }

@@ -26,6 +26,7 @@ namespace Label305\AujaLaravel\Routing;
 use Illuminate\Routing\Router;
 use Label305\AujaLaravel\Auja;
 use Label305\AujaLaravel\Config\Relation;
+use Label305\AujaLaravel\Exceptions\ExpectedAujaControllerException;
 use Label305\AujaLaravel\Exceptions\ExpectedSupportControllerException;
 
 /**
@@ -204,7 +205,11 @@ class AujaRouter {
             return;
         }
 
-        if (!is_a($controller, 'Label305\AujaLaravel\Controllers\Interfaces\AujaControllerInterface')) {
+        if (!class_exists($controller)) {
+            throw new ExpectedAujaControllerException($controller . ' does not exist.');
+        }
+
+        if (!is_subclass_of($controller, 'Label305\AujaLaravel\Controllers\Interfaces\AujaControllerInterface')) {
             throw new ExpectedAujaControllerException(
                 $controller . ' does not implement Label305\AujaLaravel\Controllers\Interfaces\AujaControllerInterface'
             );
