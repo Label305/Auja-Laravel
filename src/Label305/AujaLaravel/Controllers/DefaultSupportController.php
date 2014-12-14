@@ -17,17 +17,11 @@ class DefaultSupportController extends Controller implements SupportControllerIn
 	public $app;
 
     /**
-     * @var Auja
-     */
-	public $auja;
-
-    /**
      * @param Application $app
      * @param Auja $auja
      */
-	public function __construct(Application $app, Auja $auja) {
+	public function __construct(Application $app) {
         $this->app = $app;
-        $this->auja = $auja;
     }
 
     /**
@@ -50,14 +44,14 @@ class DefaultSupportController extends Controller implements SupportControllerIn
 
         $config = $this->app['config']['auja']['title'] ?: $this->app['config']['auja-laravel::config'];
 
-        $authenticationForm = $this->auja->authenticationForm(
+        $authenticationForm = $this->app['auja']->authenticationForm(
             $config['title'],
             $this->app['auth']->route('auja.support.login', [], false)
         );
 
         $username = ($this->app['auth']->user() == null) ? null : $this->app['auth']->user()->name;
 
-        $main = $this->auja->main(
+        $main = $this->app['auja']->main(
             $config['title'],
             $this->app['auth']->check(),
         	$username,

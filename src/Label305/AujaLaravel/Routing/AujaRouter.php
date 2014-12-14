@@ -247,7 +247,7 @@ class AujaRouter {
             return;
         }
 
-        if (!is_a($controller, 'Label305\AujaLaravel\Controllers\Interfaces\SupportControllerInterface')) {
+        if (!is_subclass_of($controller, 'Label305\AujaLaravel\Controllers\Interfaces\SupportControllerInterface')) {
             throw new ExpectedSupportControllerException(
                 $controller . ' does not implement Label305\AujaLaravel\Controllers\Interfaces\SupportControllerInterface'
             );

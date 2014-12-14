@@ -1,10 +1,10 @@
 <?php
 
-$prefix = Config::get('auja.route') ?: Config::get('auja-laravel::config.route');
+$prefix = $app['config']['auja.route'] ?: $app['config']['auja-laravel::config.route'];
 
 if ($prefix !== null) {
 
-    Route::group(['prefix' => $prefix, 'namespace' => 'Label305\AujaLaravel\Controllers'], function () {
-        AujaRoute::support('DefaultSupportController');
+    Route::group(['prefix' => $prefix], function () {
+        AujaRoute::support('Label305\AujaLaravel\Controllers\DefaultSupportController');
     });
 }

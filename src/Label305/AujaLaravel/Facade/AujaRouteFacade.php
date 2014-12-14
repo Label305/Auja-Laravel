@@ -27,8 +27,9 @@ use Illuminate\Support\Facades\Facade;
 
 class AujaRouteFacade extends Facade {
 
-    protected static function getFacadeAccessor() {
-        return 'aujarouter';
+    protected static function getFacadeAccessor()
+    {
+        return 'auja.router';
     }
 
 }
