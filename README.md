@@ -64,22 +64,20 @@ Because Auja uses both a library for the PHP backand and a library for [the Java
 7.  Add the `AdminServiceProvider`, `AujaFacade` and `AujaRouteFacade` to your `app.php` config file.
 
     ```php
-    return [
+    'providers' => [
         ...
-        'providers' => [
-            ...
-            'YourApp\Providers\AdminServiceProvider',
-        ],
-        'aliases' => [
-            ...
-            'Auja' => 'Label305\AujaLaravel\Facade\AujaFacade',
-            'AujaRoute' => 'Label305\AujaLaravel\Facade\AujaRouteFacade',
-        ],
-        ....
-    ];
+        'YourApp\Providers\AdminServiceProvider',
+    ],
+    'aliases' => [
+        ...
+        'Auja' => 'Label305\AujaLaravel\Facade\AujaFacade',
+        'AujaRoute' => 'Label305\AujaLaravel\Facade\AujaRouteFacade',
+    ],
     ```
 
-10.  Create a `app/controllers/Admin/ClubsController.php` or `app/Http/Controllers/Admin/ClubsController.php`, to manage the `Clubs` in your admin interface. You can do this for all your models. Here is an example:
+8.  Customize the `auja-laravel/config.php` file and specify the models you whish to be included in the Admin interface.
+
+9.  Create a `app/controllers/Admin/ClubsController.php` or `app/Http/Controllers/Admin/ClubsController.php`, to manage the `Clubs` in your admin interface. You can do this for all your models. Here is an example:
 
     ```php
     <?php namespace YourApp\Http\Controllers\Admin;
@@ -97,28 +95,18 @@ Because Auja uses both a library for the PHP backand and a library for [the Java
             }
 
             $linkTarget = urldecode(URL::route(AujaRoute::getEditName('Club'), '%d'));
-            return Auja::itemsFor($this, $items, $linkTarget);
-        }
 
-        public function menu($id = 0)
-        {
-            return Auja::menuFor($this, $id);
-        }
-
-        public function create()
-        {
-            return Auja::pageFor($this);
+            return Response::json(
+                Auja::itemsFor($this, $items, $linkTarget)
+            );
         }
 
         public function store()
         {
             Club::create(Input::all());
-            return new Message();
-        }
-
-        public function edit($id)
-        {
-            return Auja::pageFor($this, $id);
+            return Response::json(
+                new Message()
+            );
         }
 
         public function update($id)
@@ -127,7 +115,9 @@ Because Auja uses both a library for the PHP backand and a library for [the Java
             $page->fill(Input::all());
             $page->save();
 
-            return new Message();
+            return Response::json(
+                new Message()
+            );
         }
 
         public function delete($id)
@@ -135,12 +125,14 @@ Because Auja uses both a library for the PHP backand and a library for [the Java
             $page = Club::find($id);
             $page->delete($id);
 
-            return new Message();
+            return Response::json(
+                new Message()
+            );
         }
     }
     ```
 
-11.  Now setup the routes for the administration panel.
+10.  Now setup the routes for the administration panel.
 
     ```php
     AujaRoute::group(['before'=> 'auth'], function() {
@@ -150,7 +142,7 @@ Because Auja uses both a library for the PHP backand and a library for [the Java
     });
     ```
 
-12.  _Tip:_ add the following lines to your `.gitignore`:
+11.  _Tip:_ add the following lines to your `.gitignore`:
 
     ```
     node_modules
@@ -220,60 +212,110 @@ Setup Laravel to work with Bower and Gulp
     }
     ```
 
-Advanced
+Custom Model Configurations
+------
+
+You can provide your own subclasses of `ModelConfig` to the Auja config file in the `models` key. This way you can customize `icons` for example.
+
+1. Create a new class that extends `ModelConfig`, for example `UserConfig`.
+
+    ```php
+    class UserConfig extends ModelConfig {
+
+        public function getModelClass()
+        {
+            return 'User';
+        }
+
+        public function getIcon()
+        {
+            return Icons::ion_ios7_person;
+        }
+
+        public function isSearchable()
+        {
+            return false;
+        }
+    }
+    ```
+
+2. Modify the `auja-laravel/config.php` file to reference this new class.
+
+    ```php
+    'models' => [
+        ...
+        'YourApp\Admin\Configurations\UserConfig'
+    ],
+    ```
+
+Custom Auja Support Controller
 --------
 
-If you want your own AujaSupportController to handle authentication you can implement your own. Create a `YourSupportController.php`. This file contains information on what kind of information the admin area should contain and how administrators authenticate.
+By default Auja provides a default support controller to handle authentication and providing the main interface manifest. If you want your own AujaSupportController to handle authentication you can implement your own. Create a `YourSupportController.php`. This file contains information on what kind of information the admin area should contain and how administrators authenticate.
 
-```php
-<?php namespace YourApp\Http\Controllers\Admin;
+1. Set `route` to `null` in the configucation and create your own route to the controller.
 
-use Illuminate\Routing\Controller;
-use Label305\Auja\Shared\Message;
+    ```php
+    AujaRoute::group(['prefix' => 'admin'], function() {
+        AujaRoute::support(YourApp\Http\Controllers\Admin\YourSupportController');
+    });
 
-class YourSupportController extends Controller implements AujaSupportControllerInterface {
+    AujaRoute::group(['before'=> 'auth', 'prefix' => 'admin'], function() {
+        AujaRoute::resource('Club', 'YourApp\Http\Controllers\Admin\ClubsController');
+        AujaRoute::resource('Team', 'YourApp\Http\Controllers\Admin\TeamsController');
+    });
+    ```
 
-    public function index()
-    {
-        return View::make('auja-laravel::admin/index');
+2. Create the `YourSupportController.php` file and make sure it implements `AujaSupportControllerInterface`.
+    ```php
+    <?php namespace YourApp\Http\Controllers\Admin;
+
+    use Illuminate\Routing\Controller;
+    use Label305\Auja\Shared\Message;
+
+    class YourSupportController extends Controller implements AujaSupportControllerInterface {
+
+        public function index()
+        {
+            return View::make('auja-laravel::admin/index');
+        }
+
+        public function manifest()
+        {
+            $username = Auth::user() == null ? null : Auth::user()->name;
+            $authenticationForm = Auja::authenticationForm('Welcome Administrator!', 'admin/login');
+
+            $main = Auja::main(
+                'Your Awesome App',
+                Auth::check(),
+                $username,
+                'admin/logout',
+                $authenticationForm
+            );
+
+            $main->setColor(Main::COLOR_MAIN, '#00FF00');
+            $main->setColor(Main::COLOR_ALERT, '#00FF00');
+            $main->setColor(Main::COLOR_SECONDARY, '#666666');
+
+            return Response::json($main);
+        }
+
+        public function login()
+        {
+            Auth::attempt(['email' => Input::get('email'), 'password' => Input::get('password')]);
+
+            $message = new Message();
+            $message->setAuthenticated(Auth::check());
+            return Response::json($message);
+        }
+
+        public function logout()
+        {
+            Auth::logout();
+            return Redirect::to('admin');
+        }
     }
-
-    public function manifest()
-    {
-        $username = Auth::user() == null ? null : Auth::user()->name;
-        $authenticationForm = Auja::authenticationForm('Welcome Administrator!', 'admin/login');
-
-        $main = Auja::main(
-            'Your Awesome App',
-            Auth::check(),
-            $username,
-            'admin/logout',
-            $authenticationForm
-        );
-
-        $main->setColor(Main::COLOR_MAIN, '#00FF00');
-        $main->setColor(Main::COLOR_ALERT, '#00FF00');
-        $main->setColor(Main::COLOR_SECONDARY, '#666666');
-
-        return Response::json($main);
-    }
-
-    public function login()
-    {
-        Auth::attempt(['email' => Input::get('email'), 'password' => Input::get('password')]);
-
-        $message = new Message();
-        $message->setAuthenticated(Auth::check());
-        return Response::json($message);
-    }
-
-    public function logout()
-    {
-        Auth::logout();
-        return Redirect::to('admin');
-    }
-}
-```
+    ```
 
 License
 ---------
