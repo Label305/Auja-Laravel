@@ -32,7 +32,7 @@ use Label305\AujaLaravel\Controllers\Interfaces\AujaControllerInterface;
 /**
  * Controller abstract the developer can use to create a resource controller without implementing all required methods.
  *
- * @author  Thijs Scheepers - <thijslabel305.com>
+ * @author  Thijs Scheepers - <thijs@label305.com>
  *
  * @package Label305\AujaLaravel
  * @license http://www.apache.org/licenses/LICENSE-2.0

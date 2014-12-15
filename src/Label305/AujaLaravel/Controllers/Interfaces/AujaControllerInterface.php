@@ -28,7 +28,7 @@ use Illuminate\Http\Response;
 /**
  * Controller interface for a resource controller.
  *
- * @author  Thijs Scheepers - <thijslabel305.com>
+ * @author  Thijs Scheepers - <thijs@label305.com>
  *
  * @package Label305\AujaLaravel
  * @license http://www.apache.org/licenses/LICENSE-2.0
