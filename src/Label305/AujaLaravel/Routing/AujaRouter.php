@@ -49,9 +49,15 @@ class AujaRouter {
      */
     private $router;
 
-    public function __construct(Auja $auja, Router $router) {
+    /**
+     * @var string Group prefix
+     */
+    private $prefix;
+
+    public function __construct(Auja $auja, Router $router, $prefix) {
         $this->auja = $auja;
         $this->router = $router;
+        $this->prefix = $prefix;
     }
 
     /**
@@ -241,6 +247,22 @@ class AujaRouter {
         }
     }
 
+    /**
+     * @param $options
+     * @param $closure
+     */
+    public function group($options, $closure) {
+        if (!is_null($this->prefix)) {
+            $options = array_merge($options, ['prefix' => $this->prefix]);
+        }
+
+        $this->router->group($options, $closure);
+    }
+
+    /**
+     * @param $controller
+     * @throws ExpectedSupportControllerException
+     */
     public function support($controller) {
         if (php_sapi_name() == 'cli') {
             /* Don't run when we're running artisan commands. */

@@ -76,22 +76,40 @@ class AujaConfigurator {
      * Defines Models, Columns and Relations between the Models.
      * This method should be called before using any other methods.
      *
-     * @param  String[] $modelNames an array of model names to use.
+     * @param  String[] $modelConfigurations an array of full namespaces of ModelConfig objects of Eloquent objects
      */
-    public function configure(array $modelNames) {
-        if (empty($modelNames)) {
-            throw new \LogicException('Supply at least one model name!');
+    public function configure(array $modelConfigurations) {
+        if (empty($modelConfigurations)) {
+            throw new \LogicException('Supply at least one model or model configuration!');
         }
 
         /* First define the models and their columns. */
-        foreach ($modelNames as $modelName) {
-            $this->models[$modelName] = new Model($modelName);
-            $this->relations[$modelName] = [];
+        foreach ($modelConfigurations as $className) {
 
-            $configResolver = new ConfigResolver($this->app, $this->models[$modelName]);
-            $this->configs[$modelName] = $configResolver->resolve();
-            $this->findColumns($this->models[$modelName]);
-            $this->configs[$modelName] = $configResolver->resolve(); // TODO: Find a workaround for doing this twice.
+            $modelClass = $className;
+
+            if (is_subclass_of($className, '\Eloquent')) {
+                $config = new ModelConfig();
+                $config->setModelClass($modelClass);
+            }
+            else if (is_subclass_of($className, 'Label305\AujaLaravel\Config\ModelConfig')) {
+                $config = new $className();
+                $modelClass = $config->getModelClass();
+            }
+            else {
+                throw new \InvalidArgumentException(
+                    "Model configuration should be class name string of either a ModelConfig or Eloquent subclass."
+                );
+            }
+
+            $model = new Model($modelClass);
+            $this->models[$modelClass] = $model;
+            $this->relations[$modelClass] = [];
+
+            $configResolver = new ConfigResolver($config, $model);
+            $this->configs[$modelClass] = $configResolver->resolve();
+            $this->findColumns($this->models[$modelClass]);
+            $this->configs[$modelClass] = $configResolver->resolve(); // TODO: Find a workaround for doing this twice.
         }
 
         /* Find relations */
@@ -338,10 +356,10 @@ class AujaConfigurator {
 
         $result = false;
         if ($config != null) {
-            $result = $config->includeInMain();
+            $result = $config->getSmartIncludeInMain();
         } else {
             $modelConfig = $this->configs[$model->getName()];
-            $result = $modelConfig->includeInMain();
+            $result = $modelConfig->getSmartIncludeInMain();
         }
         return $result;
     }

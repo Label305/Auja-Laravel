@@ -4,7 +4,7 @@ $prefix = $app['config']['auja.route'] ?: $app['config']['auja-laravel::config.r
 
 if ($prefix !== null) {
 
-    Route::group(['prefix' => $prefix], function () {
+    AujaRoute::group([], function () {
         AujaRoute::support('Label305\AujaLaravel\Controllers\DefaultSupportController');
     });
 }

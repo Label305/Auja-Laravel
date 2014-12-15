@@ -26,7 +26,7 @@ return [
 
 	'color' => [
         'main' => '#1EBAB8',
-        'secondary' => '#666666',
+        'secondary' => '#E3E3E4',
         'alert' => '#1EBAB8',
     ],
 
@@ -58,35 +58,25 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
-	| Available Models
+	| Available Models or Custom Model Configurations
 	|--------------------------------------------------------------------------
 	|
 	| Specify the models that you wish to be available in the admin
 	| interface. Each model can have a separate config class.
 	|
-	| For example: 'YourApp\Models\User'
-	|
-	*/
-
-	'models' => [
-
-	],
-
-	/*
-	|--------------------------------------------------------------------------
-	| Custom Model Configurations
-	|--------------------------------------------------------------------------
+	| For example: 'YourApp\Models\User' should extend Eloquent
 	|
 	| Auja will autopopulate the interface for all models, however you can
 	| customize a lot. To do so create ModelConfiguration classes that define
 	| how each model should be presented by the interface.
 	|
-	| For example 'YourApp\Admin\Config\UsersConfig'
+	| For example: 'YourApp\Admin\Config\UsersConfig' should extend ModelConfig
 	|
 	*/
 
-	'configurations' => [
-
+	'models' => [
+        'YourApp\Models\User',
+        'YourApp\Admin\Config\UsersConfig'
 	],
 
 	/*

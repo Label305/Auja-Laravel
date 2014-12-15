@@ -73,7 +73,7 @@ class Auja {
      *
      * @param Application $app The Illuminate Application instance.
      * @param AujaConfigurator $aujaConfigurator
-     * @param String[] $modelNames The names of the models to use for Auja.
+     * @param [] $models The model configuration.
      */
     function __construct(Application $app, AujaConfigurator $aujaConfigurator, array $modelNames) {
         if (php_sapi_name() == 'cli') {

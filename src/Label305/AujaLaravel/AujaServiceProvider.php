@@ -36,12 +36,12 @@ class AujaServiceProvider extends ServiceProvider {
      */
     protected function registerManager()
     {
-        $this->app->singleton('Label305\AujaLaravel\Auja', function ($app) {
+        $this->app->singleton('auja', function ($app) {
             $config = $app['config']['auja-laravel'] ?: $app['config']['auja-laravel::config'];
             return new Auja($app, $app['auja.configurator'], $config['models']);
         });
 
-        $this->app->bind('auja', 'Label305\AujaLaravel\Auja');
+        $this->app->bind('Label305\AujaLaravel\Auja', 'auja');
     }
 
     /**
@@ -49,7 +49,7 @@ class AujaServiceProvider extends ServiceProvider {
      */
     protected function registerConfigurator()
     {
-        $this->app->singleton('Label305\AujaLaravel\Database\DatabaseHelper', function($app) {
+        $this->app->singleton('auja.database', function($app) {
 
             $config = $app['config']['auja-laravel'] ?: $app['config']['auja-laravel::config'];
 
@@ -63,13 +63,13 @@ class AujaServiceProvider extends ServiceProvider {
             }
         });
 
-        $this->app->bind('auja.database', 'Label305\AujaLaravel\Database\DatabaseHelper');
+        $this->app->bind('Label305\AujaLaravel\Database\DatabaseHelper', 'auja.database');
 
-        $this->app->singleton('Label305\AujaLaravel\Config\AujaConfigurator', function($app) {
+        $this->app->singleton('auja.configurator', function($app) {
             return new AujaConfigurator($app, $app['auja.database']);
         });
 
-        $this->app->bind('auja.configurator', 'Label305\AujaLaravel\Config\AujaConfigurator');
+        $this->app->bind('Label305\AujaLaravel\Config\AujaConfigurator', 'auja.configurator');
     }
 
     /**
@@ -78,8 +78,13 @@ class AujaServiceProvider extends ServiceProvider {
     protected function registerRouter()
     {
         $this->app->singleton('auja.router', function($app) {
-            return new AujaRouter($app['auja'], $app['router']);
+
+            $config = $app['config']['auja-laravel'] ?: $app['config']['auja-laravel::config'];
+
+            return new AujaRouter($app['auja'], $app['router'], $config['route']);
         });
+
+        $this->app->bind('Label305\AujaLaravel\Routing\AujaRouter', 'auja.router');
     }
 
     /**
