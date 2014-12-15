@@ -257,7 +257,7 @@ By default Auja provides a default support controller to handle authentication a
 
     ```php
     AujaRoute::group(['prefix' => 'admin'], function() {
-        AujaRoute::support(YourApp\Http\Controllers\Admin\YourSupportController');
+        AujaRoute::support('YourApp\Http\Controllers\Admin\YourSupportController');
     });
 
     AujaRoute::group(['before'=> 'auth', 'prefix' => 'admin'], function() {
