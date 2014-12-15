@@ -80,7 +80,7 @@ class FeatureContext extends BehatContext {
     public function thereIsAModel($modelName) {
 
         if (!class_exists($modelName)) {
-            eval('class ' . $modelName . ' extends \Illuminate\Database\Eloquent\Model { };');
+            eval('class ' . $modelName . ' extends \Illuminate\Database\Eloquent\Model {  }');
         }
 
         $this->models[] = $modelName;
