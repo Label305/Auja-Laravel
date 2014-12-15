@@ -48,8 +48,8 @@ class PageFactorySpec extends ObjectBehavior {
         $aujaConfigurator->getModel('MyModel')->willReturn($model);
         $aujaConfigurator->getVisibleFields($model, null)->willReturn($this->visibleFields);
 
-        $formItemFactory->getFormItem($column1, null)->willReturn($formItem);
-        $formItemFactory->getFormItem($column2, null)->willReturn($formItem);
+        $formItemFactory->getFormItem($model, $column1, null)->willReturn($formItem);
+        $formItemFactory->getFormItem($model, $column2, null)->willReturn($formItem);
 
         $model->getColumn('field1')->willReturn($column1);
         $column1->getName()->willReturn('field1');

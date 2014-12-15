@@ -88,7 +88,9 @@ class ModelConfig {
      */
     private $smartIncludeInMain;
 
-    public function __construct() {
+    public function __construct($modelClass = null) {
+
+        $this->modelClass = $modelClass;
         $this->smartIncludeInMain = true;
         $this->searchable = true;
     }
@@ -99,7 +101,8 @@ class ModelConfig {
     public function getDisplayName() {
         $modelClass = $this->getModelClass();
         if (is_null($this->displayName) && !is_null($modelClass)) {
-            $this->setDisplayName(array_slice(explode('\\', $modelClass), -1, 1, TRUE)[0]);
+            $displayNameResults = array_slice(explode('\\', $modelClass), -1, 1, false);
+            $this->setDisplayName($displayNameResults[0]);
         }
 
         return $this->displayName;
