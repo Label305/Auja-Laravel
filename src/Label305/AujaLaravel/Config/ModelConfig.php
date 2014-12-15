@@ -41,7 +41,14 @@ namespace Label305\AujaLaravel\Config;
 class ModelConfig {
 
     /**
+     * @var String namespace and classname of the model;
+     * For example: '/YourApp/Models/User'
+     */
+    private $modelClass;
+
+    /**
      * @var String The name of the model to display.
+     * For example: 'User'
      */
     private $displayName;
 
@@ -52,6 +59,7 @@ class ModelConfig {
 
     /**
      * @var String The name of the table for this model.
+     * For example: 'users'
      */
     private $tableName;
 
@@ -70,23 +78,43 @@ class ModelConfig {
      */
     private $visibleFields;
 
-    public function __construct($modelName) {
-        $this->tableName = str_plural(snake_case($modelName));
-        $this->displayName = $modelName;
+    /**
+     * @param bool `true` if the user should be able to search items.
+     */
+    private $searchable;
+
+    /**
+     * @var bool `true` if the smartController should be included in main.
+     */
+    private $smartIncludeInMain;
+
+    public function __construct($modelClass = null) {
+
+        $this->modelClass = $modelClass;
+        $this->smartIncludeInMain = true;
+        $this->searchable = true;
     }
 
     /**
      * @return String The name that is displayed.
      */
     public function getDisplayName() {
+        $modelClass = $this->getModelClass();
+        if (is_null($this->displayName) && !is_null($modelClass)) {
+            $displayNameResults = array_slice(explode('\\', $modelClass), -1, 1, false);
+            $this->setDisplayName($displayNameResults[0]);
+        }
+
         return $this->displayName;
     }
 
     /**
      * @param String $displayName The name to display.
+     * @return $this
      */
     public function setDisplayName($displayName) {
         $this->displayName = $displayName;
+        return $this;
     }
 
     /**
@@ -103,25 +131,34 @@ class ModelConfig {
     /**
      * Sets the name to display for given column name.
      *
-     * @param String $columnName  The name of the column.
+     * @param String $columnName The name of the column.
      * @param String $displayName The name to display for the column.
+     * @return $this
      */
     public function setColumnDisplayName($columnName, $displayName) {
         $this->columnDisplayNames[$columnName] = $displayName;
+        return $this;
     }
 
     /**
      * @return String The name of the table for this model.
      */
     public function getTableName() {
+        $displayName = $this->getDisplayName();
+        if (is_null($this->tableName) && !is_null($displayName)) {
+            $this->setTableName(str_plural(snake_case($displayName)));
+        }
+
         return $this->tableName;
     }
 
     /**
      * @param String $tableName The name of the table for this model.
+     * @return $this
      */
     public function setTableName($tableName) {
         $this->tableName = $tableName;
+        return $this;
     }
 
     /**
@@ -133,9 +170,11 @@ class ModelConfig {
 
     /**
      * @param String $displayField The name of the column to use for displaying an entry.
+     * @return $this
      */
     public function setDisplayField($displayField) {
         $this->displayField = $displayField;
+        return $this;
     }
 
     /**
@@ -147,9 +186,11 @@ class ModelConfig {
 
     /**
      * @param String $icon The name of the icon to use, as defined in Icons.
+     * @return $this
      */
     public function setIcon($icon) {
         $this->icon = $icon;
+        return $this;
     }
 
     /**
@@ -161,22 +202,60 @@ class ModelConfig {
 
     /**
      * @param String[] $visibleFields
+     * @return $this
      */
     public function setVisibleFields($visibleFields) {
         $this->visibleFields = $visibleFields;
+        return $this;
     }
 
     /**
      * @return bool `true` if the model should be included in main.
      */
-    public function includeInMain() {
-        return true;
+    public function getSmartIncludeInMain() {
+        return $this->smartIncludeInMain;
+    }
+
+    /**
+     * @param $smartInclude
+     * @return $this
+     */
+    public function setSmartIncludeInMain($smartInclude) {
+        $this->smartIncludeInMain = $smartInclude;
+        return $this;
     }
 
     /**
      * @return bool `true` if the user should be able to search items.
      */
     public function isSearchable() {
-        return true;
+        return $this->searchable;
     }
+
+    /**
+     * @param $searchable
+     * @return $this
+     */
+    public function setSearchable($searchable) {
+        $this->searchable = $searchable;
+        return $this;
+    }
+
+    /**
+     * @return String
+     */
+    public function getModelClass()
+    {
+        return $this->modelClass;
+    }
+
+    /**
+     * @param String $modelClass
+     */
+    public function setModelClass($modelClass)
+    {
+        $this->modelClass = $modelClass;
+        return $this;
+    }
+
 }

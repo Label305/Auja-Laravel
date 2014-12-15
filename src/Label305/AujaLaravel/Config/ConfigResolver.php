@@ -52,17 +52,12 @@ class ConfigResolver {
     /**
      * Creates a new ConfigResolver for given Model.
      *
-     * @param Application $app
-     * @param Model       $model The Model to generate a ModelConfig for.
+     * @param ModelConfig $config
+     * @param Model $model The Model to generate a ModelConfig for.
      */
-    public function __construct(Application $app, Model $model) {
+    public function __construct(ModelConfig $config, Model $model) {
         $this->model = $model;
-
-        try {
-            $this->config = $app->make($model->getName() . 'Config', [$model->getName()]);
-        } catch (\ReflectionException $e) {
-            $this->config = new ModelConfig($model->getName());
-        }
+        $this->config = $config;
     }
 
     /**

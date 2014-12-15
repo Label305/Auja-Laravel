@@ -13,10 +13,9 @@ use Prophecy\Argument;
 
 class ConfigResolverSpec extends ObjectBehavior {
 
-    function let(Application $application, Model $model) {
-        $this->beConstructedWith($application, $model);
+    function let(Model $model) {
 
-        $application->make('NameConfig', ['Name'])->willReturn(new ModelConfig('Name'));
+        $this->beConstructedWith(new ModelConfig('Name'), $model);
 
         $model->getName()->willReturn('Name');
         $model->getColumns()->willReturn([
@@ -32,10 +31,8 @@ class ConfigResolverSpec extends ObjectBehavior {
         $this->resolve()->shouldHaveType('Label305\AujaLaravel\Config\ModelConfig');
     }
 
-    function it_can_guess_a_name_displayfield(Application $application, Model $model) {
-        $this->beConstructedWith($application, $model);
-
-        $application->make('NameConfig', ['Name'])->willThrow('ReflectionException');
+    function it_can_guess_a_name_displayfield(Model $model) {
+        $this->beConstructedWith(new ModelConfig('Name'), $model);
 
         $model->getName()->willReturn('Name');
         $model->getColumns()->willReturn([
@@ -46,10 +43,9 @@ class ConfigResolverSpec extends ObjectBehavior {
         $this->resolve()->shouldHaveType('Label305\AujaLaravel\Config\ModelConfig');
     }
 
-    function it_creates_a_new_config_if_none_found(Application $application, Model $model) {
-        $this->beConstructedWith($application, $model);
+    function it_creates_a_new_config_if_none_found(Model $model) {
+        $this->beConstructedWith(new ModelConfig('Name'), $model);
 
-        $application->make('NameConfig', ['Name'])->willReturn(new ModelConfig('Name'));
 
         $model->getName()->willReturn('Name');
         $model->getColumns()->willReturn([

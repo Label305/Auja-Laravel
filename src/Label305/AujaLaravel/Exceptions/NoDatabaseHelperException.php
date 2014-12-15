@@ -21,15 +21,18 @@
  * limitations under the License.
  */
 
-namespace Label305\AujaLaravel\Facade;
+namespace Label305\AujaLaravel\Exceptions;
 
-use Illuminate\Support\Facades\Facade;
+use Exception;
 
-class AujaRouteFacade extends Facade {
-
-    protected static function getFacadeAccessor()
-    {
-        return 'auja.router';
-    }
+/**
+ * Exception thrown if the database key in the config is specified incorrectly.
+ *
+ * @author  Thijs Scheepers - <thijs@label305.com>
+ *
+ * @package Label305\AujaLaravel
+ * @license http://www.apache.org/licenses/LICENSE-2.0
+ */
+class NoDatabaseHelperException extends Exception {
 
 }

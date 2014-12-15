@@ -71,24 +71,25 @@ class Auja {
     /**
      * Creates a new Auja instance.
      *
-     * @param Application $app        The Illuminate Application instance.
-     * @param String[]    $modelNames The names of the models to use for Auja.
+     * @param Application $app The Illuminate Application instance.
+     * @param AujaConfigurator $aujaConfigurator
+     * @param [] $models The model configuration.
      */
-    function __construct(Application $app, array $modelNames) {
+    function __construct(Application $app, AujaConfigurator $aujaConfigurator, array $modelNames) {
         if (php_sapi_name() == 'cli') {
             /* Don't run when we're running artisan commands. */
             return;
         }
 
         if (empty($modelNames)) {
-            throw new \InvalidArgumentException('Provide models!');
+            throw new \InvalidArgumentException('Provide models for Auja to manage');
         }
 
         $this->app = $app;
 
         Log::debug('Initializing Auja with models:', $modelNames);
 
-        $this->aujaConfigurator = $app['Label305\AujaLaravel\Config\AujaConfigurator'];
+        $this->aujaConfigurator = $aujaConfigurator;
         $this->aujaConfigurator->configure($modelNames);
     }
 

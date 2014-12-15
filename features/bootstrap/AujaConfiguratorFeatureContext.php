@@ -45,6 +45,11 @@ class FeatureContext extends BehatContext {
     private $lastModel;
 
     /**
+     * @var
+     */
+    private $lastConfig;
+
+    /**
      * @var Application
      */
     private $application;
@@ -73,14 +78,18 @@ class FeatureContext extends BehatContext {
      * @Given /^there is a model "([^"]*)"$/
      */
     public function thereIsAModel($modelName) {
+
+        if (!class_exists($modelName)) {
+            eval('class ' . $modelName . ' extends \Illuminate\Database\Eloquent\Model {  }');
+        }
+
         $this->models[] = $modelName;
         $this->lastModel = $modelName;
 
         $config = new ModelConfig($modelName);
-        $config->setTableName($modelName);
-        $this->application->shouldReceive('make')->with($modelName . 'Config', [$modelName])->andReturn($config);
+        $this->lastConfig = $config;
 
-        $this->databaseHelper->shouldReceive('hasTable')->with($modelName)->andReturn(true);
+        $this->databaseHelper->shouldReceive('hasTable')->with($config->getTableName())->andReturn(true);
     }
 
     /**
@@ -90,9 +99,9 @@ class FeatureContext extends BehatContext {
         $columns = [];
         foreach ($table->getHash() as $columnHash) {
             $columns[] = $columnHash['column'];
-            $this->databaseHelper->shouldReceive('getColumnType')->with($this->lastModel, $columnHash['column'])->andReturn($columnHash['type']);
+            $this->databaseHelper->shouldReceive('getColumnType')->with($this->lastConfig->getTableName(), $columnHash['column'])->andReturn($columnHash['type']);
         }
-        $this->databaseHelper->shouldReceive('getColumnListing')->with($this->lastModel)->andReturn($columns);
+        $this->databaseHelper->shouldReceive('getColumnListing')->with($this->lastConfig->getTableName())->andReturn($columns);
     }
 
     /**
@@ -108,7 +117,6 @@ class FeatureContext extends BehatContext {
                 $this->databaseHelper->shouldReceive('hasTable')->with(sprintf('%s_%s', strtolower($model), strtolower($otherModel)))->andReturn(false);
             }
         }
-
 
         $this->aujaConfigurator->configure($this->models);
     }

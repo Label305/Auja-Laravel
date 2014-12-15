@@ -24,11 +24,16 @@
 namespace spec\Label305\AujaLaravel\Factory;
 
 use Doctrine\DBAL\Types\Type;
+use Label305\AujaLaravel\Config\AujaConfigurator;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
 class FormItemFactorySpec extends ObjectBehavior {
 
+    function let(AujaConfigurator $aujaConfigurator)
+    {
+        $this->beConstructedWith($aujaConfigurator);
+    }
 
     function it_is_initializable() {
         $this->shouldHaveType('Label305\AujaLaravel\Factory\FormItemFactory');
