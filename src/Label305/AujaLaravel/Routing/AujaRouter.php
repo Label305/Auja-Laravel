@@ -252,6 +252,11 @@ class AujaRouter {
      * @param $closure
      */
     public function group($options, $closure) {
+        if (php_sapi_name() == 'cli') {
+            /* Don't run when we're running artisan commands. */
+            return;
+        }
+        
         if (!is_null($this->prefix)) {
             $options = array_merge($options, ['prefix' => $this->prefix]);
         }
