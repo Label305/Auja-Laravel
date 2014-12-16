@@ -76,7 +76,7 @@ abstract class AujaControler extends Controller implements AujaControllerInterfa
     public function showMenu($id)
     {
         return new JsonResponse(
-            Auja::menuFor($this, $id)
+            Auja::showMenuFor($this, $id)
         );
     }
 
