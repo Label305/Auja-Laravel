@@ -42,7 +42,7 @@ class MainFactorySpec extends ObjectBehavior {
         $model = new Model('Model');
         $aujaConfigurator->getModels()->willReturn([$model]);
         $aujaConfigurator->getIcon($model, null)->willReturn('Icon');
-        $aujaConfigurator->shouldIncludeInMain($model, null)->willReturn(true);
+        $aujaConfigurator->shouldSmartIncludeInMain($model, null)->willReturn(true);
     }
 
     function it_is_initializable() {
