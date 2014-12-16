@@ -51,22 +51,50 @@ class MainFactory {
         $this->aujaRouter = $aujaRouter;
     }
 
-    public function create($title, $authenticated, $username = null, $logoutTarget = null, Form $authenticationForm = null, ModelConfig $config = null) {
+    /**
+     * @param $title
+     * @param $authenticated
+     * @param null $username
+     * @param null $logoutTarget
+     * @param Form $authenticationForm
+     * @param ModelConfig $config
+     * @param null $additionalMenuItems
+     * @param bool $smartMenuItemInclude
+     * @return Main
+     */
+    public function create($title, $authenticated, $username = null, $logoutTarget = null, Form $authenticationForm = null, ModelConfig $config = null, $additionalMenuItems = null, $smartMenuItemInclude = true) {
         $main = new Main();
 
         $main->setTitle($title);
         $main->setUsername($username);
         $main->setAuthenticated($authenticated);
 
-        if ($logoutTarget != null) {
+        if ($logoutTarget !== null) {
             $button = new Button();
             $button->setText('Logout');
             $button->setTarget($logoutTarget);
             $main->addButton($button);
         }
 
+        if ($additionalMenuItems !== null) {
+            foreach ($additionalMenuItems as $item) {
+                $main->addItem($item);
+            }
+        }
+
+        if ($smartMenuItemInclude) {
+            $this->smartIncludeMenuItems($main, $config);
+        }
+
+        $main->setAuthenticationForm($authenticationForm);
+
+        return $main;
+    }
+
+    private function smartIncludeMenuItems($main, $config) {
+
         foreach ($this->aujaConfigurator->getModels() as $model) {
-            if ($this->aujaConfigurator->shouldIncludeInMain($model, $config)) {
+            if ($this->aujaConfigurator->shouldSmartIncludeInMain($model, $config)) {
                 $item = new Item();
                 $item->setTitle($model->getName());
                 $item->setIcon($this->aujaConfigurator->getIcon($model, $config));
@@ -74,10 +102,7 @@ class MainFactory {
                 $main->addItem($item);
             }
         }
-
-        $main->setAuthenticationForm($authenticationForm);
-
-        return $main;
     }
+
 
 } 

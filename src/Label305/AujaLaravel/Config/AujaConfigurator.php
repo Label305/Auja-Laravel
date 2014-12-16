@@ -345,7 +345,7 @@ class AujaConfigurator {
      *
      * @return bool `true` if the model should be included in main.
      */
-    public function shouldIncludeInMain(Model $model, ModelConfig $config = null) {
+    public function shouldSmartIncludeInMain(Model $model, ModelConfig $config = null) {
         if (empty($this->models)) {
             throw new \LogicException('AujaConfigurator not configured yet! Call configure first.');
         }
