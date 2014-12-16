@@ -52,6 +52,19 @@ abstract class AujaControler extends Controller implements AujaControllerInterfa
     }
 
     /**
+     * Returns the general menu which often contains a "add" button and a resource which
+     * in turn calls for the resource in a separate request to index()
+     *
+     * @return Response
+     */
+    public function menu()
+    {
+        return new JsonResponse(
+            Auja::menuFor($this)
+        );
+    }
+
+    /**
      * Returns the menu of a specific object. For example to show all relations.
      *
      * If you have a Clubs and select one it can contain Teams, Members etc. but also the Edit button for that
@@ -60,7 +73,7 @@ abstract class AujaControler extends Controller implements AujaControllerInterfa
      * @param int $id
      * @return Response
      */
-    public function menu($id = 0)
+    public function showMenu($id)
     {
         return new JsonResponse(
             Auja::menuFor($this, $id)
