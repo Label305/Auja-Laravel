@@ -36,7 +36,7 @@ use Label305\AujaLaravel\Routing\AujaRouter;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
-class ResourceItemsFactorySpec extends ObjectBehavior {
+class ResourceIndexFactorySpec extends ObjectBehavior {
 
     /**
      * @var Relation[]
@@ -65,7 +65,7 @@ class ResourceItemsFactorySpec extends ObjectBehavior {
     }
 
     function it_is_initializable() {
-        $this->shouldHaveType('Label305\AujaLaravel\Factory\ResourceItemsFactory');
+        $this->shouldHaveType('Label305\AujaLaravel\Factory\ResourceIndexFactory');
     }
 
     function it_can_create_a_resource(){
