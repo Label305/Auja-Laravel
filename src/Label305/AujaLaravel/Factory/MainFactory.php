@@ -76,14 +76,14 @@ class MainFactory {
             $main->addButton($button);
         }
 
-        if ($smartMenuItemInclude) {
-            $this->smartIncludeMenuItems($main, $config);
-        }
-
         if ($additionalMenuItems !== null) {
             foreach ($additionalMenuItems as $item) {
                 $main->addItem($item);
             }
+        }
+
+        if ($smartMenuItemInclude) {
+            $this->smartIncludeMenuItems($main, $config);
         }
 
         $main->setAuthenticationForm($authenticationForm);

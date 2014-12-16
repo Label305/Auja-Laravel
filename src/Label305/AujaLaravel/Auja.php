@@ -136,14 +136,17 @@ class Auja {
     /**
      * Creates the initial Auja view based on the models as initialized in init().
      *
-     * @param String $title The title to show.
-     * @param boolean $authenticated Whether the user is authenticated.
-     * @param String $username (optional) The user name to show.
-     * @param String $logoutTarget (optional) The target url for logging out.
-     * @param Form $authenticationForm (optional) The `Form` to use for authentication, or `null` if none.
-     * @param ModelConfig $config (optional) The `ModelConfig` to use.
-     * @param Item[]|null $additionalMenuItems Enter an array of additional Label305\Auja\Main\Item objects to display as main tabs
-     * @param bool $smartMenuItemInclude Enter false to disable all the auto inclusion of menu items for models, you can also set a per model auto inclusion property on a ModelConfig object
+     * @param String        $title                  The title to show.
+     * @param boolean       $authenticated          Whether the user is authenticated.
+     * @param String        $username               (optional) The user name to show.
+     * @param String        $logoutTarget           (optional) The target url for logging out.
+     * @param Form          $authenticationForm     (optional) The `Form` to use for authentication, or `null` if none.
+     * @param ModelConfig   $config                 (optional) The `ModelConfig` to use.
+     * @param Item[]|null   $additionalMenuItems    (optional) Enter an array of additional Label305\Auja\Main\Item
+     *                                              objects to display as main tabs.
+     * @param bool          $smartMenuItemInclude   (optional) Enter false to disable all the auto inclusion of menu
+     *                                              items for models, you can also set a per model auto inclusion
+     *                                              property on a ModelConfig object
      *
      * @return Main the Main instance which can be configured further.
      */
