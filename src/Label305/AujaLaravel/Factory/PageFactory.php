@@ -58,6 +58,10 @@ class PageFactory {
         $this->formItemFactory = $formItemFactory;
     }
 
+    public function forbiddenColumns() {
+        return ['id'];
+    }
+
     public function create($modelName, $item = null, ModelConfig $config = null) {
         $page = new Page();
 
@@ -87,9 +91,11 @@ class PageFactory {
         $model = $this->aujaConfigurator->getModel($modelName);
         $visibleFields = $this->aujaConfigurator->getVisibleFields($model, $config);
         foreach ($visibleFields as $columnName) {
-            $column = $model->getColumn($columnName);
-            $formItem = $this->formItemFactory->getFormItem($model, $column, $item);
-            $form->addFormItem($formItem);
+            if (!in_array($columnName, $this->forbiddenColumns())) {
+                $column = $model->getColumn($columnName);
+                $formItem = $this->formItemFactory->getFormItem($model, $column, $item);
+                $form->addFormItem($formItem);
+            }
         }
 
         $submit = new SubmitFormItem();
