@@ -98,8 +98,10 @@ class FormItemFactory {
         }
 
         if ($relatedModel != null) {
+
             $displayName = $this->aujaConfigurator->getDisplayName($relatedModel);
-            $result->setName($displayName);
+            $result->setLabel($displayName);
+            $result->setName($column->getName());
 
             if ($item !== null) {
                 $result->setValue($item->{$column->getName()});
