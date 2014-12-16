@@ -14,12 +14,12 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "label305/auja": "v3.0.0-alpha6",
+        "label305/auja": "3.0.0-alpha7",
         "illuminate/support": "4.2.*",
         "doctrine/dbal": "2.5.*"
     },
     "require-dev": {
-        "laravel/framework": "^4.2.*",
+        "laravel/framework": "^4.2.11",
         "phpspec/phpspec": "~2.0",
         "phpunit/phpunit": "4.2.4",
         "hamcrest/hamcrest-php": "1.1.1",
