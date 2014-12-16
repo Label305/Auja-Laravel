@@ -209,7 +209,8 @@ Setup Laravel to work with Bower and Gulp
         "name": "Laravel Application",
         "dependencies": {
             "bootstrap-sass-official": "~3.3.1",
-            "font-awesome": "~4.2.0"
+            "font-awesome": "~4.2.0",
+            "auja": "~3.0.0"
         }
     }
     ```
