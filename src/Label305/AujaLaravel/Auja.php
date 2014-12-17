@@ -204,7 +204,7 @@ class Auja {
      * To automatically use pagination, simply provide a Paginator as items.
      *
      * @param Controller|Eloquent|String $model       An object which represents the model to build items for.
-     * @param array|Paginator            $items       An array of instances of the model to be shown, or a Paginator containing the instances.
+     * @param array|Paginator|null       $items       An array of instances of the model to be shown, or a Paginator containing the instances.
      * @param String                     $targetUrl   (optional) The target url for the items. Must contain '%d' in the place of the item id.
      * @param String                     $nextPageUrl (optional) The url to the next page, if any.
      * @param int                        $offset      (optional) The offset to start the order from.

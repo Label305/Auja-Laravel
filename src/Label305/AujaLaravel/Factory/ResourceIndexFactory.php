@@ -110,7 +110,8 @@ class ResourceIndexFactory {
         $displayField = $this->aujaConfigurator->getDisplayField($model, $config);
         $icon = $this->aujaConfigurator->getIcon($model, $config);
         for ($i = 0; $i < count($items); $i++) {
-            if ($targetUrl != null) {
+            if ($targetUrl !== null) {
+                $targetUrl = str_replace('%7Bid%7D', '%d', $targetUrl); // to also allow for {id}
                 $target = sprintf($targetUrl, $items[$i]->id);
             } else if (count($associationRelations) == 0) {
                 $target = URL::route($this->aujaRouter->getEditName($modelName), $items[$i]->id);
