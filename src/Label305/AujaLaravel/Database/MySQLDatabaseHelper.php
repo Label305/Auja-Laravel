@@ -73,6 +73,14 @@ class MySQLDatabaseHelper implements DatabaseHelper {
                 $this->tables = array();
                 $doctrineSchemaManager = DB::getDoctrineSchemaManager();
                 $tables = $doctrineSchemaManager->listTables();
+
+                // Register enum as string
+                // https://wildlyinaccurate.com/doctrine-2-resolving-unknown-database-type-enum-requested
+                $doctrineSchemaManager
+                    ->getConnection()
+                    ->getDatabasePlatform()
+                    ->registerDoctrineTypeMapping('enum', 'string');
+
                 /* @var $tables Table[] */
                 foreach ($tables as $table) {
                     $this->tables[$table->getName()] = $table;
