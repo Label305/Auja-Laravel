@@ -14,7 +14,7 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "label305/auja": "3.0.0-alpha8",
+        "label305/auja": "3.0.*",
         "illuminate/support": "4.2.*",
         "doctrine/dbal": "2.5.*"
     },
