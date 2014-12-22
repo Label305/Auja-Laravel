@@ -133,7 +133,7 @@ class AujaConfigurator {
      * @return Model the Model corresponding to given Model name.
      */
     public function getModel($modelName) {
-        if (!isset($this->models[$modelName])) {
+        if (!is_string($modelName) || !array_key_exists($modelName, $this->models)) {
             throw new \LogicException(sprintf('Model for name %s doesn\'t exist!', $modelName));
         }
 

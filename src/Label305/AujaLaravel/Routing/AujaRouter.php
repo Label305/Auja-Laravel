@@ -248,10 +248,12 @@ class AujaRouter {
     }
 
     /**
+     * Group prefixed with the route set in the config file
+     *
      * @param $options
      * @param $closure
      */
-    public function group($options, $closure) {
+    public function prefixedGroup($options, $closure) {
         if (php_sapi_name() == 'cli') {
             /* Don't run when we're running artisan commands. */
             return;
@@ -305,7 +307,7 @@ class AujaRouter {
     private function registerShowMenu($modelName, $controller) {
         $url = sprintf('%s/{id}/menu', $this->toUrlName($modelName));
         $routeName = $this->getShowMenuName($modelName);
-        $action = $controller . '@menu';
+        $action = $controller . '@showMenu';
 
         $this->router->get($url, ['as' => $routeName, 'uses' => $action]);
     }

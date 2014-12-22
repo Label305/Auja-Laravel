@@ -43,6 +43,14 @@ interface AujaControllerInterface {
     public function index();
 
     /**
+     * Returns the general menu which often contains a "add" button and a resource which
+     * in turn calls for the resource in a separate request to index()
+     *
+     * @return Response
+     */
+    public function menu();
+
+    /**
      * Returns the menu of a specific object. For example to show all relations.
      *
      * If you have a Clubs and select one it can contain Teams, Members etc. but also the Edit button for that
@@ -51,7 +59,7 @@ interface AujaControllerInterface {
      * @param int $id
      * @return Response
      */
-    public function menu($id = 0);
+    public function showMenu($id);
 
     /**
      * Returns the form for creating a new instance of an object.

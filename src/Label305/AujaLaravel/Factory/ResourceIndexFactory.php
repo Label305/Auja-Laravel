@@ -34,7 +34,7 @@ use Label305\AujaLaravel\Config\ModelConfig;
 use Label305\AujaLaravel\Config\Relation;
 use Label305\AujaLaravel\Routing\AujaRouter;
 
-class ResourceItemsFactory {
+class ResourceIndexFactory {
 
     /**
      * @var AujaConfigurator
@@ -110,7 +110,7 @@ class ResourceItemsFactory {
         $displayField = $this->aujaConfigurator->getDisplayField($model, $config);
         $icon = $this->aujaConfigurator->getIcon($model, $config);
         for ($i = 0; $i < count($items); $i++) {
-            if ($targetUrl != null) {
+            if ($targetUrl !== null) {
                 $target = sprintf($targetUrl, $items[$i]->id);
             } else if (count($associationRelations) == 0) {
                 $target = URL::route($this->aujaRouter->getEditName($modelName), $items[$i]->id);

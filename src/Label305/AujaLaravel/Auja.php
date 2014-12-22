@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\Log;
 use Label305\Auja\Main\Item;
 use Label305\Auja\Main\Main;
 use Label305\Auja\Menu\Menu;
+use Label305\Auja\Menu\ResourceMenuItem;
 use Label305\Auja\Page\Form;
 use Label305\AujaLaravel\Config\AujaConfigurator;
 use Label305\AujaLaravel\Config\Model;
@@ -38,11 +39,12 @@ use Label305\AujaLaravel\Config\Relation;
 use Label305\AujaLaravel\Factory\AssociationMenuFactory;
 use Label305\AujaLaravel\Factory\AuthenticationFormFactory;
 use Label305\AujaLaravel\Factory\MainFactory;
-use Label305\AujaLaravel\Factory\MultipleAssociationsIndexMenuFactory;
-use Label305\AujaLaravel\Factory\NoAssociationsIndexMenuFactory;
+use Label305\AujaLaravel\Factory\MenuFactory;
+use Label305\AujaLaravel\Factory\MultipleAssociationsShowMenuFactory;
 use Label305\AujaLaravel\Factory\PageFactory;
-use Label305\AujaLaravel\Factory\ResourceItemsFactory;
-use Label305\AujaLaravel\Factory\SingleAssociationIndexMenuFactory;
+use Label305\AujaLaravel\Factory\ResourceIndexFactory;
+use Label305\AujaLaravel\Factory\ResourceItemFactory;
+use Label305\AujaLaravel\Factory\Sing;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
 
@@ -157,31 +159,6 @@ class Auja {
     }
 
     /**
-     * Intelligently creates an index menu for given model, and optionally model id.
-     *
-     * @param Controller|Eloquent|String $model   An object which represents the model to build the menu for.
-     * @param int                        $modelId (optional) The id of an instance of the model.
-     * @param ModelConfig                $config  (optional) The `ModelConfig` to use.
-     *
-     * @return Menu The built `Menu` instance, which can be configured further.
-     */
-    public function menuFor($model, $modelId = 0, ModelConfig $config = null) {
-        if (is_null($this->aujaConfigurator)) {
-            throw new \LogicException('Auja not initialized. Call Auja::init first.');
-        }
-
-        $modelName = $this->resolveModelName($model);
-
-        if ($modelId == 0) {
-            $menu = $this->noAssociationsMenuFor($modelName, $config);
-        } else {
-            $menu = $this->buildComplexIndexMenu($modelName, $modelId, $config);
-        }
-
-        return $menu;
-    }
-
-    /**
      * Creates a `Menu` for given model, with a layout depending on its relations.
      *
      * @param String      $modelName The name of the model to create a `Menu` for.
@@ -190,7 +167,12 @@ class Auja {
      *
      * @return Menu The built `Menu` instance, which can be configured further.
      */
-    private function buildComplexIndexMenu($modelName, $modelId, ModelConfig $config = null) {
+    public function showMenuFor($model, $modelId, ModelConfig $config = null) {
+        if (is_null($this->aujaConfigurator)) {
+            throw new \LogicException('Auja not initialized. Call Auja::init first.');
+        }
+
+        $modelName = $this->resolveModelName($model);
         $model = $this->aujaConfigurator->getModel($modelName);
         $relations = $this->aujaConfigurator->getRelationsForModel($model);
 
@@ -201,15 +183,13 @@ class Auja {
             }
         }
 
+
         switch (count($associationRelations)) {
-            case 0:
-                $menu = $this->noAssociationsMenuFor($modelName, $config);
-                break;
             case 1:
-                $menu = $this->singleAssociationMenuFor($modelName, $modelId, $associationRelations[0], $config);
+                $menu = $this->singleAssociationShowMenuFor($modelName, $modelId, $associationRelations[0], $config);
                 break;
             default:
-                $menu = $this->multipleAssociationsMenuFor($modelName, $modelId, $associationRelations, $config);
+                $menu = $this->multipleAssociationsShowMenuFor($modelName, $modelId, $associationRelations, $config);
                 break;
         }
 
@@ -224,7 +204,7 @@ class Auja {
      * To automatically use pagination, simply provide a Paginator as items.
      *
      * @param Controller|Eloquent|String $model       An object which represents the model to build items for.
-     * @param array|Paginator            $items       An array of instances of the model to be shown, or a Paginator containing the instances.
+     * @param array|Paginator|null       $items       An array of instances of the model to be shown, or a Paginator containing the instances.
      * @param String                     $targetUrl   (optional) The target url for the items. Must contain '%d' in the place of the item id.
      * @param String                     $nextPageUrl (optional) The url to the next page, if any.
      * @param int                        $offset      (optional) The offset to start the order from.
@@ -239,8 +219,8 @@ class Auja {
             $items = call_user_func(array($modelName, 'simplePaginate'), 10);
         }
 
-        $factory = $this->app->make('Label305\AujaLaravel\Factory\ResourceItemsFactory');
-        /* @var $factory ResourceItemsFactory */
+        $factory = $this->app->make('Label305\AujaLaravel\Factory\ResourceIndexFactory');
+        /* @var $factory ResourceIndexFactory */
         return $factory->create($modelName, $items, $targetUrl, $nextPageUrl, $offset, $config);
     }
 
@@ -257,13 +237,38 @@ class Auja {
      *
      * @return Menu The `Menu`, which can be configured further.
      */
-    public function noAssociationsMenuFor($model, ModelConfig $config = null) {
+    public function menuFor($model, ModelConfig $config = null) {
+        if (is_null($this->aujaConfigurator)) {
+            throw new \LogicException('Auja not initialized. Call Auja::init first.');
+        }
+
         $modelName = $this->resolveModelName($model);
 
-        $menuFactory = $this->app->make('Label305\AujaLaravel\Factory\NoAssociationsIndexMenuFactory');
-        /* @var $menuFactory NoAssociationsIndexMenuFactory */
+        $menuFactory = $this->app->make('Label305\AujaLaravel\Factory\MenuFactory');
+        /* @var $menuFactory MenuFactory */
         return $menuFactory->create($modelName, $config);
     }
+
+    /**
+     * Creates a `ResourceMenuItem` for given model, with a layout depending on its relations.
+     *
+     * @param String      $model     The name of the model to create a `ResourceMenuItem` for.
+     * @param ModelConfig $config    (optional) The `ModelConfig` to use.
+     *
+     * @return ResourceMenuItem The built `ResourceMenuItem` instance, which can be configured further.
+     */
+    public function resourceItemFor($model, ModelConfig $config = null) {
+        if (is_null($this->aujaConfigurator)) {
+            throw new \LogicException('Auja not initialized. Call Auja::init first.');
+        }
+
+        $modelName = $this->resolveModelName($model);
+
+        $factory = $this->app->make('Label305\AujaLaravel\Factory\ResourceItemFactory');
+        /* @var $factory ResourceItemFactory */
+        return $factory->create($modelName, $config);
+    }
+
 
     /**
      * Builds a menu for a single model entry, where the model has exactly one relationship with another model.
@@ -280,11 +285,11 @@ class Auja {
      *
      * @return Menu the `Menu`, which can be configured further.
      */
-    public function singleAssociationMenuFor($model, $modelId, Relation $relation, ModelConfig $config = null) {
+    public function singleAssociationShowMenuFor($model, $modelId, Relation $relation, ModelConfig $config = null) {
         $modelName = $this->resolveModelName($model);
 
-        $menuFactory = $this->app->make('Label305\AujaLaravel\Factory\SingleAssociationIndexMenuFactory');
-        /* @var $menuFactory SingleAssociationIndexMenuFactory */
+        $menuFactory = $this->app->make('Label305\AujaLaravel\Factory\SingleAssociationShowMenuFactory');
+        /* @var $menuFactory SingleAssociationShowMenuFactory */
         return $menuFactory->create($modelName, $modelId, $relation, $config);
     }
 
@@ -302,11 +307,11 @@ class Auja {
      *
      * @return Menu the Menu, which can be configured further.
      */
-    public function multipleAssociationsMenuFor($model, $modelId, array $relations, ModelConfig $config = null) {
+    public function multipleAssociationsShowMenuFor($model, $modelId, array $relations, ModelConfig $config = null) {
         $modelName = $this->resolveModelName($model);
 
-        $menuFactory = $this->app->make('Label305\AujaLaravel\Factory\MultipleAssociationsIndexMenuFactory');
-        /* @var $menuFactory MultipleAssociationsIndexMenuFactory */
+        $menuFactory = $this->app->make('Label305\AujaLaravel\Factory\MultipleAssociationsShowMenuFactory');
+        /* @var $menuFactory MultipleAssociationsShowMenuFactory */
         return $menuFactory->create($modelName, $modelId, $relations, $config);
     }
 

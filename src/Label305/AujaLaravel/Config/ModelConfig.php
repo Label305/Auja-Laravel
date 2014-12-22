@@ -144,9 +144,10 @@ class ModelConfig {
      * @return String The name of the table for this model.
      */
     public function getTableName() {
-        $displayName = $this->getDisplayName();
-        if (is_null($this->tableName) && !is_null($displayName)) {
-            $this->setTableName(str_plural(snake_case($displayName)));
+        $modelClass = $this->getModelClass();
+        if (is_null($this->tableName) && !is_null($modelClass)) {
+            $displayName = array_slice(explode('\\', $modelClass), -1, 1, false);
+            $this->setTableName(str_plural(snake_case($displayName[0])));
         }
 
         return $this->tableName;

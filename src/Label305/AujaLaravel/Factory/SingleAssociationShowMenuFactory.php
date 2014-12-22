@@ -34,7 +34,7 @@ use Label305\AujaLaravel\Config\ModelConfig;
 use Label305\AujaLaravel\Config\Relation;
 use Label305\AujaLaravel\Routing\AujaRouter;
 
-class SingleAssociationIndexMenuFactory {
+class SingleAssociationShowMenuFactory {
 
     /**
      * @var AujaRouter

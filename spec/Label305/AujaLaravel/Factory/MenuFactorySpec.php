@@ -32,25 +32,25 @@ use Label305\Auja\Menu\SpacerMenuItem;
 use Label305\AujaLaravel\Config\AujaConfigurator;
 use Label305\AujaLaravel\Config\Model;
 use Label305\AujaLaravel\Config\Relation;
+use Label305\AujaLaravel\Factory\ResourceItemFactory;
 use Label305\AujaLaravel\Routing\AujaRouter;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
-class NoAssociationsIndexMenuFactorySpec extends ObjectBehavior {
+class MenuFactorySpec extends ObjectBehavior {
 
-    function let(AujaConfigurator $aujaConfigurator, AujaRouter $aujaRouter, Model $model) {
-        $this->beConstructedWith($aujaConfigurator, $aujaRouter);
+    function let(ResourceItemFactory $resourceItemFactory, AujaRouter $aujaRouter, ResourceMenuItem $resourceMenuItem) {
+        $this->beConstructedWith($resourceItemFactory, $aujaRouter);
 
         URL::shouldReceive('route');
         Lang::shouldReceive('trans')->with('Add')->andReturn('Add');
         Lang::shouldReceive('trans')->with('Model')->andReturn('Model');
 
-        $aujaConfigurator->getModel('Model')->willReturn($model);
-        $aujaConfigurator->isSearchable($model, null)->willReturn(false);
+        $resourceItemFactory->create('Model', null)->willReturn($resourceMenuItem);
     }
 
     function it_is_initializable() {
-        $this->shouldHaveType('Label305\AujaLaravel\Factory\NoAssociationsIndexMenuFactory');
+        $this->shouldHaveType('Label305\AujaLaravel\Factory\MenuFactory');
     }
 
     function it_can_create_a_menu() {
