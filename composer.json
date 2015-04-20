@@ -15,7 +15,7 @@
     "require": {
         "php": ">=5.4.0",
         "laravel/framework": "5.0.*",
-    	"label305/auja": "dev-master",
+    	"label305/auja": "dev-master"
     },
     "require-dev": {
         "phpspec/phpspec": "~2.0",
