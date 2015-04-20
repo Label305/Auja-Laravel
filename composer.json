@@ -14,7 +14,7 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "label305/auja": "3.0.0-alpha8",
+        "label305/auja": "3.0.0-alpha2",
         "illuminate/support": "5.0.*"
     },
     "require-dev": {
