@@ -77,7 +77,7 @@ Because Auja uses both a library for the PHP backand and a library for [the Java
     ],
     ```
 
-8.  Customize the `auja-laravel/config.php` file and specify the models you whish to be included in the Admin interface.
+8.  Customize the `auja-laravel/config.php` file and specify the models you wish to be included in the Admin interface.
 
 9.  Create a `app/controllers/Admin/ClubsController.php` or `app/Http/Controllers/Admin/ClubsController.php`, to manage the `Clubs` in your admin interface. You can do this for all your models. Here is an example:
 
