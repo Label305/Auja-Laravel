@@ -202,7 +202,7 @@ Setup Laravel to work with Bower and Gulp
     });
     ```
 
-6.  Now your all setup. Laravel 5 also includes a `bower.json` file but placing this file is not manditory for other versions.
+6.  Now you're all setup. Laravel 5 also includes a `bower.json` file but placing this file is not mandatory for other versions.
 
     ```json
     {
