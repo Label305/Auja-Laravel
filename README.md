@@ -1,5 +1,11 @@
 # Auja for Laravel
 
+__Deprecated__
+
+This repo will no longer be maintained and will be deleted in the start of 2017.
+
+__About__
+
 [![Build Status](https://travis-ci.org/Label305/Auja-Laravel.svg?branch=dev)](https://travis-ci.org/Label305/Auja-Laravel)
 [![Coverage Status](https://coveralls.io/repos/Label305/Auja-Laravel/badge.png?branch=dev)](https://coveralls.io/r/Label305/Auja-Laravel?branch=dev)
 [![Dependency Status](https://www.versioneye.com/user/projects/548991d6746eb53fa700032e/badge.svg?style=flat)](https://www.versioneye.com/user/projects/548991d6746eb53fa700032e)
