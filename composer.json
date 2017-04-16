@@ -14,11 +14,10 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "label305/auja": "3.0.0-alpha8",
-        "illuminate/support": "5.0.*"
+        "laravel/framework": "5.0.*"
     },
     "require-dev": {
-        "laravel/framework": "4.2.*",
+    	"label305/auja": "dev-master",
         "phpspec/phpspec": "~2.0",
         "phpunit/phpunit": "4.2.4",
         "hamcrest/hamcrest-php": "1.1.1",
