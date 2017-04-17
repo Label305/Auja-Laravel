@@ -15,7 +15,7 @@
     "require": {
         "php": ">=5.4.0",
         "label305/auja": "3.0.0-alpha8",
-        "illuminate/support": "5.0.*"
+        "illuminate/support": "5.0.*|5.1.*"
     },
     "require-dev": {
         "laravel/framework": "4.2.*",
